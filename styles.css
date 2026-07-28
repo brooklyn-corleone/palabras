@@ -172,6 +172,8 @@ input[type=text]:focus{outline:none;border-bottom-color:var(--accent)}
 
 /* ---------- кнопки ---------- */
 .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:28px}
+/* Кнопки внутри пустого экрана не прижимаются к низу — там центрированная колонка. */
+.row-inline{margin-top:0;padding-top:0;justify-content:center}
 .btn{
   font:inherit;font-size:15px;font-weight:500;
   min-height:48px;padding:0 22px;
@@ -190,6 +192,35 @@ input[type=text]:focus{outline:none;border-bottom-color:var(--accent)}
 kbd{
   font:inherit;font-size:11px;font-weight:500;letter-spacing:.04em;
   opacity:.65;
+}
+
+/* ---------- настройка занятия ---------- */
+.session-bar{display:flex;align-items:center;gap:12px;margin-bottom:26px}
+.session-bar .cap{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.session-bar .mini{margin-left:auto;flex-shrink:0}
+
+.setup .chooser{margin-bottom:22px}
+.setup .chooser .cap{display:block;margin-bottom:8px;text-transform:uppercase}
+.chooser-row{display:flex;gap:6px;flex-wrap:wrap}
+.pill{
+  font:inherit;font-size:14px;font-weight:500;
+  min-height:44px;padding:0 16px;
+  border:1px solid var(--line);border-radius:var(--radius);
+  background:none;color:var(--muted);
+  cursor:pointer;touch-action:manipulation;
+  transition:border-color .15s, color .15s, background .15s;
+}
+.pill:hover:not(:disabled){color:var(--text);border-color:var(--muted)}
+.pill[aria-pressed="true"]{color:var(--text);border-color:var(--accent);background:var(--ok-soft)}
+.pill:disabled{opacity:.4;cursor:default}
+.pill:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.setup .hint{margin:-10px 0 0}
+
+.picked-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--line)}
+.picked-bar .cap{margin-right:auto}
+input.pick{
+  width:20px;height:20px;margin:0;accent-color:var(--accent);
+  cursor:pointer;flex-shrink:0;
 }
 
 /* ---------- choice: варианты ответа ---------- */
@@ -295,21 +326,31 @@ kbd{
 .note{min-height:18px;margin-bottom:12px}
 .note:empty{margin-bottom:0}
 
+.list-filters{display:flex;gap:12px;align-items:center;margin-bottom:8px}
 input.filter{
-  width:100%;font:inherit;font-size:16px;padding:12px 0;
+  flex:1;min-width:0;font:inherit;font-size:16px;padding:12px 0;
   border:0;border-bottom:1px solid var(--line);background:none;color:var(--text);
-  margin-bottom:8px;
 }
 input.filter:focus{outline:none;border-bottom-color:var(--accent)}
+.filter-cat{
+  font:inherit;font-size:14px;
+  min-height:44px;padding:0 10px;
+  border:1px solid var(--line);border-radius:var(--radius);
+  background:var(--bg);color:var(--text);
+  cursor:pointer;touch-action:manipulation;
+}
+.filter-cat:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 .list{margin-top:4px}
+/* Flex, а не grid: количество кнопок в строке может меняться, а перенос должен
+   происходить сам. Перевод всегда уходит на отдельную строку через order. */
 .item{
-  display:grid;grid-template-columns:1fr auto auto;
-  gap:6px 12px;align-items:center;
+  display:flex;flex-wrap:wrap;align-items:center;
+  gap:8px 12px;
   padding:14px 0;border-bottom:1px solid var(--line);
 }
-.item .es{font-size:17px;font-weight:500;letter-spacing:-.01em}
-.item .ua{grid-column:1/-1;color:var(--muted);margin-top:-6px}
+.item .es{flex:1;min-width:120px;font-size:17px;font-weight:500;letter-spacing:-.01em}
+.item .ru{order:10;flex-basis:100%;color:var(--muted);margin-top:-4px;padding-left:32px}
 .item.arch .es{color:var(--muted)}
 .item .box-tag{white-space:nowrap;text-transform:uppercase}
 .mini{
@@ -346,9 +387,11 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line)}
 @media (max-width:480px){
   .wrap{padding:20px 18px calc(20px + env(safe-area-inset-bottom))}
   #view-learn{display:flex;flex-direction:column;flex:1}
-  .goal{order:0;margin-bottom:24px}
-  .rail-block{order:1;margin:0 0 28px}
-  .stage{order:2}
+  .goal{order:0;margin-bottom:20px}
+  .session-bar{order:1;margin-bottom:20px}
+  .rail-block{order:2;margin:0 0 24px}
+  .stage{order:3}
+  .item .ru{padding-left:0}
   /* Кнопки — в зоне большого пальца, у нижнего края экрана. */
   .row{position:sticky;bottom:0;background:var(--bg);padding-bottom:8px}
   .keys{display:none}

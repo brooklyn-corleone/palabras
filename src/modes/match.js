@@ -20,7 +20,7 @@ export function render({ words, onMiss, onDone }) {
 
   // Колонки перемешиваются независимо, иначе пары окажутся друг напротив друга.
   const left = shuffle(words.map((w) => ({ id: w.id, text: w.es })));
-  const right = shuffle(words.map((w) => ({ id: w.id, text: w.ua })));
+  const right = shuffle(words.map((w) => ({ id: w.id, text: w.ru })));
 
   const solved = new Set();
   let pickedLeft = null;

@@ -20,6 +20,7 @@ import {
   activeWords,
   addWord,
   deleteWord,
+  categories,
   DIRS,
 } from './state.js';
 
@@ -42,6 +43,58 @@ const filterEl = $('filter');
 
 let currentKey = null;
 let view = 'learn';
+
+// ---------------------------------------------------------------------------
+// занятие
+// ---------------------------------------------------------------------------
+
+// Настройки живут только в памяти: занятие — это «что учу прямо сейчас»,
+// после перезагрузки логично начинать с обычного повторения.
+const session = {
+  source: 'due', // 'due' — что созрело, 'random' — случайные, 'picked' — выбранные руками
+  cat: '', // код темы, пустой — все
+  size: 0, // 0 — сколько наберётся
+  mode: 'auto',
+  picked: new Set(),
+};
+
+const SOURCE_LABEL = { due: 'к повторению', random: 'случайные', picked: 'выбранные' };
+const SIZES = [0, 10, 20, 30];
+
+// Цель дня празднуем один раз: дальше пользователь сам решает, продолжать или нет.
+// Флаг сбрасывается вместе со счётчиком — при смене дня и при сборке нового занятия.
+let goalCelebrated = false;
+
+// Очередь пачек для режима «Пары», выбранного руками: он работает не карточками,
+// а группами по шесть, поэтому идёт мимо обычной очереди.
+let matchPacks = [];
+
+// Русское склонение после числа: 1 карточка, 2 карточки, 5 карточек, 21 карточка.
+function plural(n, one, few, many) {
+  const mod100 = n % 100;
+  if (mod100 >= 11 && mod100 <= 14) return many;
+  const mod10 = n % 10;
+  if (mod10 === 1) return one;
+  if (mod10 >= 2 && mod10 <= 4) return few;
+  return many;
+}
+
+function catLabel(code) {
+  const found = categories().find(([c]) => c === code);
+  return found ? found[1] : code;
+}
+
+function sessionSummary() {
+  const parts = [SOURCE_LABEL[session.source]];
+  if (session.cat) parts.push(catLabel(session.cat).toLowerCase());
+  parts.push(session.size ? session.size + ' слов' : 'все');
+  parts.push(srs.MODE_LABEL[session.mode].toLowerCase());
+  return parts.join(' · ');
+}
+
+function renderSessionBar() {
+  $('session-summary').textContent = sessionSummary();
+}
 
 // ---------------------------------------------------------------------------
 // тема
@@ -91,6 +144,11 @@ function bindTheme() {
 // ---------------------------------------------------------------------------
 
 function nextCard() {
+  // Пачки «Пар» идут вперёд карточек: пока они не кончились, занятие состоит из них.
+  if (matchPacks.length) {
+    renderMatchPack(matchPacks.shift());
+    return;
+  }
   // Правило показываем вместо карточки, а не поверх неё: одна вещь на экране за раз.
   if (notes.shouldShow()) {
     renderNote();
@@ -100,6 +158,135 @@ function nextCard() {
   renderStage();
   renderRail();
   renderGoal();
+}
+
+// ---------------------------------------------------------------------------
+// настройка занятия
+// ---------------------------------------------------------------------------
+
+// Группа кнопок-переключателей: один выбранный вариант, подпись слева.
+function chooser(label, options, current, onPick) {
+  return el(
+    'div',
+    { class: 'chooser' },
+    el('span', { class: 'cap', text: label }),
+    el(
+      'div',
+      { class: 'chooser-row' },
+      options.map(([value, text, disabled]) =>
+        el('button', {
+          class: 'pill',
+          text,
+          disabled: disabled || undefined,
+          'aria-pressed': String(value === current),
+          onclick: () => {
+            onPick(value);
+            renderSetup();
+          },
+        }),
+      ),
+    ),
+  );
+}
+
+function renderSetup() {
+  const picked = session.picked.size;
+  const cats = categories();
+  replace(
+    stage,
+    el(
+      'div',
+      { class: 'mode setup' },
+      el('div', { class: 'dir' }, el('span', { text: 'Настройка занятия' })),
+
+      chooser(
+        'Какие слова',
+        [
+          ['due', 'К повторению'],
+          ['random', 'Случайные'],
+          ['picked', picked ? 'Выбранные · ' + picked : 'Выбранные', picked === 0],
+        ],
+        session.source,
+        (v) => {
+          session.source = v;
+        },
+      ),
+
+      cats.length
+        ? chooser(
+            'Тема',
+            [['', 'Все темы'], ...cats],
+            session.cat,
+            (v) => {
+              session.cat = v;
+            },
+          )
+        : null,
+
+      chooser(
+        'Сколько слов',
+        SIZES.map((n) => [n, n === 0 ? 'Все' : String(n)]),
+        session.size,
+        (v) => {
+          session.size = v;
+        },
+      ),
+
+      chooser(
+        'Формат',
+        Object.keys(srs.MODE_LABEL).map((m) => [m, srs.MODE_LABEL[m]]),
+        session.mode,
+        (v) => {
+          session.mode = v;
+        },
+      ),
+
+      session.source === 'picked' && picked === 0
+        ? el('p', { class: 'hint', text: 'Слова отмечаются галочками на вкладке «Слова».' })
+        : null,
+
+      el(
+        'div',
+        { class: 'row' },
+        el(
+          'button',
+          { class: 'btn', dataset: { key: 'enter' }, onclick: startSession },
+          'Начать',
+          el('kbd', { text: 'Enter' }),
+        ),
+        el('button', { class: 'btn ghost', onclick: () => nextCard() }, 'Отмена'),
+      ),
+    ),
+  );
+}
+
+function startSession() {
+  srs.setSession({
+    source: session.source,
+    cat: session.cat,
+    size: session.size,
+    mode: session.mode,
+    picked: session.picked,
+  });
+  renderSessionBar();
+  matchPacks = [];
+  goalCelebrated = state.stats.done >= state.settings.goal;
+
+  if (session.mode === 'match') {
+    const words = srs.sessionWords();
+    for (let i = 0; i + 1 < words.length; i += srs.MATCH_PAIRS) {
+      matchPacks.push(words.slice(i, i + srs.MATCH_PAIRS));
+    }
+    nextCard();
+    return;
+  }
+
+  srs.buildQueue();
+  // Разминка уместна только в обычном занятии: если формат выбран руками,
+  // подсовывать вместо него другой было бы неуважением к выбору.
+  const warmup = session.source === 'due' && session.mode === 'auto' ? srs.pickMatchWords() : null;
+  if (warmup) renderMatchPack(warmup);
+  else nextCard();
 }
 
 function renderStage() {
@@ -115,7 +302,7 @@ function renderStage() {
     renderEmpty();
     return;
   }
-  const mode = srs.pickMode(currentKey);
+  const mode = srs.pickMode(currentKey, session.mode);
   replace(
     stage,
     MODES[mode]({
@@ -134,9 +321,9 @@ function renderStage() {
   );
 }
 
-// Разминка идёт один раз за сессию и только если карточек к повторению хватает:
-// иначе шесть пар превратятся в весь день занятий.
-function renderMatchWarmup(words) {
+// Пачка из шести пар — и разминка в начале обычного занятия, и единица работы
+// в режиме «Пары», выбранном руками.
+function renderMatchPack(words) {
   replace(
     stage,
     renderMatch({
@@ -173,30 +360,49 @@ function renderNote() {
 
 function renderEmpty() {
   const hasWords = activeWords().length > 0;
+  const custom = session.source !== 'due' || session.mode !== 'auto';
+
+  if (!hasWords) {
+    replace(
+      stage,
+      el(
+        'div',
+        { class: 'empty' },
+        el('h2', { text: 'Колода пуста' }),
+        el('p', { text: 'Добавь слова на вкладке «Слова».' }),
+      ),
+    );
+    return;
+  }
+
   replace(
     stage,
     el(
       'div',
       { class: 'empty' },
-      el('h2', { text: hasWords ? 'На сегодня всё' : 'Колода пуста' }),
+      el('h2', { text: custom ? 'Занятие закончено' : 'На сегодня всё' }),
       el('p', {
-        text: hasWords
-          ? 'Все карточки повторены. Следующие придут завтра.'
-          : 'Добавь слова на вкладке «Слова».',
+        text: custom
+          ? 'Можно собрать ещё одно или вернуться к обычному повторению.'
+          : 'Все карточки повторены. Следующие придут завтра.',
       }),
-      hasWords
-        ? el(
-            'button',
-            {
-              class: 'btn ghost',
-              onclick: () => {
-                srs.buildExtraQueue();
-                nextCard();
-              },
+      el(
+        'div',
+        { class: 'row row-inline' },
+        el('button', { class: 'btn', onclick: renderSetup }, 'Собрать занятие'),
+        el(
+          'button',
+          {
+            class: 'btn ghost',
+            onclick: () => {
+              srs.setSession({});
+              srs.buildExtraQueue();
+              nextCard();
             },
-            'Повторить ещё раз',
-          )
-        : null,
+          },
+          'Повторить ещё раз',
+        ),
+      ),
     ),
   );
 }
@@ -204,8 +410,54 @@ function renderEmpty() {
 function answer(mode, correct) {
   const res = srs.grade(currentKey, mode, correct);
   notes.countCard();
+
+  // Дневная цель должна быть точкой, а не цифрой, которая молча уезжает в 21, 22, 23.
+  // Останавливаемся один раз и спрашиваем, продолжать ли.
+  if (!goalCelebrated && res && res.counted && state.stats.done >= state.settings.goal) {
+    goalCelebrated = true;
+    renderGoal();
+    renderRail();
+    renderGoalReached();
+    return;
+  }
+
   nextCard();
   if (res) pulseSeg(res.arch ? 'arch' : String(res.box));
+}
+
+function renderGoalReached() {
+  const left = srs.queueLength();
+  replace(
+    stage,
+    el(
+      'div',
+      { class: 'empty' },
+      el('div', { class: 'cap', text: 'Цель дня' }),
+      el('h2', { text: state.stats.done + ' из ' + state.settings.goal }),
+      el('p', {
+        text: left
+          ? 'Можно остановиться. Осталось ещё ' +
+            left +
+            ' ' +
+            plural(left, 'карточка', 'карточки', 'карточек') +
+            ', если хочется дальше.'
+          : 'Можно остановиться — на сегодня всё повторено.',
+      }),
+      el(
+        'div',
+        { class: 'row row-inline' },
+        left
+          ? el(
+              'button',
+              { class: 'btn', dataset: { key: 'enter' }, onclick: () => nextCard() },
+              'Продолжить',
+              el('kbd', { text: 'Enter' }),
+            )
+          : null,
+        el('button', { class: 'btn ghost', onclick: renderSetup }, 'Собрать занятие'),
+      ),
+    ),
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -261,15 +513,44 @@ function pulseSeg(box) {
 // список слов
 // ---------------------------------------------------------------------------
 
+// Список тем в фильтре пересобираем только когда набор изменился: иначе выбранное
+// значение сбрасывается при каждой перерисовке списка.
+function syncCatFilter() {
+  const select = $('filter-cat');
+  const cats = categories();
+  const signature = cats.map(([c]) => c).join(',');
+  if (select.dataset.signature === signature) return;
+  select.dataset.signature = signature;
+  const current = select.value;
+  replace(
+    select,
+    el('option', { value: '', text: 'Все темы' }),
+    cats.map(([code, label]) => el('option', { value: code, text: label })),
+  );
+  select.value = current;
+}
+
 function renderList() {
+  syncCatFilter();
   const q = (filterEl.value || '').toLowerCase().trim();
+  const cat = $('filter-cat').value;
   const items = activeWords()
-    .filter((w) => !q || (w.es + ' ' + w.ua).toLowerCase().includes(q))
+    .filter((w) => !cat || w.cat === cat)
+    .filter((w) => !q || (w.es + ' ' + w.ru).toLowerCase().includes(q))
     .map((w) => {
       const arch = srs.isArchived(w.id);
+      const check = el('input', { type: 'checkbox', class: 'pick', 'aria-label': 'Учить ' + w.es });
+      check.checked = session.picked.has(w.id);
+      check.addEventListener('change', () => {
+        if (check.checked) session.picked.add(w.id);
+        else session.picked.delete(w.id);
+        renderPickedBar();
+      });
+
       return el(
         'div',
         { class: 'item' + (arch ? ' arch' : '') },
+        check,
         el('div', { class: 'es', text: w.es }),
         el('div', { class: 'box-tag', text: arch ? 'архив' : 'коробка ' + srs.wordBox(w.id) }),
         el(
@@ -284,7 +565,7 @@ function renderList() {
           },
           arch ? 'вернуть' : 'в архив',
         ),
-        el('div', { class: 'ua', text: w.ua }),
+        el('div', { class: 'ru', text: w.ru }),
         el(
           'button',
           {
@@ -304,23 +585,44 @@ function renderList() {
 
   replace(
     listEl,
-    items.length ? items : el('div', { class: 'item' }, el('div', { class: 'ua', text: 'Ничего не нашлось.' })),
+    items.length ? items : el('div', { class: 'item' }, el('div', { class: 'ru', text: 'Ничего не нашлось.' })),
   );
+}
+
+function renderPickedBar() {
+  const bar = $('picked-bar');
+  bar.classList.toggle('hidden', session.picked.size === 0);
+  $('picked-count').textContent = 'Выбрано: ' + session.picked.size;
 }
 
 function bindWordsView() {
   filterEl.addEventListener('input', renderList);
 
+  $('btn-learn-picked').addEventListener('click', () => {
+    session.source = 'picked';
+    showView('learn');
+    startSession();
+  });
+
+  $('btn-clear-picked').addEventListener('click', () => {
+    session.picked.clear();
+    if (session.source === 'picked') session.source = 'due';
+    renderPickedBar();
+    renderList();
+  });
+
+  $('filter-cat').addEventListener('change', renderList);
+
   $('btn-add').addEventListener('click', () => {
     const es = $('new-es').value.trim();
-    const ua = $('new-ua').value.trim();
-    if (!es || !ua) {
+    const ru = $('new-ru').value.trim();
+    if (!es || !ru) {
       setNote('Нужны испанское слово и перевод.');
       return;
     }
-    addWord({ es, ua });
+    addWord({ es, ru });
     $('new-es').value = '';
-    $('new-ua').value = '';
+    $('new-ru').value = '';
     setNote('Слово добавлено.');
     srs.buildQueue();
     renderList();
@@ -396,7 +698,10 @@ function showView(which) {
   $('view-words').classList.toggle('hidden', learn);
   $('tab-learn').setAttribute('aria-current', String(learn));
   $('tab-words').setAttribute('aria-current', String(!learn));
-  if (!learn) renderList();
+  if (!learn) {
+    renderList();
+    renderPickedBar();
+  }
 }
 
 // Клавиши не разбираются в режимах: каждый режим просто помечает свою кнопку
@@ -453,11 +758,10 @@ async function init() {
   bindKeyboard();
   $('tab-learn').addEventListener('click', () => showView('learn'));
   $('tab-words').addEventListener('click', () => showView('words'));
+  $('btn-session').addEventListener('click', renderSetup);
 
-  srs.buildQueue();
-  const warmup = srs.pickMatchWords();
-  if (warmup) renderMatchWarmup(warmup);
-  else nextCard();
+  renderSessionBar();
+  startSession();
 
   notes.loadNotes();
 

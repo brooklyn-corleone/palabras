@@ -5,7 +5,7 @@
 import { el, replace } from '../dom.js';
 import { norm } from '../srs.js';
 
-const DIR_LABEL = 'Украинский → Испанский';
+const DIR_LABEL = 'Русский → Испанский';
 const DECOYS = 4;
 const EXTRA_LETTERS = 'aeiorstnlucdmpbgv';
 
@@ -60,7 +60,7 @@ export function render({ word, card, onAnswer, onArchive }) {
     replace(
       root,
       head(),
-      el('div', { class: 'prompt', text: word.ua }),
+      el('div', { class: 'prompt', text: word.ru }),
       el('div', { class: 'assembled', text: typed() || ' ' }),
       el(
         'div',
@@ -119,7 +119,7 @@ export function render({ word, card, onAnswer, onArchive }) {
     replace(
       root,
       head(),
-      el('div', { class: 'prompt', text: word.ua }),
+      el('div', { class: 'prompt', text: word.ru }),
       el(
         'div',
         { class: 'verdict ' + (correct ? 'ok' : 'no') },

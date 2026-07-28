@@ -1,10 +1,10 @@
-// Режим flip — карточка с переворотом, ES→UA. Узнавание с самооценкой.
+// Режим flip — карточка с переворотом, ES→RU. Узнавание с самооценкой.
 // Потолок режима — коробка 3: «вспомнил при виде слова» это не то же самое,
 // что вспомнить слово с нуля, и двигать выше по такому ответу нечестно.
 
 import { el, replace } from '../dom.js';
 
-const DIR_LABEL = 'Испанский → Украинский';
+const DIR_LABEL = 'Испанский → Русский';
 const HALF_FLIP = 120; // половина переворота, вторая половина доигрывается в CSS
 
 export function render({ word, card, onAnswer, onArchive }) {
@@ -64,7 +64,7 @@ export function render({ word, card, onAnswer, onArchive }) {
         'div',
         { class: 'verdict ok' },
         el('span', { class: 'lbl', text: 'Перевод' }),
-        el('b', { text: word.ua }),
+        el('b', { text: word.ru }),
       ),
       el(
         'div',

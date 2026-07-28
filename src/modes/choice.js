@@ -9,11 +9,11 @@ const OPTIONS = 3;
 export function render({ word, card, dir, onAnswer, onArchive }) {
   const root = el('div', { class: 'mode' });
 
-  const asking = dir === 'es' ? word.es : word.ua;
-  const answer = dir === 'es' ? word.ua : word.es;
-  const label = dir === 'es' ? 'Испанский → Украинский' : 'Украинский → Испанский';
+  const asking = dir === 'es' ? word.es : word.ru;
+  const answer = dir === 'es' ? word.ru : word.es;
+  const label = dir === 'es' ? 'Испанский → Русский' : 'Русский → Испанский';
 
-  const options = [answer, ...pickDistractors(word, dir, OPTIONS - 1).map((w) => (dir === 'es' ? w.ua : w.es))];
+  const options = [answer, ...pickDistractors(word, dir, OPTIONS - 1).map((w) => (dir === 'es' ? w.ru : w.es))];
   for (let i = options.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [options[i], options[j]] = [options[j], options[i]];

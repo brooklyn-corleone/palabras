@@ -43,6 +43,11 @@ try {
     <div class="goal-num" id="goal-num">0 / 20</div>
   </div>
 
+  <div class="session-bar">
+    <span class="cap" id="session-summary"></span>
+    <button class="mini" id="btn-session">Настроить занятие</button>
+  </div>
+
   <div class="stage" id="stage"></div>
 
   <div class="rail-block">
@@ -55,7 +60,7 @@ try {
 <section id="view-words" class="hidden">
   <div class="add">
     <input id="new-es" type="text" placeholder="la palabra" autocapitalize="off" autocorrect="off" spellcheck="false">
-    <input id="new-ua" type="text" placeholder="переклад українською">
+    <input id="new-ru" type="text" placeholder="перевод на русский">
     <button class="btn" id="btn-add">Добавить</button>
   </div>
   <div class="tools">
@@ -65,7 +70,15 @@ try {
     <input type="file" id="file-input" accept="application/json" class="hidden">
   </div>
   <div class="note" id="words-note" role="status"></div>
-  <input type="text" id="filter" class="filter" placeholder="Найти слово">
+  <div class="list-filters">
+    <input type="text" id="filter" class="filter" placeholder="Найти слово">
+    <select id="filter-cat" class="filter-cat" aria-label="Тема"></select>
+  </div>
+  <div class="picked-bar hidden" id="picked-bar">
+    <span class="cap" id="picked-count">Выбрано: 0</span>
+    <button class="mini" id="btn-learn-picked">Учить выбранные</button>
+    <button class="mini" id="btn-clear-picked">Снять всё</button>
+  </div>
   <div class="list" id="list"></div>
 </section>
 

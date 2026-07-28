@@ -4,11 +4,11 @@
 import * as db from './db.js';
 
 const STATE_KEY = 'state';
-const VERSION = 3;
+const VERSION = 4;
 
-// "es" — показываем испанское, вспоминаем украинское (узнавание).
-// "ua" — показываем украинское, вспоминаем испанское (воспроизведение).
-export const DIRS = ['es', 'ua'];
+// "es" — показываем испанское, вспоминаем русское (узнавание).
+// "ru" — показываем русское, вспоминаем испанское (воспроизведение).
+export const DIRS = ['es', 'ru'];
 
 export let state = null;
 
@@ -99,24 +99,31 @@ function freshState() {
   };
 }
 
+// Переименование поля перевода и направления карточки: `<id>|from` → `<id>|to`.
+// Прогресс не теряется, потому что переезжает вся запись карточки целиком.
+function renameDir(s, from, to) {
+  for (const w of s.words || []) {
+    if (!w[to]) w[to] = w[from] || '';
+    delete w[from];
+  }
+  const suffix = '|' + from;
+  const renamed = {};
+  for (const [key, card] of Object.entries(s.cards || {})) {
+    renamed[key.endsWith(suffix) ? key.slice(0, -suffix.length) + '|' + to : key] = card;
+  }
+  s.cards = renamed;
+}
+
 // Миграции только вперёд и только достраивающие: ничего не удаляем и не перетираем.
 function migrate(raw) {
   const s = raw;
 
-  // v2 → v3: язык перевода сменился с русского на украинский. Поле `ru` у слова стало `ua`,
-  // направление карточки "…|ru" стало "…|ua". Переименовываем, прогресс сохраняем.
-  if (!s.v || s.v < 3) {
-    for (const w of s.words || []) {
-      if (!w.ua) w.ua = w.ru || '';
-      delete w.ru;
-    }
-    const renamed = {};
-    for (const [key, card] of Object.entries(s.cards || {})) {
-      renamed[key.endsWith('|ru') ? key.slice(0, -3) + '|ua' : key] = card;
-    }
-    s.cards = renamed;
-    s.v = VERSION;
-  }
+  // Язык перевода менялся: русский → украинский (v3) → снова русский (v4).
+  // Обе миграции переименовывают одно и то же поле и одно направление карточки,
+  // поэтому пишем их как одну пару взаимно обратных переходов.
+  if (!s.v || s.v < 3) renameDir(s, 'ru', 'ua');
+  if (s.v < 4) renameDir(s, 'ua', 'ru');
+  s.v = VERSION;
 
   if (!s.deviceId) s.deviceId = uuid();
   if (!Array.isArray(s.words)) s.words = [];
@@ -180,17 +187,20 @@ function makeCards(wordId) {
   }
 }
 
-export function addWord({ es, ua, ex = '', mn = '', pos = '' }) {
+export function addWord({ es, ru, ex = '', mn = '', pos = '' }) {
   const word = {
     id: 'u' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36),
     es,
-    ua,
+    ru,
     ex,
     mn,
     pos,
+    cat: '',
     created: now(),
     updated: now(),
     deleted: false,
+    // Слово, заведённое руками, репозиторию не принадлежит и обновляться из него не должно.
+    edited: true,
   };
   state.words.push(word);
   index.set(word.id, word);
@@ -199,10 +209,12 @@ export function addWord({ es, ua, ex = '', mn = '', pos = '' }) {
   return word;
 }
 
+// Единственный законный способ поменять поля слова. Кроме самой правки помечает слово
+// как отредактированное — после этого пополнение колоды его не трогает.
 export function updateWord(id, patch) {
   const w = wordById(id);
   if (!w) return null;
-  Object.assign(w, patch, { updated: now() });
+  Object.assign(w, patch, { updated: now(), edited: true });
   save();
   return w;
 }
@@ -220,9 +232,24 @@ export function deleteWord(id) {
 // пополнение колоды из репозитория
 // ---------------------------------------------------------------------------
 
-// Читаем deck.seed.json и добавляем только те id, которых нет локально.
-// Существующие слова не трогаем: пользователь мог поправить перевод или дописать
-// мнемонику. Удалённые (tombstone) не воскрешаем — их id тоже считается известным.
+// Слово считается нетронутым, пока пользователь его не редактировал.
+//
+// Флаг явный, а не «created !== updated»: обе метки берутся из Date и при быстром
+// редактировании попадают в одну миллисекунду — правка тогда молча теряется
+// при следующем пополнении колоды. Такую ошибку почти невозможно заметить.
+function isPristine(w) {
+  return !w.edited;
+}
+
+// Поля, которые приезжают из репозитория. Прогресс и метки сюда не входят.
+const SEED_FIELDS = ['es', 'ru', 'ex', 'pos', 'cat'];
+
+// Читаем deck.seed.json и добавляем те id, которых нет локально.
+//
+// Существующие слова обновляем только если пользователь их не трогал: тогда репозиторий
+// остаётся источником правды и опечатка в переводе чинится одним пушем. Как только слово
+// отредактировано в приложении, оно замораживается и пополнение его больше не касается.
+// Удалённые (tombstone) не воскрешаем — их id тоже считается известным.
 export async function mergeSeed() {
   let seed;
   try {
@@ -239,17 +266,38 @@ export async function mergeSeed() {
   }
 
   let added = 0;
+  let refreshed = 0;
+
   for (const sw of seed.words) {
-    if (!sw || !sw.id || index.has(sw.id)) continue;
+    if (!sw || !sw.id) continue;
+
+    const existing = index.get(sw.id);
+    if (existing) {
+      if (existing.deleted || !isPristine(existing)) continue;
+      let changed = false;
+      for (const field of SEED_FIELDS) {
+        const value = sw[field] || '';
+        if (existing[field] !== value) {
+          existing[field] = value;
+          changed = true;
+        }
+      }
+      // `updated` не двигаем: слово должно остаться нетронутым и для следующего пополнения.
+      if (changed) refreshed++;
+      continue;
+    }
+
+    const stamp = now();
     const word = {
       id: sw.id,
       es: sw.es || '',
-      ua: sw.ua || '',
+      ru: sw.ru || '',
       ex: sw.ex || '',
       mn: sw.mn || '',
       pos: sw.pos || '',
-      created: now(),
-      updated: now(),
+      cat: sw.cat || '',
+      created: stamp,
+      updated: stamp,
       deleted: false,
     };
     state.words.push(word);
@@ -258,9 +306,22 @@ export async function mergeSeed() {
     added++;
   }
 
-  if (added) {
+  const cats = JSON.stringify(seed.categories || {});
+  const catsChanged = JSON.stringify(state.categories || {}) !== cats;
+  if (catsChanged) state.categories = seed.categories || {};
+
+  if (added || refreshed || catsChanged) {
     state.seedVersion = seed.version;
     save();
   }
   return added;
+}
+
+// Темы колоды: код → название. Приезжают из deck.seed.json, поэтому переименовать
+// тему можно одним пушем, не трогая слова.
+export function categories() {
+  const known = state.categories || {};
+  const used = new Set();
+  for (const w of state.words) if (!w.deleted && w.cat) used.add(w.cat);
+  return [...used].map((code) => [code, known[code] || code]);
 }

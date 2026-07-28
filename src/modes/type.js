@@ -1,10 +1,10 @@
-// Режим type — ввод текста, UA→ES. Активное воспроизведение: единственный режим,
+// Режим type — ввод текста, RU→ES. Активное воспроизведение: единственный режим,
 // который поднимает карточку в коробки 4 и 5 (см. MAX_BOX в srs.js).
 
 import { el, replace } from '../dom.js';
 import { judge } from '../srs.js';
 
-const DIR_LABEL = 'Украинский → Испанский';
+const DIR_LABEL = 'Русский → Испанский';
 
 export function render({ word, card, onAnswer, onArchive }) {
   const root = el('div', { class: 'mode' });
@@ -33,7 +33,7 @@ export function render({ word, card, onAnswer, onArchive }) {
     replace(
       root,
       head(),
-      el('div', { class: 'prompt', text: word.ua }),
+      el('div', { class: 'prompt', text: word.ru }),
       input,
       el('div', { class: 'hint', text: 'Артикль не обязателен, ударения можно не ставить' }),
       el(
@@ -64,7 +64,7 @@ export function render({ word, card, onAnswer, onArchive }) {
     replace(
       root,
       head(),
-      el('div', { class: 'prompt', text: word.ua }),
+      el('div', { class: 'prompt', text: word.ru }),
       el(
         'div',
         { class: 'verdict ' + (correct ? 'ok' : 'no') },

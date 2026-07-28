@@ -22,17 +22,37 @@ function pickOne(list) {
   return list[Math.floor(Math.random() * list.length)];
 }
 
-// dir "ua" — показываем украинское, вспоминаем испанское (воспроизведение).
-// dir "es" — показываем испанское, вспоминаем украинское (узнавание).
+// dir "ru" — показываем русское, вспоминаем испанское (воспроизведение).
+// dir "es" — показываем испанское, вспоминаем русское (узнавание).
 //
 // Чем выше коробка, тем меньше подсказок: сначала выбор из вариантов, потом сборка
 // из букв, потом чистый ввод. Обратно režим не «понижается» — за этим следит MAX_BOX.
-export function pickMode(key) {
+// Какое направление карточки требует режим, если его выбрали руками.
+// null — режим работает в обе стороны. type и letters всегда RU→ES (воспроизведение),
+// flip всегда ES→RU (узнавание), иначе задание теряет смысл.
+export const MODE_DIR = { type: 'ru', letters: 'ru', flip: 'es', choice: null, match: null, auto: null };
+
+export const MODE_LABEL = {
+  auto: 'Авто',
+  choice: 'Квиз',
+  type: 'Ввод',
+  letters: 'Из букв',
+  flip: 'Карточки',
+  match: 'Пары',
+};
+
+export function pickMode(key, forced) {
+  // Режим, выбранный руками, важнее лестницы коробок: пользователь знает, что хочет
+  // потренировать. Веса MAX_BOX при этом остаются в силе, так что схитрить не выйдет.
+  if (forced && forced !== 'auto' && forced !== 'match' && MAX_BOX[forced] !== undefined) {
+    return forced;
+  }
+
   const { dir } = parseKey(key);
   const card = state.cards[key];
   const box = card ? card.box : 1;
 
-  if (card && card.arch) return dir === 'ua' ? 'type' : 'flip';
+  if (card && card.arch) return dir === 'ru' ? 'type' : 'flip';
 
   if (dir === 'es') return pickOne(['flip', 'choice']);
 
@@ -49,11 +69,11 @@ export function pickMode(key) {
 // далёкий — тривиальным. Поэтому берём по приоритету: та же часть речи → близкая длина
 // → что угодно. Слово с тем же переводом не берём никогда.
 export function pickDistractors(word, dir, n = 2) {
-  const answerOf = (w) => (dir === 'es' ? w.ua : w.es);
+  const answerOf = (w) => (dir === 'es' ? w.ru : w.es);
   const correct = answerOf(word);
 
   const usable = state.words.filter(
-    (w) => !w.deleted && w.id !== word.id && w.es && w.ua && answerOf(w) !== correct,
+    (w) => !w.deleted && w.id !== word.id && w.es && w.ru && answerOf(w) !== correct,
   );
 
   const tiers = [
@@ -88,7 +108,7 @@ export function pickMatchWords() {
   const seen = new Set();
   for (const key of queue) {
     const w = wordOf(key);
-    if (!w || seen.has(w.id) || !w.es || !w.ua) continue;
+    if (!w || seen.has(w.id) || !w.es || !w.ru) continue;
     seen.add(w.id);
     ids.push(w);
     if (ids.length >= MATCH_PAIRS) break;
@@ -114,29 +134,98 @@ function archivedKeys() {
   return Object.keys(state.cards).filter((k) => state.cards[k].arch && isLiveKey(k));
 }
 
-export function buildQueue() {
-  const t = today();
-  const out = [];
-  for (const key of Object.keys(state.cards)) {
-    const c = state.cards[key];
-    if (c.arch) continue;
-    if (c.due <= t && isLiveKey(key)) out.push(key);
+// Настройки текущего занятия. Пустые — обычный режим «что созрело к повторению».
+//   source: 'due' | 'random' | 'picked'
+//   size:   сколько слов взять (0 — сколько есть)
+//   mode:   'auto' или конкретный режим
+//   picked: Set с id слов для source: 'picked'
+let session = {};
+
+export function setSession(options) {
+  session = options || {};
+}
+
+export function getSession() {
+  return session;
+}
+
+// Ограничиваем занятие по словам, а не по карточкам: «20 слов» для человека — это
+// двадцать слов, даже если у каждого два направления.
+function limitByWords(keys, size) {
+  if (!size || size <= 0) return keys;
+  const allowed = new Set();
+  for (const key of keys) {
+    if (allowed.size >= size) break;
+    allowed.add(parseKey(key).wordId);
   }
+  return keys.filter((key) => allowed.has(parseKey(key).wordId));
+}
+
+export function buildQueue(options) {
+  if (options) session = options;
+  const source = session.source || 'due';
+  const dir = MODE_DIR[session.mode || 'auto'] || null;
+  const cat = session.cat || '';
+  const t = today();
+
+  let out = Object.keys(state.cards).filter(isLiveKey);
+
+  if (source === 'picked') {
+    const picked = session.picked;
+    out = out.filter((key) => picked && picked.has(parseKey(key).wordId));
+  } else if (source !== 'random') {
+    out = out.filter((key) => !state.cards[key].arch && state.cards[key].due <= t);
+  }
+  if (dir) out = out.filter((key) => parseKey(key).dir === dir);
+  // Тема выбирается независимо от источника: «случайные 20 из семьи» — обычный запрос.
+  if (cat) {
+    out = out.filter((key) => {
+      const w = wordById(parseKey(key).wordId);
+      return w && w.cat === cat;
+    });
+  }
+
   shuffle(out);
 
-  // Архивные подмешиваем примерно одну на десять обычных, но хотя бы одну:
-  // иначе выученное тихо выпадает из памяти и обнаруживается это слишком поздно.
-  const arch = shuffle(archivedKeys());
-  const take = out.length ? Math.min(arch.length, Math.max(1, Math.round(out.length / 10))) : 0;
-  for (let i = 0; i < take; i++) {
-    out.splice(Math.floor(Math.random() * (out.length + 1)), 0, arch[i]);
+  // Архивные подмешиваем только в обычное занятие: если слова выбраны руками
+  // или заказано «двадцать случайных», подмешивать к ним чужое было бы самоуправством.
+  if (source === 'due') {
+    const arch = shuffle(archivedKeys()).filter((key) => {
+      const { wordId, dir: keyDir } = parseKey(key);
+      if (dir && keyDir !== dir) return false;
+      if (!cat) return true;
+      const w = wordById(wordId);
+      return w && w.cat === cat;
+    });
+    const take = out.length ? Math.min(arch.length, Math.max(1, Math.round(out.length / 10))) : 0;
+    for (let i = 0; i < take; i++) {
+      out.splice(Math.floor(Math.random() * (out.length + 1)), 0, arch[i]);
+    }
   }
-  queue = out;
+
+  queue = limitByWords(out, session.size);
   return queue.length;
 }
 
+// Слова для занятия целиком — нужны режиму «Пары», который работает пачками, а не карточками.
+export function sessionWords() {
+  buildQueue();
+  const seen = new Set();
+  const words = [];
+  for (const key of queue) {
+    const w = wordOf(key);
+    if (!w || seen.has(w.id) || !w.es || !w.ru) continue;
+    seen.add(w.id);
+    words.push(w);
+  }
+  return words;
+}
+
 export function nextKey() {
-  if (!queue.length) buildQueue();
+  // Пересобираем очередь только для обычного занятия: там кончившиеся карточки
+  // означают «на сегодня всё». Занятие из выбранных или случайных слов конечно
+  // по замыслу — иначе оно никогда не закончится.
+  if (!queue.length && (session.source || 'due') === 'due') buildQueue();
   return queue.shift() || null;
 }
 
@@ -224,7 +313,7 @@ export function judge(input, target) {
 
 // Архив — шестое состояние поверх пяти коробок: слово выучено, но изредка проверяется.
 export function archiveWord(id, on) {
-  for (const suffix of ['|es', '|ua']) {
+  for (const suffix of ['|es', '|ru']) {
     const c = state.cards[id + suffix];
     if (!c) continue;
     if (on === false) {
@@ -302,8 +391,8 @@ export function boxCounts() {
 // насколько выучено его слабое направление.
 export function wordBox(id) {
   const es = state.cards[id + '|es'];
-  const ua = state.cards[id + '|ua'];
-  const boxes = [es, ua].filter(Boolean).map((c) => c.box);
+  const ru = state.cards[id + '|ru'];
+  const boxes = [es, ru].filter(Boolean).map((c) => c.box);
   return boxes.length ? Math.min(...boxes) : 1;
 }
 
