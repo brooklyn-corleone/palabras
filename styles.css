@@ -1,0 +1,366 @@
+/* Спокойный минимализм: воздух, одна акцентная краска, никаких теней и рамок там,
+   где хватает волосяной линии. Единственный яркий момент — верный или неверный ответ.
+
+   Шрифт один, системный: на iPhone это SF, на Android — Roboto, на Windows — Segoe.
+   Свой файл шрифта пришлось бы тащить в репозиторий ради офлайна, а системный уже
+   на устройстве и отрисуется мгновенно. Контраст делаем весом и размером, не гарнитурой. */
+
+:root{
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', system-ui, sans-serif;
+
+  --bg:      #F7F7F6;
+  --surface: #FFFFFF;
+  --text:    #1A1A19;
+  --muted:   #6E6E6B;
+  --line:    #E4E4E1;
+  --accent:  #3A5A40;
+  --ok:      #4E7A55;
+  --err:     #A85B52;
+
+  --ok-soft:  rgba(78,122,85,.10);
+  --err-soft: rgba(168,91,82,.10);
+
+  --radius: 10px;
+  --col: 560px;
+}
+
+:root[data-theme="dark"]{
+  --bg:      #121312;
+  --surface: #1B1C1B;
+  --text:    #EDEDEA;
+  --muted:   #92938F;
+  --line:    #2A2B29;
+  --accent:  #7FA88A;
+  --ok:      #7FA88A;
+  --err:     #D08B80;
+
+  --ok-soft:  rgba(127,168,138,.13);
+  --err-soft: rgba(208,139,128,.13);
+}
+
+@media (prefers-color-scheme: dark){
+  :root[data-theme="auto"]{
+    --bg:      #121312;
+    --surface: #1B1C1B;
+    --text:    #EDEDEA;
+    --muted:   #92938F;
+    --line:    #2A2B29;
+    --accent:  #7FA88A;
+    --ok:      #7FA88A;
+    --err:     #D08B80;
+
+    --ok-soft:  rgba(127,168,138,.13);
+    --err-soft: rgba(208,139,128,.13);
+  }
+}
+
+*{box-sizing:border-box}
+html{background:var(--bg)}
+html,body{margin:0;padding:0}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font);
+  font-size:15px;
+  line-height:1.55;
+  min-height:100dvh;
+  -webkit-font-smoothing:antialiased;
+  -webkit-text-size-adjust:100%;
+  font-variant-numeric:tabular-nums;
+}
+
+.wrap{
+  max-width:var(--col);
+  margin:0 auto;
+  padding:24px 20px calc(28px + env(safe-area-inset-bottom));
+  min-height:100dvh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* подписи и счётчики — общий стиль мелкого текста */
+.cap,.dir,.hint,.goal-num,.rail-note,.item .box-tag,.note,.keys{
+  font-size:12px;
+  font-weight:500;
+  letter-spacing:.04em;
+  color:var(--muted);
+}
+
+/* ---------- шапка ---------- */
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;margin-bottom:28px;
+}
+.mark{
+  font-size:17px;font-weight:600;letter-spacing:-.01em;margin:0;
+}
+nav{display:flex;gap:2px}
+nav button{
+  font:inherit;font-size:14px;font-weight:500;
+  background:none;border:0;color:var(--muted);
+  padding:10px 12px;min-height:44px;border-radius:var(--radius);
+  cursor:pointer;touch-action:manipulation;
+}
+nav button[aria-current="true"]{color:var(--text)}
+nav button:hover{color:var(--text)}
+
+/* ---------- дневная цель ---------- */
+.goal{display:flex;align-items:center;gap:12px;margin-bottom:34px}
+.ticks{display:flex;gap:2px;flex:1}
+.tick{height:2px;flex:1;background:var(--line);border-radius:1px;transition:background .3s}
+.tick.on{background:var(--accent)}
+.goal-num{white-space:nowrap}
+
+/* ---------- карточка ---------- */
+/* Контейнера-карточки нет специально: содержимое лежит прямо на фоне.
+   Рамка вокруг рамки — лишний шум, воздух отделяет лучше линии. */
+.stage{display:flex;flex-direction:column;flex:1;min-height:280px}
+.mode{display:flex;flex-direction:column;flex:1}
+
+.dir{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:20px;text-transform:uppercase;
+}
+.dir .mini{margin-left:auto;text-transform:none;letter-spacing:0}
+
+/* переворот карточки в режиме flip: две половины, содержимое меняется в середине */
+.mode.flip-out{animation:flipOut .12s ease-in both}
+.mode.flip-in{animation:flipIn .24s ease-out both}
+@keyframes flipOut{
+  from{transform:perspective(900px) rotateY(0);opacity:1}
+  to{transform:perspective(900px) rotateY(80deg);opacity:0}
+}
+@keyframes flipIn{
+  from{transform:perspective(900px) rotateY(-80deg);opacity:0}
+  to{transform:perspective(900px) rotateY(0);opacity:1}
+}
+
+.prompt{
+  font-size:clamp(32px,8vw,52px);
+  font-weight:300;
+  letter-spacing:-.03em;
+  line-height:1.12;
+  margin:0 0 28px;
+  overflow-wrap:break-word;
+}
+
+input[type=text]{
+  width:100%;font:inherit;font-size:20px;
+  padding:14px 0;
+  border:0;border-bottom:1px solid var(--line);border-radius:0;
+  background:none;color:var(--text);
+}
+input[type=text]::placeholder{color:var(--muted);opacity:.7}
+input[type=text]:focus{outline:none;border-bottom-color:var(--accent)}
+.hint{margin-top:10px}
+
+/* единственный яркий момент во всём интерфейсе */
+.verdict{
+  margin:0 0 8px;padding:16px 18px;
+  border-radius:var(--radius);
+  border-left:2px solid var(--ok);
+  background:var(--ok-soft);
+}
+.verdict.no{border-left-color:var(--err);background:var(--err-soft)}
+.verdict .lbl{
+  display:block;margin-bottom:6px;
+  font-size:12px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--muted);
+}
+.verdict b{font-size:20px;font-weight:500;letter-spacing:-.01em}
+
+/* ---------- кнопки ---------- */
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:28px}
+.btn{
+  font:inherit;font-size:15px;font-weight:500;
+  min-height:48px;padding:0 22px;
+  border:1px solid var(--accent);border-radius:var(--radius);
+  background:var(--accent);color:var(--bg);
+  cursor:pointer;touch-action:manipulation;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn:hover{opacity:.88}
+.btn.ghost{background:none;color:var(--text);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--muted);opacity:1}
+.btn.good{background:var(--ok);border-color:var(--ok);color:var(--bg)}
+.btn.bad{background:none;color:var(--err);border-color:var(--err)}
+.btn:focus-visible,nav button:focus-visible,.seg:focus-visible,.mini:focus-visible,
+.theme button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+kbd{
+  font:inherit;font-size:11px;font-weight:500;letter-spacing:.04em;
+  opacity:.65;
+}
+
+/* ---------- choice: варианты ответа ---------- */
+.options{display:flex;flex-direction:column;gap:8px}
+.option{
+  font:inherit;font-size:17px;text-align:left;
+  display:flex;align-items:center;gap:14px;
+  min-height:56px;padding:12px 18px;
+  border:1px solid var(--line);border-radius:var(--radius);
+  background:none;color:var(--text);
+  cursor:pointer;touch-action:manipulation;
+  transition:border-color .15s, background .15s;
+}
+.option:hover:not(:disabled){border-color:var(--muted)}
+.option:disabled{cursor:default}
+.option-num{font-size:12px;font-weight:500;color:var(--muted);min-width:12px}
+.option.is-right{border-color:var(--ok);background:var(--ok-soft)}
+.option.is-wrong{border-color:var(--err);background:var(--err-soft)}
+
+/* ---------- letters: сборка слова из букв ---------- */
+.assembled{
+  font-size:clamp(24px,6vw,34px);font-weight:400;letter-spacing:.06em;
+  min-height:1.6em;padding-bottom:10px;margin-bottom:22px;
+  border-bottom:1px solid var(--line);
+  overflow-wrap:break-word;
+}
+.bank{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  font:inherit;font-size:18px;
+  min-width:48px;min-height:48px;padding:0 12px;
+  border:1px solid var(--line);border-radius:var(--radius);
+  background:none;color:var(--text);
+  cursor:pointer;touch-action:manipulation;
+}
+.chip:hover:not(:disabled){border-color:var(--muted)}
+.chip.is-used{opacity:.22;cursor:default}
+
+/* ---------- match: две колонки ---------- */
+.match{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.match-col{display:flex;flex-direction:column;gap:8px}
+.pair{
+  font:inherit;font-size:15px;text-align:left;
+  min-height:52px;padding:10px 14px;
+  border:1px solid var(--line);border-radius:var(--radius);
+  background:none;color:var(--text);
+  cursor:pointer;touch-action:manipulation;
+  transition:opacity .2s, border-color .15s, background .15s;
+}
+.pair:hover:not(:disabled){border-color:var(--muted)}
+.pair.is-picked{border-color:var(--accent);background:var(--ok-soft)}
+.pair.is-wrong{border-color:var(--err);background:var(--err-soft)}
+.pair.is-solved{opacity:.2;cursor:default}
+
+/* ---------- шкала коробок ---------- */
+/* Шесть сегментов шириной пропорционально числу карточек. Единственный «фирменный»
+   элемент интерфейса, поэтому всё вокруг него должно молчать. */
+.rail-block{margin-top:32px}
+.rail{display:flex;gap:2px;align-items:center}
+.seg{
+  /* content-box здесь обязателен: при глобальном border-box вертикальные отступы
+     съедают высоту, содержимое схлопывается в ноль и полоса просто не рисуется.
+     Отступы нужны, чтобы у шкалы толщиной 6px была человеческая зона нажатия. */
+  box-sizing:content-box;
+  flex-grow:0;flex-basis:0;min-width:8px;
+  height:6px;padding:12px 0;
+  border:0;
+  background-color:var(--muted);
+  background-clip:content-box;
+  cursor:pointer;touch-action:manipulation;
+  transition:background-color .25s, transform .25s;
+}
+/* Пустая коробка остаётся еле заметной чёрточкой: место под неё видно, шума нет. */
+.seg.is-empty{background-color:var(--line)}
+.seg[data-box="5"]:not(.is-empty){background-color:var(--accent)}
+.seg.seg-arch:not(.is-empty){opacity:.5}
+.seg.pulse{transform:translateY(-3px);background-color:var(--accent)}
+.rail-note{margin-top:10px;min-height:18px}
+
+/* ---------- пусто / правило ---------- */
+.empty{margin:auto 0;padding:40px 0}
+.empty h2{font-size:22px;font-weight:400;letter-spacing:-.01em;margin:0 0 8px}
+.empty p{color:var(--muted);margin:0 0 24px}
+
+.note-title{font-size:22px;font-weight:400;letter-spacing:-.01em;margin:0 0 20px}
+.note-table-wrap{overflow-x:auto;margin:0 -20px;padding:0 20px}
+.note-table{border-collapse:collapse;width:100%;font-size:15px}
+.note-table th,.note-table td{
+  text-align:left;padding:10px 14px 10px 0;
+  border-bottom:1px solid var(--line);white-space:nowrap;
+}
+.note-table thead th{
+  font-size:12px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);
+}
+.note-table tbody th{font-weight:400;color:var(--muted)}
+.note-table tbody td{font-weight:500}
+.note-body{color:var(--muted);margin:20px 0 0;max-width:46ch}
+
+/* ---------- список слов ---------- */
+.add{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin-bottom:20px}
+.add input[type=text]{font-size:16px;padding:12px 0}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tools .btn{min-height:40px;font-size:14px;padding:0 14px}
+.note{min-height:18px;margin-bottom:12px}
+.note:empty{margin-bottom:0}
+
+input.filter{
+  width:100%;font:inherit;font-size:16px;padding:12px 0;
+  border:0;border-bottom:1px solid var(--line);background:none;color:var(--text);
+  margin-bottom:8px;
+}
+input.filter:focus{outline:none;border-bottom-color:var(--accent)}
+
+.list{margin-top:4px}
+.item{
+  display:grid;grid-template-columns:1fr auto auto;
+  gap:6px 12px;align-items:center;
+  padding:14px 0;border-bottom:1px solid var(--line);
+}
+.item .es{font-size:17px;font-weight:500;letter-spacing:-.01em}
+.item .ua{grid-column:1/-1;color:var(--muted);margin-top:-6px}
+.item.arch .es{color:var(--muted)}
+.item .box-tag{white-space:nowrap;text-transform:uppercase}
+.mini{
+  font:inherit;font-size:12px;font-weight:500;
+  min-height:36px;padding:0 10px;
+  border:1px solid var(--line);border-radius:var(--radius);
+  background:none;color:var(--muted);cursor:pointer;touch-action:manipulation;white-space:nowrap;
+}
+.mini:hover{color:var(--text);border-color:var(--muted)}
+.mini.danger:hover{color:var(--err);border-color:var(--err)}
+
+/* ---------- служебное ---------- */
+.warn{
+  padding:12px 16px;margin-bottom:20px;
+  border-left:2px solid var(--err);background:var(--err-soft);border-radius:var(--radius);
+  font-size:14px;
+}
+.hidden{display:none!important}
+
+footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line)}
+.theme{display:flex;align-items:center;gap:2px;flex-wrap:wrap}
+.theme .cap{margin-right:8px}
+.theme button{
+  font:inherit;font-size:12px;font-weight:500;letter-spacing:.04em;
+  background:none;border:0;color:var(--muted);
+  padding:8px 10px;min-height:36px;border-radius:var(--radius);
+  cursor:pointer;touch-action:manipulation;
+}
+.theme button[aria-pressed="true"]{color:var(--text)}
+.theme button:hover{color:var(--text)}
+.keys{margin-top:12px}
+
+/* ---------- адаптив ---------- */
+@media (max-width:480px){
+  .wrap{padding:20px 18px calc(20px + env(safe-area-inset-bottom))}
+  #view-learn{display:flex;flex-direction:column;flex:1}
+  .goal{order:0;margin-bottom:24px}
+  .rail-block{order:1;margin:0 0 28px}
+  .stage{order:2}
+  /* Кнопки — в зоне большого пальца, у нижнего края экрана. */
+  .row{position:sticky;bottom:0;background:var(--bg);padding-bottom:8px}
+  .keys{display:none}
+  .add{grid-template-columns:1fr;gap:0}
+  .add .btn{margin-top:16px;width:100%;justify-content:center}
+  .note-table th,.note-table td{padding-right:18px}
+}
+
+@media (min-width:481px){
+  .wrap{padding-top:40px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}

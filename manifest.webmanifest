@@ -1,0 +1,17 @@
+{
+  "name": "Palabras — испанские слова",
+  "short_name": "Palabras",
+  "description": "Испанские слова по коробкам Лейтнера. Работает офлайн, без аккаунтов.",
+  "lang": "ru",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#D6E0E2",
+  "theme_color": "#25578C",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

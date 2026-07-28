@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "notes": [
+    {
+      "id": "ser-estar-presente",
+      "title": "ser и estar — настоящее время",
+      "kind": "table",
+      "head": ["", "ser", "estar"],
+      "rows": [
+        ["Yo", "soy", "estoy"],
+        ["Tú", "eres", "estás"],
+        ["Él / Ella / Ud.", "es", "está"],
+        ["Nosotros", "somos", "estamos"],
+        ["Vosotros", "sois", "estáis"],
+        ["Ellos / Ellas / Uds.", "son", "están"]
+      ],
+      "note": "ser — кто или что это по сути: профессия, происхождение, характер. estar — где находится и в каком состоянии сейчас."
+    },
+    {
+      "id": "tener-presente",
+      "title": "Verbo TENER — настоящее время",
+      "kind": "table",
+      "head": ["", "tener"],
+      "rows": [
+        ["Yo", "tengo"],
+        ["Tú", "tienes"],
+        ["Él / Ella / Usted", "tiene"],
+        ["Nosotros", "tenemos"],
+        ["Vosotros", "tenéis"],
+        ["Ellos / Ustedes", "tienen"]
+      ],
+      "note": "Возраст в испанском — через tener: «Tengo 30 años», а не «Soy 30»."
+    }
+  ]
+}

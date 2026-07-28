@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palabras — испанские слова по коробкам Лейтнера</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Karla:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --glaze:#D6E0E2;
+  --glaze-deep:#B7CACF;
+  --card:#FCFAF5;
+  --ink:#152B33;
+  --ink-soft:#54696F;
+  --cobalt:#25578C;
+  --cobalt-light:#3E7FBF;
+  --saffron:#E3A130;
+  --olive:#4F7A52;
+  --brick:#A34039;
+  --tile:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36'%3E%3Cpath d='M18 0 L36 18 L18 36 L0 18 Z' fill='%2325578C' opacity='.09'/%3E%3Ccircle cx='18' cy='18' r='4.5' fill='%2325578C' opacity='.13'/%3E%3C/svg%3E");
+  --r:3px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--glaze) var(--tile);
+  color:var(--ink);
+  font-family:'Karla',system-ui,-apple-system,'Segoe UI',sans-serif;
+  font-size:16px;line-height:1.5;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:760px;margin:0 auto;padding:22px 18px 64px}
+
+/* ---------- header ---------- */
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.mark{font-family:'Fraunces',Georgia,serif;font-weight:700;font-size:30px;letter-spacing:-.02em;line-height:1;margin:0}
+.mark span{color:var(--cobalt)}
+.sub{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-top:6px}
+nav{display:flex;gap:4px}
+nav button{
+  font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  background:transparent;border:1px solid var(--glaze-deep);color:var(--ink-soft);
+  padding:8px 12px;border-radius:var(--r);cursor:pointer;
+}
+nav button[aria-current="true"]{background:var(--cobalt);border-color:var(--cobalt);color:#fff}
+nav button:hover{border-color:var(--cobalt)}
+
+/* ---------- daily goal ---------- */
+.goal{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.ticks{display:flex;gap:3px;flex:1}
+.tick{height:8px;flex:1;background:rgba(21,43,51,.13);border-radius:1px;transition:background .25s}
+.tick.on{background:var(--saffron)}
+.goal-num{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink-soft);white-space:nowrap}
+
+/* ---------- card ---------- */
+.stage{
+  background:var(--card);
+  border:1px solid var(--glaze-deep);
+  border-radius:var(--r);
+  box-shadow:0 1px 0 rgba(21,43,51,.06), 0 12px 28px -22px rgba(21,43,51,.5);
+  padding:34px 28px 26px;
+  min-height:320px;
+  display:flex;flex-direction:column;
+  position:relative;overflow:hidden;
+}
+.stage::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--cobalt);opacity:.85;
+}
+.stage.flying{animation:fly .42s cubic-bezier(.4,0,.2,1)}
+@keyframes fly{
+  0%{transform:translateX(0) scale(1);opacity:1}
+  55%{transform:translateX(26px) scale(.97);opacity:0}
+  56%{transform:translateX(-22px) scale(.97);opacity:0}
+  100%{transform:translateX(0) scale(1);opacity:1}
+}
+.dir{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:auto}
+.prompt{
+  font-family:'Fraunces',Georgia,serif;font-weight:600;
+  font-size:clamp(30px,7vw,46px);line-height:1.1;letter-spacing:-.015em;
+  margin:18px 0 6px;
+}
+.prompt small{display:block;font-family:'Karla';font-weight:500;font-size:14px;letter-spacing:0;color:var(--ink-soft);margin-bottom:4px}
+.example{font-family:'Fraunces',Georgia,serif;font-style:italic;font-size:17px;color:var(--ink-soft);margin:0 0 18px}
+
+input[type=text]{
+  width:100%;font-family:'Fraunces',Georgia,serif;font-size:24px;
+  padding:11px 13px;border:1px solid var(--glaze-deep);border-radius:var(--r);
+  background:#fff;color:var(--ink);
+}
+input[type=text]:focus{outline:2px solid var(--cobalt-light);outline-offset:1px;border-color:var(--cobalt)}
+.hint{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-soft);margin-top:8px}
+
+.verdict{margin-top:16px;padding:14px 16px;border-radius:var(--r);border-left:4px solid}
+.verdict.ok{background:rgba(79,122,82,.11);border-color:var(--olive)}
+.verdict.almost{background:rgba(227,161,48,.14);border-color:var(--saffron)}
+.verdict.no{background:rgba(163,64,57,.10);border-color:var(--brick)}
+.verdict b{font-family:'Fraunces',Georgia,serif;font-size:21px;font-weight:600}
+.verdict .lbl{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:4px}
+
+.mnemo{margin-top:14px}
+.mnemo label{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);display:block;margin-bottom:5px}
+.mnemo textarea{
+  width:100%;min-height:56px;resize:vertical;font-family:'Karla',sans-serif;font-size:15px;
+  padding:9px 11px;border:1px dashed var(--glaze-deep);border-radius:var(--r);background:#fff;color:var(--ink);
+}
+.mnemo textarea:focus{outline:2px solid var(--cobalt-light);outline-offset:1px;border-style:solid}
+
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.btn{
+  font-family:'Karla',sans-serif;font-weight:700;font-size:15px;
+  padding:11px 20px;border-radius:var(--r);border:1px solid var(--cobalt);
+  background:var(--cobalt);color:#fff;cursor:pointer;
+}
+.btn:hover{background:var(--cobalt-light);border-color:var(--cobalt-light)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--glaze-deep)}
+.btn.ghost:hover{border-color:var(--cobalt);background:rgba(37,87,140,.06)}
+.btn.good{background:var(--olive);border-color:var(--olive)}
+.btn.bad{background:transparent;color:var(--brick);border-color:var(--brick)}
+.btn.bad:hover{background:rgba(163,64,57,.08)}
+.btn:focus-visible,nav button:focus-visible,.boxes button:focus-visible{outline:2px solid var(--cobalt);outline-offset:2px}
+kbd{font-family:'Space Mono',monospace;font-size:10px;background:rgba(21,43,51,.1);padding:1px 5px;border-radius:2px;margin-left:6px}
+
+/* ---------- leitner rail (signature) ---------- */
+.boxes{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:22px}
+.box{
+  position:relative;aspect-ratio:1/1;border:1px solid var(--glaze-deep);border-radius:var(--r);
+  background:rgba(252,250,245,.6) var(--tile);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  transition:transform .2s, box-shadow .2s, background .2s;
+}
+.box .n{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--ink-soft)}
+.box .c{font-family:'Fraunces',Georgia,serif;font-size:26px;font-weight:700;line-height:1}
+.box .d{font-family:'Space Mono',monospace;font-size:9px;color:var(--ink-soft)}
+.box.pulse{transform:translateY(-4px);box-shadow:0 10px 18px -12px rgba(37,87,140,.8);background:rgba(227,161,48,.2) var(--tile)}
+.box.mastered .c{color:var(--olive)}
+.box.arch{border-style:dashed;background:rgba(252,250,245,.3);opacity:.9}
+.box.arch .c{color:var(--ink-soft)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- word list ---------- */
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.list{background:var(--card);border:1px solid var(--glaze-deep);border-radius:var(--r);overflow:hidden}
+.item{display:grid;grid-template-columns:1fr 1fr auto auto;gap:10px;padding:11px 14px;border-bottom:1px solid rgba(183,202,207,.5);align-items:center}
+.item.arch{background:rgba(183,202,207,.24)}
+.item.arch .es{color:var(--ink-soft)}
+.mini{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:5px 9px;border:1px solid var(--glaze-deep);border-radius:var(--r);background:transparent;color:var(--ink-soft);cursor:pointer;white-space:nowrap}
+.mini:hover{border-color:var(--cobalt);color:var(--cobalt)}
+.mini:focus-visible{outline:2px solid var(--cobalt);outline-offset:2px}
+.badge{display:inline-block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;background:rgba(183,202,207,.6);color:var(--ink-soft);padding:3px 7px;border-radius:2px;margin-left:9px;vertical-align:middle}
+.filter{width:100%;font-family:'Karla',sans-serif;font-size:15px;padding:9px 11px;border:1px solid var(--glaze-deep);border-radius:var(--r);background:#fff;margin-bottom:10px}
+.filter:focus{outline:2px solid var(--cobalt-light);outline-offset:1px;border-color:var(--cobalt)}
+.item:last-child{border-bottom:none}
+.item .es{font-family:'Fraunces',Georgia,serif;font-size:18px;font-weight:600}
+.item .ru{color:var(--ink-soft);font-size:15px}
+.item .bx{font-family:'Space Mono',monospace;font-size:11px;color:var(--cobalt);white-space:nowrap}
+.item .mn{grid-column:1/-1;font-size:13px;color:var(--ink-soft);font-style:italic;margin-top:-4px}
+.add{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.add input{font-family:'Karla',sans-serif;font-size:15px;padding:9px 11px;border:1px solid var(--glaze-deep);border-radius:var(--r);background:#fff}
+.add .full{grid-column:1/-1}
+
+.empty{text-align:center;padding:50px 20px}
+.empty h2{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:26px;margin:0 0 8px}
+.empty p{color:var(--ink-soft);margin:0 0 18px}
+.warn{background:rgba(227,161,48,.18);border-left:4px solid var(--saffron);padding:10px 14px;border-radius:var(--r);font-size:14px;margin-bottom:16px}
+.hidden{display:none!important}
+footer{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);text-align:center;margin-top:34px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <h1 class="mark">Pala<span>bras</span></h1>
+    <div class="sub">Испанский · коробки Лейтнера</div>
+  </div>
+  <nav>
+    <button id="tab-learn" aria-current="true">Учить</button>
+    <button id="tab-words">Слова</button>
+  </nav>
+</header>
+
+<div id="storage-warn" class="warn hidden">Прогресс не сохраняется — браузер заблокировал локальное хранилище. Скачай файл и открой его с диска.</div>
+
+<!-- ============ LEARN ============ -->
+<section id="view-learn">
+  <div class="goal">
+    <div class="ticks" id="ticks"></div>
+    <div class="goal-num" id="goal-num">0 / 20</div>
+  </div>
+
+  <div class="stage" id="stage"></div>
+
+  <div class="boxes" id="boxes"></div>
+</section>
+
+<!-- ============ WORDS ============ -->
+<section id="view-words" class="hidden">
+  <div class="add">
+    <input id="new-es" type="text" placeholder="la palabra">
+    <input id="new-ru" type="text" placeholder="слово">
+    <input id="new-ex" class="full" type="text" placeholder="Пример на испанском (необязательно)">
+    <input id="new-mn" class="full" type="text" placeholder="Мнемоника — образ, созвучие (необязательно)">
+  </div>
+  <div class="tools">
+    <button class="btn" id="btn-add">Добавить слово</button>
+    <button class="btn ghost" id="btn-export">Скачать колоду</button>
+    <button class="btn ghost" id="btn-import">Загрузить колоду</button>
+    <button class="btn ghost" id="btn-reset">Сбросить прогресс</button>
+    <input type="file" id="file-input" accept="application/json" class="hidden">
+  </div>
+  <input type="text" id="filter" class="filter" placeholder="Найти слово — по-испански, по-русски или по мнемонике…">
+  <div class="list" id="list"></div>
+</section>
+
+<footer>Enter — проверить · Пробел — показать · 1 — не помню · 2 — помню</footer>
+</div>
+
+<script>
+/* ------------------------------------------------------------------ */
+/* storage: localStorage with in-memory fallback                       */
+/* ------------------------------------------------------------------ */
+var Store = (function(){
+  var mem = {}, ok = true;
+  try { localStorage.setItem('__t','1'); localStorage.removeItem('__t'); } catch(e){ ok = false; }
+  return {
+    ok: ok,
+    get: function(k){ try { return ok ? localStorage.getItem(k) : (mem[k]||null); } catch(e){ return mem[k]||null; } },
+    set: function(k,v){ try { if(ok) localStorage.setItem(k,v); else mem[k]=v; } catch(e){ mem[k]=v; } }
+  };
+})();
+if(!Store.ok) document.getElementById('storage-warn').classList.remove('hidden');
+
+/* ------------------------------------------------------------------ */
+/* seed deck                                                           */
+/* ------------------------------------------------------------------ */
+var SEED = [
+  ["la llave","ключ","No encuentro las llaves de casa.","«Ляве» ≈ ЛАВКА: ключи забыл на лавке."],
+  ["el piso","квартира; этаж","Vivo en un piso pequeño.",""],
+  ["el alquiler","аренда","El alquiler sube cada año.",""],
+  ["la factura","счёт за услуги","Ha llegado la factura de la luz.",""],
+  ["el recibo","квитанция","Guarda el recibo, por favor.",""],
+  ["la cita","приём, назначенная встреча","Tengo cita en el médico a las diez.",""],
+  ["el trámite","бюрократическая процедура","Es un trámite de media hora.",""],
+  ["el empadronamiento","прописка","Necesito el empadronamiento para el NIE.",""],
+  ["la cola","очередь","Hay mucha cola en el banco.","Очередь за КОЛОЙ."],
+  ["el mostrador","прилавок, стойка","Pregunta en el mostrador.","МОСТ между тобой и продавцом."],
+  ["la caja","касса; коробка","Pague en la caja, por favor.",""],
+  ["el efectivo","наличные","¿Puedo pagar en efectivo?",""],
+  ["la cuenta","счёт (в кафе, в банке)","La cuenta, por favor.",""],
+  ["la propina","чаевые","Dejamos propina en la mesa.","«ПРО ПИВО» — оставил на пиво."],
+  ["el descuento","скидка","Tiene un descuento del veinte por ciento.",""],
+  ["la tienda","магазин","La tienda cierra a las nueve.",""],
+  ["la panadería","пекарня","Compro pan en la panadería de al lado.",""],
+  ["la carnicería","мясная лавка","En la carnicería venden pollo fresco.",""],
+  ["la frutería","овощная лавка","La frutería del mercado es más barata.",""],
+  ["el mercado","рынок","Vamos al mercado los sábados.",""],
+  ["la playa","пляж","La playa está a diez minutos.",""],
+  ["la arena","песок","La arena quema al mediodía.",""],
+  ["la ola","волна","Hoy hay olas grandes.","Волна кричит «ОЛА!»"],
+  ["la toalla","полотенце","He olvidado la toalla en casa.",""],
+  ["el paseo","набережная; прогулка","Damos un paseo por la playa.",""],
+  ["el barrio","район","Mi barrio es muy tranquilo.",""],
+  ["la acera","тротуар","No aparques en la acera.",""],
+  ["el semáforo","светофор","Gira a la derecha en el semáforo.","Почти как русское «семафор»."],
+  ["la parada","остановка","La parada del tranvía está allí.",""],
+  ["el tranvía","трамвай","Cojo el tranvía para ir al centro.",""],
+  ["el billete","билет","Un billete de ida y vuelta, por favor.",""],
+  ["el horario","расписание","¿Cuál es el horario de la tienda?",""],
+  ["el retraso","опоздание, задержка","El tren lleva veinte minutos de retraso.","РЕТРО-поезд вечно опаздывает."],
+  ["la salida","выход; отправление","La salida está al fondo.",""],
+  ["el atasco","пробка на дороге","Hay atasco en la entrada de la ciudad.","«А ТАСКАть» машины в пробке."],
+  ["el aparcamiento","парковка","El aparcamiento es gratis los domingos.",""],
+  ["el vecino","сосед","Mi vecino tiene un perro ruidoso.",""],
+  ["el ascensor","лифт","El ascensor no funciona hoy.","От англ. ASCEND — подниматься."],
+  ["la basura","мусор","Saca la basura, por favor.","«БА, СОР!»"],
+  ["el contenedor","мусорный контейнер","El contenedor amarillo es para plástico.",""],
+  ["la lavadora","стиральная машина","La lavadora tarda dos horas.","Внутри крутится ЛАВА."],
+  ["el grifo","кран","Cierra el grifo, gotea.","ГРИФ сидит на кране и пьёт."],
+  ["la nevera","холодильник","No queda nada en la nevera.","«НЕ ВЕРЮ, что пусто!»"],
+  ["el enchufe","розетка","¿Hay un enchufe cerca de la mesa?","«ЧУФ!» — искра из розетки."],
+  ["la bombilla","лампочка","Se ha fundido la bombilla del baño.","БОМБА-лампочка взорвалась."],
+  ["la ventana","окно","Abre la ventana, hace calor.",""],
+  ["la almohada","подушка","Esta almohada es demasiado dura.","АЛЬМА (душа) отдыхает на подушке."],
+  ["la manta","одеяло, плед","Por la noche necesito una manta.","МАНТА-скат укрывает как плед."],
+  ["la sombra","тень","Nos sentamos a la sombra.","СОМБРЕро даёт тень."],
+  ["el calor","жара","En agosto hace un calor horrible.",""],
+  ["la resaca","похмелье","Tengo resaca desde ayer.","Перебрал РЕ-САКЕ — вот и похмелье."],
+  ["la huelga","забастовка","Mañana hay huelga de transporte.","«У ЭЛЬГИ забастовка.»"],
+  ["desayunar","завтракать","Desayuno café y tostada.",""],
+  ["cenar","ужинать","Cenamos sobre las diez.",""],
+  ["probar","пробовать, примерять","¿Puedo probar esta camisa?",""],
+  ["pedir","просить; заказывать","Voy a pedir la cuenta.",""],
+  ["tardar","занимать время, задерживаться","¿Cuánto tarda el autobús?","ТОРМОЗит — значит tarda."],
+  ["quedar","договориться о встрече","Quedamos a las ocho en la plaza.",""],
+  ["echar de menos","скучать по","Echo de menos a mi familia.",""],
+  ["a lo mejor","может быть","A lo mejor viene mañana.",""],
+  ["de repente","вдруг","De repente empezó a llover.",""],
+  ["en seguida","сейчас же, сразу","Vuelvo en seguida.",""],
+  ["hace falta","нужно, требуется","Hace falta más sal.",""],
+  ["me da igual","мне всё равно","Me da igual, elige tú.",""],
+  ["vale","ладно, ок","Vale, nos vemos allí.","«ВАЛЕ» ≈ «валяй»."],
+  ["venga","давай, ну же","Venga, vámonos ya.",""]
+];
+
+var INTERVALS = [1,2,4,8,16];          // дни для коробок 1..5
+var BOX_LABEL = ["1 день","2 дня","4 дня","8 дней","16 дней"];
+var KEY = "palabras.v1";
+
+/* ------------------------------------------------------------------ */
+/* state                                                               */
+/* ------------------------------------------------------------------ */
+var state;
+
+function today(){ var d=new Date(); return d.toISOString().slice(0,10); }
+function addDays(n){ var d=new Date(); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); }
+
+function freshState(){
+  var words = SEED.map(function(w,i){ return {id:"w"+i, es:w[0], ru:w[1], ex:w[2], mn:w[3]}; });
+  var cards = {};
+  words.forEach(function(w){
+    cards[w.id+"|es"] = {box:1, due:today()};
+    cards[w.id+"|ru"] = {box:1, due:today()};
+  });
+  return {words:words, cards:cards, day:today(), done:0, goal:20};
+}
+
+function load(){
+  var raw = Store.get(KEY);
+  if(raw){
+    try{
+      state = JSON.parse(raw);
+      if(state.day !== today()){ state.day = today(); state.done = 0; }
+      return;
+    }catch(e){}
+  }
+  state = freshState();
+  save();
+}
+function save(){ Store.set(KEY, JSON.stringify(state)); }
+
+function wordById(id){
+  for(var i=0;i<state.words.length;i++) if(state.words[i].id===id) return state.words[i];
+  return null;
+}
+
+/* ------------------------------------------------------------------ */
+/* queue                                                               */
+/* ------------------------------------------------------------------ */
+var queue = [], current = null;
+
+function shuffle(a){
+  for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
+  return a;
+}
+
+function archivedKeys(){
+  var out = [];
+  for(var k in state.cards){
+    if(state.cards[k].arch && wordById(k.split("|")[0])) out.push(k);
+  }
+  return out;
+}
+
+function buildQueue(){
+  var t = today(), out = [];
+  for(var k in state.cards){
+    var c = state.cards[k];
+    if(c.arch) continue;
+    if(c.due <= t && wordById(k.split("|")[0])) out.push(k);
+  }
+  shuffle(out);
+
+  // подмешать случайные слова из архива — примерно каждое десятое, но хотя бы одно
+  var arch = shuffle(archivedKeys());
+  var take = out.length ? Math.min(arch.length, Math.max(1, Math.round(out.length/10))) : 0;
+  for(var i=0;i<take;i++){
+    out.splice(Math.floor(Math.random()*(out.length+1)), 0, arch[i]);
+  }
+  queue = out;
+}
+
+function nextCard(){
+  if(!queue.length) buildQueue();
+  current = queue.shift() || null;
+  renderStage();
+  renderBoxes();
+  renderGoal();
+}
+
+/* ------------------------------------------------------------------ */
+/* answer checking                                                     */
+/* ------------------------------------------------------------------ */
+function norm(s){
+  return (s||"").toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/^(el|la|los|las|un|una)\s+/,"")
+    .replace(/[^a-zñ\s]/g,"")
+    .replace(/\s+/g," ").trim();
+}
+function lev(a,b){
+  var m=a.length,n=b.length,prev=[],cur=[],i,j;
+  for(j=0;j<=n;j++) prev[j]=j;
+  for(i=1;i<=m;i++){
+    cur[0]=i;
+    for(j=1;j<=n;j++){
+      cur[j]=Math.min(prev[j]+1, cur[j-1]+1, prev[j-1]+(a[i-1]===b[j-1]?0:1));
+    }
+    prev=cur.slice();
+  }
+  return prev[n];
+}
+function judge(input, target){
+  var a=norm(input), b=norm(target);
+  if(!a) return "no";
+  if(a===b) return "ok";
+  if(lev(a,b)<=1) return "almost";
+  return "no";
+}
+
+/* ------------------------------------------------------------------ */
+/* grading                                                             */
+/* ------------------------------------------------------------------ */
+function archiveWord(id, on){
+  ["|es","|ru"].forEach(function(s){
+    var c = state.cards[id+s];
+    if(!c) return;
+    if(on === false){ c.arch = false; c.box = 2; c.due = today(); }
+    else { c.arch = true; c.box = 5; c.due = addDays(INTERVALS[4]); }
+  });
+  save(); renderBoxes(); buildQueue();
+}
+
+function grade(key, correct){
+  var c = state.cards[key];
+
+  if(c.arch){
+    if(correct){
+      c.due = addDays(INTERVALS[4]);       // помнит — остаётся в архиве
+      pulseArch();
+    } else {
+      c.arch = false;                      // забыл — возвращается в оборот
+      c.box = 2;
+      c.due = today();
+      queue.push(key);
+      pulseBox(2);
+    }
+    save();
+    return;                                // архивные не идут в дневную цель
+  }
+
+  if(correct){ c.box = Math.min(5, c.box+1); }
+  else { c.box = 1; }
+  c.due = correct ? addDays(INTERVALS[c.box-1]) : today();
+  if(!correct) queue.push(key);            // вернуть в конец сессии
+  state.done++;
+  save();
+  pulseBox(c.box);
+}
+
+/* ------------------------------------------------------------------ */
+/* render: stage                                                       */
+/* ------------------------------------------------------------------ */
+var stage = document.getElementById('stage');
+
+function esc(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+function renderStage(){
+  if(!current){
+    stage.innerHTML =
+      '<div class="empty">' +
+        '<h2>На сегодня всё</h2>' +
+        '<p>Все карточки повторены. Следующие придут завтра.</p>' +
+        '<button class="btn ghost" id="btn-extra">Повторить ещё раз</button>' +
+      '</div>';
+    document.getElementById('btn-extra').onclick = function(){
+      queue = Object.keys(state.cards).filter(function(k){ return wordById(k.split("|")[0]); });
+      for(var i=queue.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=queue[i]; queue[i]=queue[j]; queue[j]=t; }
+      nextCard();
+    };
+    return;
+  }
+  var parts = current.split("|"), w = wordById(parts[0]), dir = parts[1];
+  var card = state.cards[current];
+  var tag = card.arch ? '<span class="badge">из архива</span>' : '';
+  var where = card.arch ? 'архив' : 'коробка ' + card.box;
+  var archBtn = card.arch ? '' : '<button class="btn ghost" id="btn-arch">Уже выучил → в архив</button>';
+
+  if(dir === "ru"){
+    // RU -> ES: печатаем ответ (активное воспроизведение)
+    stage.innerHTML =
+      '<div class="dir">Русский → Испанский · ' + where + tag + '</div>' +
+      '<div class="prompt">' + esc(w.ru) + '</div>' +
+      '<input type="text" id="answer" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="escribe aquí…">' +
+      '<div class="hint">Артикль не обязателен · ударения можно не ставить</div>' +
+      '<div class="row"><button class="btn" id="btn-check">Проверить<kbd>Enter</kbd></button>' +
+      '<button class="btn ghost" id="btn-skip">Не знаю</button>' + archBtn + '</div>';
+    var inp = document.getElementById('answer');
+    inp.focus();
+    inp.onkeydown = function(e){ if(e.key==="Enter"){ e.preventDefault(); check(); } };
+    document.getElementById('btn-check').onclick = check;
+    document.getElementById('btn-skip').onclick = function(){ reveal("no", ""); };
+    bindArchive();
+  } else {
+    // ES -> RU: узнавание с самооценкой
+    stage.innerHTML =
+      '<div class="dir">Испанский → Русский · ' + where + tag + '</div>' +
+      '<div class="prompt">' + esc(w.es) + '</div>' +
+      (w.ex ? '<p class="example">' + esc(w.ex) + '</p>' : '') +
+      '<div class="row"><button class="btn" id="btn-show">Показать перевод<kbd>Пробел</kbd></button>' + archBtn + '</div>';
+    document.getElementById('btn-show').onclick = function(){ reveal("show", ""); };
+    bindArchive();
+  }
+}
+
+function bindArchive(){
+  var b = document.getElementById('btn-arch');
+  if(!b) return;
+  b.onclick = function(){
+    archiveWord(current.split("|")[0], true);
+    nextCard();
+  };
+}
+
+function check(){
+  var w = wordById(current.split("|")[0]);
+  var val = document.getElementById('answer').value;
+  reveal(judge(val, w.es), val);
+}
+
+function reveal(mode, typed){
+  var parts = current.split("|"), w = wordById(parts[0]), dir = parts[1];
+  var cls = mode==="ok" ? "ok" : mode==="almost" ? "almost" : mode==="show" ? "ok" : "no";
+  var lbl = mode==="ok" ? "Верно" : mode==="almost" ? "Почти — опечатка" : mode==="show" ? "Перевод" : "Правильный ответ";
+  var body = dir==="ru"
+    ? '<b>' + esc(w.es) + '</b>' + (w.ex ? '<p class="example" style="margin:8px 0 0">' + esc(w.ex) + '</p>' : '')
+    : '<b>' + esc(w.ru) + '</b>';
+
+  var html =
+    '<div class="dir">' + (dir==="ru" ? "Русский → Испанский" : "Испанский → Русский") + '</div>' +
+    '<div class="prompt">' + esc(dir==="ru" ? w.ru : w.es) + '</div>' +
+    '<div class="verdict ' + cls + '"><span class="lbl">' + lbl + '</span>' + body + '</div>' +
+    '<div class="mnemo"><label for="mn">Мнемоника — образ, созвучие, что угодно</label>' +
+    '<textarea id="mn" placeholder="Придумай зацепку и запиши сюда — она сохранится">' + esc(w.mn) + '</textarea></div>';
+
+  if(mode==="show"){
+    html += '<div class="row">' +
+      '<button class="btn bad" id="g-no">Не помнил<kbd>1</kbd></button>' +
+      '<button class="btn good" id="g-yes">Помнил<kbd>2</kbd></button></div>';
+  } else {
+    html += '<div class="row"><button class="btn" id="g-next">Дальше<kbd>Enter</kbd></button></div>';
+  }
+  stage.innerHTML = html;
+
+  var mn = document.getElementById('mn');
+  mn.onblur = function(){ w.mn = mn.value; save(); };
+
+  function done(correct){
+    w.mn = mn.value;
+    var el = stage;
+    grade(current, correct);
+    el.classList.add('flying');
+    setTimeout(function(){ el.classList.remove('flying'); nextCard(); }, 200);
+  }
+
+  if(mode==="show"){
+    document.getElementById('g-no').onclick = function(){ done(false); };
+    document.getElementById('g-yes').onclick = function(){ done(true); };
+    stage.dataset.await = "grade";
+    stage._no = function(){ done(false); }; stage._yes = function(){ done(true); };
+  } else {
+    var correct = (mode==="ok" || mode==="almost");
+    var btn = document.getElementById('g-next');
+    btn.onclick = function(){ done(correct); };
+    btn.focus();
+    stage.dataset.await = "next";
+    stage._next = function(){ done(correct); };
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* render: boxes + goal                                                */
+/* ------------------------------------------------------------------ */
+var boxesEl = document.getElementById('boxes');
+
+function renderBoxes(){
+  var counts = [0,0,0,0,0], arch = 0;
+  for(var k in state.cards){
+    if(!wordById(k.split("|")[0])) continue;
+    if(state.cards[k].arch) arch++;
+    else counts[state.cards[k].box-1]++;
+  }
+  var html = "";
+  for(var i=0;i<5;i++){
+    html += '<div class="box' + (i===4?' mastered':'') + '" data-box="' + (i+1) + '">' +
+      '<div class="n">CAJA ' + (i+1) + '</div>' +
+      '<div class="c">' + counts[i] + '</div>' +
+      '<div class="d">' + BOX_LABEL[i] + '</div></div>';
+  }
+  html += '<div class="box arch" data-box="arch">' +
+    '<div class="n">ARCHIVO</div>' +
+    '<div class="c">' + arch + '</div>' +
+    '<div class="d">изредка</div></div>';
+  boxesEl.innerHTML = html;
+}
+
+function pulseBox(box){
+  var el = boxesEl.querySelector('[data-box="' + box + '"]');
+  if(!el) return;
+  el.classList.add('pulse');
+  setTimeout(function(){ el.classList.remove('pulse'); }, 450);
+}
+
+function pulseArch(){ pulseBox("arch"); }
+
+function renderGoal(){
+  var g = state.goal, d = Math.min(state.done, g);
+  var t = "";
+  for(var i=0;i<g;i++) t += '<div class="tick' + (i<d?' on':'') + '"></div>';
+  document.getElementById('ticks').innerHTML = t;
+  document.getElementById('goal-num').textContent = state.done + " / " + g;
+}
+
+/* ------------------------------------------------------------------ */
+/* words view                                                          */
+/* ------------------------------------------------------------------ */
+function isArch(id){ var c = state.cards[id+"|es"]; return !!(c && c.arch); }
+
+function renderList(){
+  var q = (document.getElementById('filter').value || "").toLowerCase().trim();
+  var html = "";
+  state.words.forEach(function(w){
+    if(q && (w.es + " " + w.ru + " " + (w.mn||"")).toLowerCase().indexOf(q) < 0) return;
+    var a = isArch(w.id);
+    var b = Math.min(state.cards[w.id+"|es"] ? state.cards[w.id+"|es"].box : 1,
+                     state.cards[w.id+"|ru"] ? state.cards[w.id+"|ru"].box : 1);
+    html += '<div class="item' + (a ? ' arch' : '') + '">' +
+      '<div class="es">' + esc(w.es) + '</div>' +
+      '<div class="ru">' + esc(w.ru) + '</div>' +
+      '<div class="bx">' + (a ? 'ARCHIVO' : 'CAJA ' + b) + '</div>' +
+      '<button class="mini" data-id="' + w.id + '" data-on="' + (a ? '0' : '1') + '">' + (a ? 'вернуть' : 'в архив') + '</button>' +
+      (w.mn ? '<div class="mn">' + esc(w.mn) + '</div>' : '') +
+      '</div>';
+  });
+  var el = document.getElementById('list');
+  el.innerHTML = html || '<div class="item"><div class="ru">Ничего не нашлось.</div></div>';
+  Array.prototype.forEach.call(el.querySelectorAll('.mini'), function(btn){
+    btn.onclick = function(){
+      archiveWord(btn.getAttribute('data-id'), btn.getAttribute('data-on') === "1");
+      renderList();
+    };
+  });
+}
+
+document.getElementById('filter').oninput = renderList;
+
+document.getElementById('btn-add').onclick = function(){
+  var es = document.getElementById('new-es').value.trim();
+  var ru = document.getElementById('new-ru').value.trim();
+  if(!es || !ru){ alert("Нужны испанское слово и перевод."); return; }
+  var id = "u" + Date.now();
+  state.words.push({id:id, es:es, ru:ru, ex:document.getElementById('new-ex').value.trim(), mn:document.getElementById('new-mn').value.trim()});
+  state.cards[id+"|es"] = {box:1, due:today()};
+  state.cards[id+"|ru"] = {box:1, due:today()};
+  ["new-es","new-ru","new-ex","new-mn"].forEach(function(i){ document.getElementById(i).value = ""; });
+  save(); renderList(); renderBoxes(); buildQueue();
+};
+
+document.getElementById('btn-export').onclick = function(){
+  var blob = new Blob([JSON.stringify(state,null,2)], {type:"application/json"});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = "palabras-" + today() + ".json";
+  a.click();
+};
+
+document.getElementById('btn-import').onclick = function(){ document.getElementById('file-input').click(); };
+document.getElementById('file-input').onchange = function(e){
+  var f = e.target.files[0]; if(!f) return;
+  var r = new FileReader();
+  r.onload = function(){
+    try{
+      var d = JSON.parse(r.result);
+      if(!d.words || !d.cards) throw 0;
+      state = d; state.day = today();
+      save(); renderList(); renderBoxes(); renderGoal(); buildQueue(); nextCard();
+    }catch(err){ alert("Файл не похож на колоду Palabras."); }
+  };
+  r.readAsText(f);
+};
+
+document.getElementById('btn-reset').onclick = function(){
+  if(!confirm("Сбросить все коробки и начать заново? Слова останутся, прогресс — нет.")) return;
+  for(var k in state.cards){ state.cards[k] = {box:1, due:today()}; }
+  state.done = 0;
+  save(); renderList(); renderBoxes(); renderGoal(); buildQueue(); nextCard();
+};
+
+/* ------------------------------------------------------------------ */
+/* tabs + keyboard                                                     */
+/* ------------------------------------------------------------------ */
+var tabLearn = document.getElementById('tab-learn'), tabWords = document.getElementById('tab-words');
+function show(which){
+  var learn = which === "learn";
+  document.getElementById('view-learn').classList.toggle('hidden', !learn);
+  document.getElementById('view-words').classList.toggle('hidden', learn);
+  tabLearn.setAttribute('aria-current', learn);
+  tabWords.setAttribute('aria-current', !learn);
+  if(!learn) renderList();
+}
+tabLearn.onclick = function(){ show("learn"); };
+tabWords.onclick = function(){ show("words"); };
+
+document.addEventListener('keydown', function(e){
+  if(document.getElementById('view-learn').classList.contains('hidden')) return;
+  var tag = (e.target.tagName||"").toLowerCase();
+  if(tag === "input" || tag === "textarea") return;
+  var a = stage.dataset.await;
+  if(e.code === "Space"){
+    var s = document.getElementById('btn-show');
+    if(s){ e.preventDefault(); s.click(); }
+  }
+  if(a === "grade"){
+    if(e.key === "1"){ e.preventDefault(); stage._no(); }
+    if(e.key === "2"){ e.preventDefault(); stage._yes(); }
+  }
+  if(a === "next" && e.key === "Enter"){ e.preventDefault(); stage._next(); }
+});
+
+/* ------------------------------------------------------------------ */
+load();
+buildQueue();
+nextCard();
+</script>
+</body>
+</html>

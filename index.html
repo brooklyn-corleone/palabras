@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F7F7F6">
+<title>Palabras</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Palabras">
+<script>
+// Тему ставим до первой отрисовки, иначе тёмная тема моргнёт светлой.
+// Настройки живут в IndexedDB, а её синхронно не прочитать — поэтому здесь зеркало
+// в localStorage. Единственное место, где приложение читает данные до запуска модулей.
+try {
+  var t = localStorage.getItem('palabras.theme') || 'auto';
+  document.documentElement.dataset.theme = t;
+  var dark = t === 'dark' || (t === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
+  document.querySelector('meta[name=theme-color]').content = dark ? '#121312' : '#F7F7F6';
+} catch (e) {}
+</script>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1 class="mark">Palabras</h1>
+  <nav>
+    <button id="tab-learn" aria-current="true">Учить</button>
+    <button id="tab-words" aria-current="false">Слова</button>
+  </nav>
+</header>
+
+<div id="storage-warn" class="warn hidden"></div>
+
+<!-- ============ УЧИТЬ ============ -->
+<section id="view-learn">
+  <div class="goal">
+    <div class="ticks" id="ticks"></div>
+    <div class="goal-num" id="goal-num">0 / 20</div>
+  </div>
+
+  <div class="stage" id="stage"></div>
+
+  <div class="rail-block">
+    <div class="rail" id="boxes"></div>
+    <div class="rail-note" id="rail-note"></div>
+  </div>
+</section>
+
+<!-- ============ СЛОВА ============ -->
+<section id="view-words" class="hidden">
+  <div class="add">
+    <input id="new-es" type="text" placeholder="la palabra" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <input id="new-ua" type="text" placeholder="переклад українською">
+    <button class="btn" id="btn-add">Добавить</button>
+  </div>
+  <div class="tools">
+    <button class="btn ghost" id="btn-export">Скачать колоду</button>
+    <button class="btn ghost" id="btn-import">Загрузить колоду</button>
+    <button class="btn ghost" id="btn-reset">Сбросить прогресс</button>
+    <input type="file" id="file-input" accept="application/json" class="hidden">
+  </div>
+  <div class="note" id="words-note" role="status"></div>
+  <input type="text" id="filter" class="filter" placeholder="Найти слово">
+  <div class="list" id="list"></div>
+</section>
+
+<footer>
+  <div class="theme" role="group" aria-label="Тема оформления">
+    <span class="cap">Тема</span>
+    <button data-theme-choice="auto">Авто</button>
+    <button data-theme-choice="light">Светлая</button>
+    <button data-theme-choice="dark">Тёмная</button>
+  </div>
+  <div class="keys">Enter — проверить · Пробел — показать · 1 — не помню · 2 — помню</div>
+</footer>
+
+</div>
+
+<script type="module" src="src/ui.js"></script>
+</body>
+</html>
