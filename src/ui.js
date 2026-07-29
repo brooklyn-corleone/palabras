@@ -731,17 +731,73 @@ function resetProgress() {
 // вкладки и клавиатура
 // ---------------------------------------------------------------------------
 
+const VIEWS = ['learn', 'words', 'rules'];
+
 function showView(which) {
   view = which;
-  const learn = which === 'learn';
-  $('view-learn').classList.toggle('hidden', !learn);
-  $('view-words').classList.toggle('hidden', learn);
-  $('tab-learn').setAttribute('aria-current', String(learn));
-  $('tab-words').setAttribute('aria-current', String(!learn));
-  if (!learn) {
+  for (const name of VIEWS) {
+    $('view-' + name).classList.toggle('hidden', name !== which);
+    $('tab-' + name).setAttribute('aria-current', String(name === which));
+  }
+  if (which === 'words') {
     renderList();
     renderPickedBar();
   }
+  if (which === 'rules') renderRules();
+}
+
+// ---------------------------------------------------------------------------
+// раздел «Правила»
+// ---------------------------------------------------------------------------
+
+// Список групп с правилами внутри. Открывать правило прямо здесь, не уводя
+// на отдельный экран, — иначе теряется место, где ты был.
+function renderRules() {
+  const groups = notes.byGroup();
+  if (!groups.length) {
+    replace(
+      $('rules'),
+      el(
+        'div',
+        { class: 'empty' },
+        el('h2', { text: 'Правил пока нет' }),
+        el('p', { text: 'Они лежат в notes.seed.json и подтягиваются из репозитория.' }),
+      ),
+    );
+    return;
+  }
+
+  replace(
+    $('rules'),
+    groups.map((group) =>
+      el(
+        'section',
+        { class: 'rule-group' },
+        el('h2', { class: 'rule-group-title', text: group.label }),
+        group.notes.map((note) => renderRuleRow(note)),
+      ),
+    ),
+  );
+}
+
+// Правило-гармошка: заголовок всегда виден, содержимое разворачивается по нажатию.
+function renderRuleRow(note) {
+  const body = el('div', { class: 'rule-body hidden' });
+  const head = el(
+    'button',
+    {
+      class: 'rule-head',
+      'aria-expanded': 'false',
+      onclick: () => {
+        const open = body.classList.toggle('hidden');
+        head.setAttribute('aria-expanded', String(!open));
+        if (!open && !body.childElementCount) replace(body, notes.renderBlocks(note));
+      },
+    },
+    el('span', { text: note.title || note.id }),
+    el('span', { class: 'rule-chevron', text: '▾' }),
+  );
+  return el('div', { class: 'rule' }, head, body);
 }
 
 // Клавиши не разбираются в режимах: каждый режим просто помечает свою кнопку
@@ -796,14 +852,18 @@ async function init() {
   warnAboutStorage();
   bindWordsView();
   bindKeyboard();
-  $('tab-learn').addEventListener('click', () => showView('learn'));
-  $('tab-words').addEventListener('click', () => showView('words'));
+  for (const name of VIEWS) {
+    $('tab-' + name).addEventListener('click', () => showView(name));
+  }
   $('btn-session').addEventListener('click', renderSetup);
 
   renderSessionBar();
   startSession();
 
-  notes.loadNotes();
+  // Правила подтягиваются в фоне и не задерживают первую карточку.
+  notes.loadNotes().then(() => {
+    if (view === 'rules') renderRules();
+  });
 
   if (!firstRun) {
     mergeSeed().then((added) => {

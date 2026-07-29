@@ -1,8 +1,12 @@
 // Правила и таблицы — второй тип содержимого рядом со словами.
-// Их не спрашивают и не оценивают: они просто иногда всплывают между карточками,
-// чтобы спряжение или правило попадалось на глаза само, без отдельного «раздела теории».
+// Их не спрашивают и не оценивают: они лежат в разделе «Правила» и вдобавок
+// иногда сами всплывают между карточками, чтобы попадаться на глаза без усилий.
 //
 // Пополняются так же, как колода: дописал в notes.seed.json → git push → появилось у всех.
+//
+// Правило состоит из заголовка и блоков. Блок бывает трёх видов: table, list, text.
+// Так одно правило может смешивать таблицу спряжения, перечень исключений и пояснение,
+// а рисуется всё одним кодом.
 
 import { el } from './dom.js';
 import { state, save, now } from './state.js';
@@ -11,6 +15,7 @@ import { state, save, now } from './state.js';
 const EVERY = 8;
 
 let notes = [];
+let groups = {};
 
 export async function loadNotes() {
   try {
@@ -18,9 +23,11 @@ export async function loadNotes() {
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
     notes = Array.isArray(data.notes) ? data.notes : [];
+    groups = data.groups || {};
   } catch (e) {
     console.warn('правила недоступны, работаем без них:', e);
     notes = [];
+    groups = {};
   }
   return notes.length;
 }
@@ -28,6 +35,36 @@ export async function loadNotes() {
 export function count() {
   return notes.length;
 }
+
+export function all() {
+  return notes;
+}
+
+// Группы в порядке из notes.seed.json, но только те, в которых что-то есть.
+// Правило без группы попадает в «Разное» — чтобы не потерялось молча.
+export function byGroup() {
+  const order = Object.keys(groups);
+  const buckets = new Map();
+  for (const note of notes) {
+    const code = note.group && groups[note.group] ? note.group : '';
+    if (!buckets.has(code)) buckets.set(code, []);
+    buckets.get(code).push(note);
+  }
+  const out = [];
+  for (const code of order) {
+    if (buckets.has(code)) out.push({ code, label: groups[code], notes: buckets.get(code) });
+  }
+  if (buckets.has('')) out.push({ code: '', label: 'Разное', notes: buckets.get('') });
+  return out;
+}
+
+export function byId(id) {
+  return notes.find((n) => n.id === id) || null;
+}
+
+// ---------------------------------------------------------------------------
+// когда показывать между карточками
+// ---------------------------------------------------------------------------
 
 // Сколько карточек прошло с прошлой подсказки. Живёт в памяти сессии, а не в состоянии:
 // после перезапуска счётчик логично начинать заново.
@@ -71,9 +108,9 @@ export function markSeen(id) {
 // отрисовка
 // ---------------------------------------------------------------------------
 
-function renderTable(note) {
-  const head = note.head || [];
-  const rows = note.rows || [];
+function table(block) {
+  const head = block.head || [];
+  const rows = block.rows || [];
   return el(
     'div',
     { class: 'note-table-wrap' },
@@ -108,14 +145,45 @@ function renderTable(note) {
   );
 }
 
+function list(block) {
+  return el(
+    'div',
+    { class: 'note-block' },
+    block.title ? el('div', { class: 'cap note-block-title', text: block.title }) : null,
+    el(
+      'ul',
+      { class: 'note-list' },
+      (block.items || []).map((item) => el('li', { text: item })),
+    ),
+  );
+}
+
+// Правило целиком, без заголовка и кнопок — общее для карточки в занятии
+// и для экрана «Правила».
+export function renderBlocks(note) {
+  // Старый формат (kind прямо на правиле) поддерживаем, чтобы уже опубликованный
+  // notes.seed.json не ломал приложение до того, как доедет новый.
+  const blocks = note.blocks || [
+    note.kind === 'table' ? { kind: 'table', head: note.head, rows: note.rows } : null,
+    note.body ? { kind: 'text', body: note.body } : null,
+    note.note ? { kind: 'text', body: note.note } : null,
+  ].filter(Boolean);
+
+  return blocks.map((block) => {
+    if (block.kind === 'table') return table(block);
+    if (block.kind === 'list') return list(block);
+    return el('p', { class: 'note-body', text: block.body || '' });
+  });
+}
+
+// Правило как карточка внутри занятия.
 export function render({ note, onDone }) {
   return el(
     'div',
     { class: 'mode note' },
-    el('div', { class: 'dir', text: 'Подсказка' }),
+    el('div', { class: 'dir' }, el('span', { text: 'Подсказка' })),
     el('h2', { class: 'note-title', text: note.title || '' }),
-    note.kind === 'table' ? renderTable(note) : el('p', { class: 'note-body', text: note.body || '' }),
-    note.note ? el('p', { class: 'note-body', text: note.note }) : null,
+    renderBlocks(note),
     el(
       'div',
       { class: 'row' },

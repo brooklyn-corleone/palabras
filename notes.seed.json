@@ -1,35 +1,465 @@
 {
-  "version": 1,
+  "version": 2,
+  "groups": {
+    "presente": "Настоящее время",
+    "irregulares": "Неправильные глаголы",
+    "sustantivos": "Существительные и прилагательные",
+    "numeros": "Цифры",
+    "alfabeto": "Алфавит"
+  },
   "notes": [
     {
+      "id": "presente-regulares",
+      "group": "presente",
+      "title": "Правильные глаголы",
+      "blocks": [
+        {
+          "kind": "table",
+          "head": ["", "hablar · -ar", "comer · -er", "vivir · -ir"],
+          "rows": [
+            ["yo", "hablo", "como", "vivo"],
+            ["tú", "hablas", "comes", "vives"],
+            ["él, ella, usted", "habla", "come", "vive"],
+            ["nosotros/as", "hablamos", "comemos", "vivimos"],
+            ["vosotros/as", "habláis", "coméis", "vivís"],
+            ["ellos/as, ustedes", "hablan", "comen", "viven"]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Отбрасываешь -ar, -er или -ir и добавляешь окончание. У -er и -ir всё совпадает, кроме nosotros и vosotros."
+        }
+      ]
+    },
+    {
       "id": "ser-estar-presente",
-      "title": "ser и estar — настоящее время",
-      "kind": "table",
-      "head": ["", "ser", "estar"],
-      "rows": [
-        ["Yo", "soy", "estoy"],
-        ["Tú", "eres", "estás"],
-        ["Él / Ella / Ud.", "es", "está"],
-        ["Nosotros", "somos", "estamos"],
-        ["Vosotros", "sois", "estáis"],
-        ["Ellos / Ellas / Uds.", "son", "están"]
-      ],
-      "note": "ser — кто или что это по сути: профессия, происхождение, характер. estar — где находится и в каком состоянии сейчас."
+      "group": "presente",
+      "title": "ser и estar",
+      "blocks": [
+        {
+          "kind": "table",
+          "head": ["", "ser", "estar"],
+          "rows": [
+            ["yo", "soy", "estoy"],
+            ["tú", "eres", "estás"],
+            ["él, ella, usted", "es", "está"],
+            ["nosotros/as", "somos", "estamos"],
+            ["vosotros/as", "sois", "estáis"],
+            ["ellos/as, ustedes", "son", "están"]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "ser — кто или что это по сути: профессия, происхождение, характер. estar — где находится и в каком состоянии сейчас."
+        }
+      ]
     },
     {
       "id": "tener-presente",
-      "title": "Verbo TENER — настоящее время",
-      "kind": "table",
-      "head": ["", "tener"],
-      "rows": [
-        ["Yo", "tengo"],
-        ["Tú", "tienes"],
-        ["Él / Ella / Usted", "tiene"],
-        ["Nosotros", "tenemos"],
-        ["Vosotros", "tenéis"],
-        ["Ellos / Ustedes", "tienen"]
-      ],
-      "note": "Возраст в испанском — через tener: «Tengo 30 años», а не «Soy 30»."
+      "group": "presente",
+      "title": "tener — иметь",
+      "blocks": [
+        {
+          "kind": "table",
+          "head": ["", "tener"],
+          "rows": [
+            ["yo", "tengo"],
+            ["tú", "tienes"],
+            ["él, ella, usted", "tiene"],
+            ["nosotros/as", "tenemos"],
+            ["vosotros/as", "tenéis"],
+            ["ellos/as, ustedes", "tienen"]
+          ]
+        },
+        {
+          "kind": "list",
+          "title": "Примеры",
+          "items": ["Yo tengo un gato.", "Ellos tienen una casa grande."]
+        },
+        {
+          "kind": "text",
+          "body": "Возраст в испанском — через tener: «Tengo 30 años», а не «Soy 30»."
+        }
+      ]
+    },
+    {
+      "id": "llamarse-presente",
+      "group": "presente",
+      "title": "llamarse — зваться",
+      "blocks": [
+        {
+          "kind": "table",
+          "head": ["", "llamarse"],
+          "rows": [
+            ["yo", "me llamo"],
+            ["tú", "te llamas"],
+            ["él, ella, usted", "se llama"],
+            ["nosotros/as", "nos llamamos"],
+            ["vosotros/as", "os llamáis"],
+            ["ellos/as, ustedes", "se llaman"]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Возвратный глагол: местоимение me, te, se, nos, os стоит перед формой. «¿Cómo te llamas?» — «Как тебя зовут?»"
+        }
+      ]
+    },
+
+    {
+      "id": "irr-caber-decir",
+      "group": "irregulares",
+      "title": "caber, caer, dar, decir",
+      "blocks": [
+        {
+          "kind": "table",
+          "head": ["", "caber", "caer", "dar", "decir"],
+          "rows": [
+            ["yo", "quepo", "caigo", "doy", "digo"],
+            ["tú", "cabes", "caes", "das", "dices"],
+            ["él, ella, usted", "cabe", "cae", "da", "dice"],
+            ["nosotros/as", "cabemos", "caemos", "damos", "decimos"],
+            ["vosotros/as", "cabéis", "caéis", "dais", "decís"],
+            ["ellos/as, ustedes", "caben", "caen", "dan", "dicen"]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "caber — вмещать, caer — падать, dar — давать, decir — говорить."
+        }
+      ]
+    },
+    {
+      "id": "irr-estar-oir",
+      "group": "irregulares",
+      "title": "estar, hacer, ir, oír",
+      "blocks": [
+        {
+          "kind": "table",
+          "head": ["", "estar", "hacer", "ir", "oír"],
+          "rows": [
+            ["yo", "estoy", "hago", "voy", "oigo"],
+            ["tú", "estás", "haces", "vas", "oyes"],
+            ["él, ella, usted", "está", "hace", "va", "oye"],
+            ["nosotros/as", "estamos", "hacemos", "vamos", "oímos"],
+            ["vosotros/as", "estáis", "hacéis", "vais", "oís"],
+            ["ellos/as, ustedes", "están", "hacen", "van", "oyen"]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "estar — находиться, hacer — делать, ir — идти, oír — слышать."
+        }
+      ]
+    },
+    {
+      "id": "irr-poder-saber",
+      "group": "irregulares",
+      "title": "poder, poner, querer, saber",
+      "blocks": [
+        {
+          "kind": "table",
+          "head": ["", "poder", "poner", "querer", "saber"],
+          "rows": [
+            ["yo", "puedo", "pongo", "quiero", "sé"],
+            ["tú", "puedes", "pones", "quieres", "sabes"],
+            ["él, ella, usted", "puede", "pone", "quiere", "sabe"],
+            ["nosotros/as", "podemos", "ponemos", "queremos", "sabemos"],
+            ["vosotros/as", "podéis", "ponéis", "queréis", "sabéis"],
+            ["ellos/as, ustedes", "pueden", "ponen", "quieren", "saben"]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "poder — мочь, poner — класть, querer — хотеть, saber — знать. У poder и querer в корне o→ue и e→ie, но не в nosotros и vosotros."
+        }
+      ]
+    },
+    {
+      "id": "irr-salir-traer",
+      "group": "irregulares",
+      "title": "salir, ser, tener, traer",
+      "blocks": [
+        {
+          "kind": "table",
+          "head": ["", "salir", "ser", "tener", "traer"],
+          "rows": [
+            ["yo", "salgo", "soy", "tengo", "traigo"],
+            ["tú", "sales", "eres", "tienes", "traes"],
+            ["él, ella, usted", "sale", "es", "tiene", "trae"],
+            ["nosotros/as", "salimos", "somos", "tenemos", "traemos"],
+            ["vosotros/as", "salís", "sois", "tenéis", "traéis"],
+            ["ellos/as, ustedes", "salen", "son", "tienen", "traen"]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "salir — выходить, ser — быть, tener — иметь, traer — приносить."
+        }
+      ]
+    },
+    {
+      "id": "irr-venir-ver",
+      "group": "irregulares",
+      "title": "venir, ver",
+      "blocks": [
+        {
+          "kind": "table",
+          "head": ["", "venir", "ver"],
+          "rows": [
+            ["yo", "vengo", "veo"],
+            ["tú", "vienes", "ves"],
+            ["él, ella, usted", "viene", "ve"],
+            ["nosotros/as", "venimos", "vemos"],
+            ["vosotros/as", "venís", "veis"],
+            ["ellos/as, ustedes", "vienen", "ven"]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "venir — приходить, ver — видеть."
+        }
+      ]
+    },
+
+    {
+      "id": "genero",
+      "group": "sustantivos",
+      "title": "Род существительных",
+      "blocks": [
+        {
+          "kind": "list",
+          "title": "Мужской род",
+          "items": [
+            "-o: el libro, el chico, el teléfono",
+            "-or: el amor, el autor, el color",
+            "-aje: el viaje, el equipaje, el bagaje",
+            "Дни недели: el sábado",
+            "Цвета: el azul, el blanco, el rojo",
+            "Части света: el sur, el norte",
+            "Исключения: la mano, la moto, la radio, la flor"
+          ]
+        },
+        {
+          "kind": "list",
+          "title": "Женский род",
+          "items": [
+            "-a: la mesa, la silla",
+            "-dad, -tad: la universidad, la libertad",
+            "-ción, -sión: la lección, la ilusión",
+            "Буквы алфавита: la erre, la efe",
+            "Исключения: el día, el mapa, el problema, el planeta, el sofá, el programa",
+            "Слова женского рода на ударную a или ha берут артикль el: el agua (fría)"
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Слова на -ista и -e бывают и мужского, и женского рода: el/la periodista, el/la estudiante."
+        }
+      ]
+    },
+    {
+      "id": "plural",
+      "group": "sustantivos",
+      "title": "Множественное число",
+      "blocks": [
+        {
+          "kind": "list",
+          "title": "Как образуется",
+          "items": [
+            "Оканчивается на гласную, кроме ударных í, ú, ó → -s: la casa — las casas",
+            "Оканчивается на согласную или на ударные í, ú, ó, y → -es: el país — los países"
+          ]
+        },
+        {
+          "kind": "list",
+          "title": "Не имеют формы множественного числа",
+          "items": [
+            "На -is: la crisis — las crisis",
+            "Дни недели на -es: el martes — los martes",
+            "Единственные в своём роде: el sol, la luna",
+            "Продукты: el queso, el pan",
+            "Некоторые существительные: el dinero — деньги, la gente — люди",
+            "Сложные слова: el paraguas — los paraguas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "plural-especial",
+      "group": "sustantivos",
+      "title": "Особые случаи множественного числа",
+      "blocks": [
+        {
+          "kind": "list",
+          "title": "Только во множественном числе",
+          "items": ["las gafas — очки", "las tijeras — ножницы", "las vacaciones — отпуск, каникулы"]
+        },
+        {
+          "kind": "list",
+          "title": "Слова на -z: z переходит в c",
+          "items": [
+            "la voz — las voces (голос)",
+            "el pez — los peces (рыба)",
+            "el lápiz — los lápices (карандаш)",
+            "la nuez — las nueces (грецкий орех)"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "adjetivos",
+      "group": "sustantivos",
+      "title": "Прилагательные",
+      "blocks": [
+        {
+          "kind": "text",
+          "body": "Прилагательное согласуется с существительным в роде и числе и стоит после него."
+        },
+        {
+          "kind": "table",
+          "head": ["", "мужской род", "женский род"],
+          "rows": [
+            ["ед. ч.", "-o: un coche bonito", "-a: una mesa blanca"],
+            ["мн. ч.", "-os: unos coches bonitos", "-as: unas mesas blancas"]
+          ]
+        },
+        {
+          "kind": "list",
+          "title": "Одинаковое окончание для обоих родов",
+          "items": [
+            "-e: una historia interesante, un traje verde",
+            "-es: unos chicos jóvenes, unas chicas jóvenes",
+            "На согласную: azul — azules",
+            "Исключение — национальности: español/españoles, española/españolas"
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "На письме z переходит в c: lápiz — lápices."
+        }
+      ]
+    },
+
+    {
+      "id": "numeros-0-9",
+      "group": "numeros",
+      "title": "От 0 до 9",
+      "blocks": [
+        {
+          "kind": "list",
+          "items": [
+            "0 — cero",
+            "1 — uno",
+            "2 — dos",
+            "3 — tres",
+            "4 — cuatro",
+            "5 — cinco",
+            "6 — seis",
+            "7 — siete",
+            "8 — ocho",
+            "9 — nueve"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "numeros-10-19",
+      "group": "numeros",
+      "title": "От 10 до 19",
+      "blocks": [
+        {
+          "kind": "list",
+          "items": [
+            "10 — diez",
+            "11 — once",
+            "12 — doce",
+            "13 — trece",
+            "14 — catorce",
+            "15 — quince",
+            "16 — dieciséis",
+            "17 — diecisiete",
+            "18 — dieciocho",
+            "19 — diecinueve"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "numeros-20-100",
+      "group": "numeros",
+      "title": "От 20 до 100",
+      "blocks": [
+        {
+          "kind": "list",
+          "items": [
+            "20 — veinte",
+            "21 — veintiuno(a), veintiún",
+            "30 — treinta",
+            "32 — treinta y dos",
+            "40 — cuarenta",
+            "43 — cuarenta y tres",
+            "50 — cincuenta",
+            "54 — cincuenta y cuatro",
+            "60 — sesenta",
+            "65 — sesenta y cinco",
+            "70 — setenta",
+            "76 — setenta y seis",
+            "80 — ochenta",
+            "87 — ochenta y siete",
+            "90 — noventa",
+            "98 — noventa y ocho"
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "До 29 составные числа пишутся слитно: veintiuno, veintidós. С 31 — раздельно через y: treinta y uno."
+        }
+      ]
+    },
+
+    {
+      "id": "alfabeto",
+      "group": "alfabeto",
+      "title": "Испанский алфавит",
+      "blocks": [
+        {
+          "kind": "list",
+          "items": [
+            "A a — a",
+            "B b — be",
+            "C c — ce",
+            "D d — de",
+            "E e — e",
+            "F f — efe",
+            "G g — ge",
+            "H h — hache",
+            "I i — i",
+            "J j — jota",
+            "K k — ka",
+            "L l — ele",
+            "M m — eme",
+            "N n — ene",
+            "Ñ ñ — eñe",
+            "O o — o",
+            "P p — pe",
+            "Q q — cu",
+            "R r — erre",
+            "S s — ese",
+            "T t — te",
+            "U u — u",
+            "V v — uve",
+            "W w — uve doble",
+            "X x — equis",
+            "Y y — i griega",
+            "Z z — zeta"
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "H не читается никогда: hola — «ола». Ñ — отдельная буква, а не N с чёрточкой."
+        }
+      ]
     }
   ]
 }
