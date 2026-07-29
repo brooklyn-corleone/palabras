@@ -553,6 +553,34 @@ function pulseSeg(box) {
 // список слов
 // ---------------------------------------------------------------------------
 
+// Активные и выученные вперемешку — это терпимо на семидесяти словах и каша на пятистах.
+// Поэтому список всегда показывает что-то одно, а «Все» остаётся отдельным выбором.
+let listScope = 'active'; // 'active' | 'arch' | 'all'
+
+const SCOPE_LABEL = { active: 'Активные', arch: 'Архив', all: 'Все' };
+
+function renderScope() {
+  const words = activeWords();
+  const archived = words.filter((w) => srs.isArchived(w.id)).length;
+  const counts = { active: words.length - archived, arch: archived, all: words.length };
+
+  replace(
+    $('list-scope'),
+    Object.keys(SCOPE_LABEL).map((key) =>
+      el('button', {
+        class: 'pill',
+        text: SCOPE_LABEL[key] + ' · ' + counts[key],
+        'aria-pressed': String(listScope === key),
+        onclick: () => {
+          listScope = key;
+          renderScope();
+          renderList();
+        },
+      }),
+    ),
+  );
+}
+
 // Список тем в фильтре пересобираем только когда набор изменился: иначе выбранное
 // значение сбрасывается при каждой перерисовке списка.
 function syncCatFilter() {
@@ -575,6 +603,7 @@ function renderList() {
   const q = (filterEl.value || '').toLowerCase().trim();
   const cat = $('filter-cat').value;
   const items = activeWords()
+    .filter((w) => listScope === 'all' || srs.isArchived(w.id) === (listScope === 'arch'))
     .filter((w) => !cat || w.cat === cat)
     .filter((w) => !q || (w.es + ' ' + w.ru).toLowerCase().includes(q))
     .map((w) => {
@@ -599,6 +628,7 @@ function renderList() {
             class: 'mini',
             onclick: () => {
               srs.archiveWord(w.id, !arch);
+              renderScope();
               renderList();
               renderRail();
             },
@@ -614,6 +644,7 @@ function renderList() {
               if (!confirm('Удалить «' + w.es + '»? Прогресс по слову тоже исчезнет.')) return;
               deleteWord(w.id);
               srs.buildQueue();
+              renderScope();
               renderList();
               renderRail();
             },
@@ -665,6 +696,7 @@ function bindWordsView() {
     $('new-ru').value = '';
     setNote('Слово добавлено.');
     srs.buildQueue();
+    renderScope();
     renderList();
     renderRail();
   });
@@ -722,6 +754,7 @@ function resetProgress() {
   state.stats.done = 0;
   save();
   srs.buildQueue();
+  renderScope();
   renderList();
   nextCard();
   setNote('Прогресс сброшен.');
@@ -740,6 +773,7 @@ function showView(which) {
     $('tab-' + name).setAttribute('aria-current', String(name === which));
   }
   if (which === 'words') {
+    renderScope();
     renderList();
     renderPickedBar();
   }

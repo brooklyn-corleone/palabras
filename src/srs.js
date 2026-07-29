@@ -120,6 +120,9 @@ export function pickDistractors(word, dir, n = 2) {
 
 export const MATCH_PAIRS = 6;
 
+// Сколько выученных слов максимум подмешивать в одно занятие.
+export const MAX_ARCHIVE_MIX = 3;
+
 // Пачка из шести пар в начале сессии — только если карточек к повторению вообще хватает.
 // Разминка не должна становиться единственным содержанием дня.
 export function pickMatchWords() {
@@ -206,9 +209,17 @@ export function buildQueue(options) {
   }
 
   shuffle(out);
+  queue = limitByWords(out, session.size);
 
-  // Архивные подмешиваем только в обычное занятие: если слова выбраны руками
+  // Выученные подмешиваем только в обычное занятие: если слова выбраны руками
   // или заказано «двадцать случайных», подмешивать к ним чужое было бы самоуправством.
+  //
+  // Делается это после лимита, а не до: иначе на занятии «10 слов» подмешанное выученное
+  // конкурировало бы за те же десять мест и почти всегда выбрасывалось. «Десять слов» —
+  // это десять новых плюс пара повторений сверху, а не десять на всех.
+  //
+  // Доля — примерно одна на десять, но не больше MAX_ARCHIVE_MIX за занятие. Без потолка
+  // на колоде в пятьсот слов половина занятия превратилась бы в повторение выученного.
   if (source === 'due') {
     const arch = shuffle(archivedKeys()).filter((key) => {
       const { wordId, dir } = parseKey(key);
@@ -217,13 +228,13 @@ export function buildQueue(options) {
       const w = wordById(wordId);
       return w && cats.has(w.cat);
     });
-    const take = out.length ? Math.min(arch.length, Math.max(1, Math.round(out.length / 10))) : 0;
+    const share = Math.min(Math.round(queue.length / 10), MAX_ARCHIVE_MIX);
+    const take = queue.length ? Math.min(arch.length, Math.max(1, share)) : 0;
     for (let i = 0; i < take; i++) {
-      out.splice(Math.floor(Math.random() * (out.length + 1)), 0, arch[i]);
+      queue.splice(Math.floor(Math.random() * (queue.length + 1)), 0, arch[i]);
     }
   }
 
-  queue = limitByWords(out, session.size);
   return queue.length;
 }
 
