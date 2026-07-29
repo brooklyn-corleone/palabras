@@ -12,7 +12,7 @@
 // Страница после смены воркера сама перезагружается, см. ui.js: модули в памяти
 // должны совпасть с тем, что воркер теперь отдаёт.
 
-const CACHE = 'palabras-v8';
+const CACHE = 'palabras-v9';
 
 const SHELL = [
   './',
@@ -56,7 +56,11 @@ self.addEventListener('activate', (event) => {
 // и новое не доедет никогда, поэтому здесь сеть в приоритете.
 async function networkFirst(request) {
   try {
-    const response = await fetch(request);
+    // cache: 'no-cache' обязателен. Без него запрос уходит в обычный HTTP-кэш браузера,
+    // а GitHub Pages отдаёт эти файлы с max-age=600 — и «сеть в приоритете» десять минут
+    // возвращает вчерашнюю копию. С no-cache уходит условный запрос: не изменилось —
+    // сервер ответит 304, изменилось — придут свежие данные.
+    const response = await fetch(request.url, { cache: 'no-cache' });
     if (response && response.ok) {
       const cache = await caches.open(CACHE);
       cache.put(request, response.clone());
