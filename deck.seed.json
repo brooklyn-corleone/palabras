@@ -1,11 +1,12 @@
 {
-  "version": 6,
+  "version": 7,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
     "cuerpo": "Тело",
     "casa": "Дом",
-    "dormitorio": "Спальня"
+    "dormitorio": "Спальня",
+    "descripcion": "Описание"
   },
   "words": [
     { "id": "ser-yo", "es": "soy", "ru": "я — ser (постоянный признак)", "pos": "v", "cat": "verbos" },
@@ -84,6 +85,14 @@
     { "id": "dorm-cortina", "es": "la cortina", "ru": "шторы", "pos": "n", "cat": "dormitorio" },
     { "id": "dorm-alfombra", "es": "la alfombra", "ru": "ковёр", "pos": "n", "cat": "dormitorio" },
     { "id": "dorm-pijama", "es": "el pijama", "ru": "пижама", "pos": "n", "cat": "dormitorio" },
-    { "id": "dorm-monstruo", "es": "el monstruo", "ru": "монстр", "pos": "n", "cat": "dormitorio" }
+    { "id": "dorm-monstruo", "es": "el monstruo", "ru": "монстр", "pos": "n", "cat": "dormitorio" },
+
+    { "id": "desc-espaciosa", "es": "espaciosa", "ru": "просторная", "pos": "adj", "cat": "descripcion" },
+    { "id": "desc-luminosa", "es": "luminosa", "ru": "светлая, солнечная", "pos": "adj", "cat": "descripcion" },
+    { "id": "desc-practico", "es": "práctico", "ru": "практичный", "pos": "adj", "cat": "descripcion" },
+    { "id": "desc-suave", "es": "suave", "ru": "мягкая, приятная на ощупь", "pos": "adj", "cat": "descripcion" },
+    { "id": "desc-diseno", "es": "el diseño", "ru": "дизайн", "pos": "n", "cat": "descripcion" },
+    { "id": "desc-estampados", "es": "los estampados", "ru": "узоры (на ткани)", "pos": "n", "cat": "descripcion" },
+    { "id": "desc-espacio", "es": "tiene mucho espacio", "ru": "есть много места", "pos": "phrase", "cat": "descripcion" }
   ]
 }
