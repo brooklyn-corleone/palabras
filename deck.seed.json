@@ -1,5 +1,5 @@
 {
-  "version": 11,
+  "version": 12,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
@@ -8,7 +8,8 @@
     "dormitorio": "Спальня",
     "descripcion": "Описание",
     "rutina": "Распорядок дня",
-    "tiempo": "Время и частота"
+    "tiempo": "Время и частота",
+    "calendario": "Дни и месяцы"
   },
   "words": [
     { "id": "ser-yo", "es": "soy", "ru": "я — ser (постоянный признак)", "pos": "v", "cat": "verbos" },
@@ -138,6 +139,27 @@
     { "id": "tiempo-a-veces", "es": "a veces", "ru": "иногда", "pos": "phrase", "cat": "tiempo" },
     { "id": "tiempo-pocas-veces", "es": "pocas veces", "ru": "редко", "pos": "phrase", "cat": "tiempo" },
     { "id": "tiempo-nunca", "es": "nunca", "ru": "никогда", "pos": "adv", "cat": "tiempo" },
-    { "id": "tiempo-casi-nunca", "es": "casi nunca", "ru": "почти никогда", "pos": "phrase", "cat": "tiempo" }
+    { "id": "tiempo-casi-nunca", "es": "casi nunca", "ru": "почти никогда", "pos": "phrase", "cat": "tiempo" },
+
+    { "id": "cal-lunes", "es": "el lunes", "ru": "понедельник", "pos": "n", "cat": "calendario" },
+    { "id": "cal-martes", "es": "el martes", "ru": "вторник", "pos": "n", "cat": "calendario" },
+    { "id": "cal-miercoles", "es": "el miércoles", "ru": "среда", "pos": "n", "cat": "calendario" },
+    { "id": "cal-jueves", "es": "el jueves", "ru": "четверг", "pos": "n", "cat": "calendario" },
+    { "id": "cal-viernes", "es": "el viernes", "ru": "пятница", "pos": "n", "cat": "calendario" },
+    { "id": "cal-sabado", "es": "el sábado", "ru": "суббота", "pos": "n", "cat": "calendario" },
+    { "id": "cal-domingo", "es": "el domingo", "ru": "воскресенье", "pos": "n", "cat": "calendario" },
+
+    { "id": "cal-enero", "es": "enero", "ru": "январь", "pos": "n", "cat": "calendario" },
+    { "id": "cal-febrero", "es": "febrero", "ru": "февраль", "pos": "n", "cat": "calendario" },
+    { "id": "cal-marzo", "es": "marzo", "ru": "март", "pos": "n", "cat": "calendario" },
+    { "id": "cal-abril", "es": "abril", "ru": "апрель", "pos": "n", "cat": "calendario" },
+    { "id": "cal-mayo", "es": "mayo", "ru": "май", "pos": "n", "cat": "calendario" },
+    { "id": "cal-junio", "es": "junio", "ru": "июнь", "pos": "n", "cat": "calendario" },
+    { "id": "cal-julio", "es": "julio", "ru": "июль", "pos": "n", "cat": "calendario" },
+    { "id": "cal-agosto", "es": "agosto", "ru": "август", "pos": "n", "cat": "calendario" },
+    { "id": "cal-septiembre", "es": "septiembre", "ru": "сентябрь", "pos": "n", "cat": "calendario" },
+    { "id": "cal-octubre", "es": "octubre", "ru": "октябрь", "pos": "n", "cat": "calendario" },
+    { "id": "cal-noviembre", "es": "noviembre", "ru": "ноябрь", "pos": "n", "cat": "calendario" },
+    { "id": "cal-diciembre", "es": "diciembre", "ru": "декабрь", "pos": "n", "cat": "calendario" }
   ]
 }

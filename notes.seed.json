@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "groups": {
     "presente": "Настоящее время",
     "irregulares": "Неправильные глаголы",
@@ -507,6 +507,66 @@
         {
           "kind": "text",
           "body": "Son las nueve de la mañana. Son las nueve de la noche. Часовой пояс тут ни при чём: испанцы делят сутки по свету, а не по цифрам."
+        }
+      ]
+    },
+
+    {
+      "id": "dias-meses",
+      "group": "hora",
+      "title": "Дни недели и месяцы",
+      "blocks": [
+        {
+          "kind": "table",
+          "head": ["день", "перевод"],
+          "rows": [
+            ["el lunes", "понедельник"],
+            ["el martes", "вторник"],
+            ["el miércoles", "среда"],
+            ["el jueves", "четверг"],
+            ["el viernes", "пятница"],
+            ["el sábado", "суббота"],
+            ["el domingo", "воскресенье"]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Дни мужского рода и пишутся с маленькой буквы. Предлог не нужен: «в понедельник» — el lunes, «по понедельникам» — los lunes. С понедельника по пятницу форма во множественном не меняется, потому что они кончаются на -s: el martes — los martes."
+        },
+        {
+          "kind": "list",
+          "title": "Месяцы",
+          "items": [
+            "enero — январь",
+            "febrero — февраль",
+            "marzo — март",
+            "abril — апрель",
+            "mayo — май",
+            "junio — июнь",
+            "julio — июль",
+            "agosto — август",
+            "septiembre — сентябрь",
+            "octubre — октябрь",
+            "noviembre — ноябрь",
+            "diciembre — декабрь"
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Месяцы тоже с маленькой буквы и без артикля. «В январе» — en enero. Дата — el 5 de mayo, «сегодня 5 мая» — hoy es 5 de mayo."
+        },
+        {
+          "kind": "list",
+          "title": "Рядом пригодится",
+          "items": [
+            "hoy — сегодня",
+            "mañana — завтра",
+            "ayer — вчера",
+            "la semana — неделя",
+            "el fin de semana — выходные",
+            "el mes — месяц",
+            "el año — год"
+          ]
         }
       ]
     },
