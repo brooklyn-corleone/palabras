@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "groups": {
     "presente": "Настоящее время",
     "irregulares": "Неправильные глаголы",
@@ -102,6 +102,46 @@
         {
           "kind": "text",
           "body": "Возвратный глагол: местоимение me, te, se, nos, os стоит перед формой. «¿Cómo te llamas?» — «Как тебя зовут?»"
+        }
+      ]
+    },
+
+    {
+      "id": "reflexivos",
+      "group": "presente",
+      "title": "Возвратные глаголы",
+      "blocks": [
+        {
+          "kind": "text",
+          "body": "bañar + se = bañarse. Частица se в конце инфинитива означает, что действие направлено на себя: bañar — купать кого-то, bañarse — купаться."
+        },
+        {
+          "kind": "table",
+          "head": ["", "местоимение", "bañarse"],
+          "rows": [
+            ["yo", "me", "baño"],
+            ["tú", "te", "bañas"],
+            ["él, ella, usted", "se", "baña"],
+            ["nosotros/as", "nos", "bañamos"],
+            ["vosotros/as", "os", "bañáis"],
+            ["ellos/as, ustedes", "se", "bañan"]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Перед спрягаемым глаголом местоимение стоит отдельным словом: me baño. При инфинитиве оно приклеивается к нему в конец: tengo que bañarme, ¿a qué hora tienes que levantarte?"
+        },
+        {
+          "kind": "list",
+          "title": "Распорядок дня",
+          "items": [
+            "despertarse — просыпаться",
+            "levantarse — вставать",
+            "ducharse — принимать душ",
+            "vestirse — одеваться",
+            "acostarse — ложиться спать",
+            "llamarse — зваться"
+          ]
         }
       ]
     },

@@ -1,12 +1,13 @@
 {
-  "version": 9,
+  "version": 10,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
     "cuerpo": "Тело",
     "casa": "Дом",
     "dormitorio": "Спальня",
-    "descripcion": "Описание"
+    "descripcion": "Описание",
+    "rutina": "Распорядок дня"
   },
   "words": [
     { "id": "ser-yo", "es": "soy", "ru": "я — ser (постоянный признак)", "pos": "v", "cat": "verbos" },
@@ -109,6 +110,11 @@
     { "id": "desc-muy", "es": "muy", "ru": "очень", "pos": "adv", "cat": "descripcion" },
     { "id": "desc-bastante", "es": "bastante", "ru": "довольно, достаточно", "pos": "adv", "cat": "descripcion" },
     { "id": "verbos-ensenar", "es": "enseñar", "ru": "учить, преподавать; показывать", "pos": "v", "cat": "verbos" },
-    { "id": "desc-al-lado", "es": "al lado", "ru": "рядом; al lado de — рядом с", "pos": "phrase", "cat": "descripcion" }
+    { "id": "desc-al-lado", "es": "al lado", "ru": "рядом; al lado de — рядом с", "pos": "phrase", "cat": "descripcion" },
+
+    { "id": "rutina-despertarse", "es": "despertarse", "ru": "просыпаться", "pos": "v", "cat": "rutina" },
+    { "id": "rutina-levantarse", "es": "levantarse", "ru": "вставать, подниматься (levantarte — тебе вставать)", "pos": "v", "cat": "rutina" },
+    { "id": "rutina-sales", "es": "sales", "ru": "ты выходишь, ты уходишь — salir", "pos": "v", "cat": "rutina" },
+    { "id": "rutina-despues", "es": "después", "ru": "потом, после", "pos": "adv", "cat": "rutina" }
   ]
 }
