@@ -1,10 +1,11 @@
 {
-  "version": 3,
+  "version": 4,
   "groups": {
     "presente": "Настоящее время",
     "irregulares": "Неправильные глаголы",
     "sustantivos": "Существительные и прилагательные",
     "numeros": "Цифры",
+    "hora": "Время",
     "alfabeto": "Алфавит"
   },
   "notes": [
@@ -454,6 +455,58 @@
         {
           "kind": "text",
           "body": "До 29 составные числа пишутся слитно: veintiuno, veintidós. С 31 — раздельно через y: treinta y uno."
+        }
+      ]
+    },
+
+    {
+      "id": "la-hora",
+      "group": "hora",
+      "title": "Который час",
+      "blocks": [
+        {
+          "kind": "text",
+          "body": "Вопрос — ¿Qué hora es? Час один: Es la una. Все остальные во множественном: Son las dos, son las siete, son las doce."
+        },
+        {
+          "kind": "table",
+          "head": ["", "как сказать"],
+          "rows": [
+            ["2:00", "Son las dos en punto"],
+            ["2:05", "Son las dos y cinco"],
+            ["2:15", "Son las dos y cuarto"],
+            ["2:20", "Son las dos y veinte"],
+            ["2:30", "Son las dos y media"],
+            ["2:35", "Son las tres menos veinticinco"],
+            ["2:45", "Son las tres menos cuarto"],
+            ["2:50", "Son las tres menos diez"]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "До половины минуты прибавляют к текущему часу через y. После половины — отнимают от следующего через menos. Ровно — en punto, четверть — cuarto, половина — media."
+        },
+        {
+          "kind": "list",
+          "title": "Полдень и полночь",
+          "items": [
+            "Las doce en punto — двенадцать ровно",
+            "El mediodía — полдень, 12 дня",
+            "La medianoche — полночь, 12 ночи"
+          ]
+        },
+        {
+          "kind": "list",
+          "title": "Часть суток после времени",
+          "items": [
+            "de la mañana — до полудня",
+            "de la tarde — с полудня до темноты",
+            "de la noche — когда уже стемнело"
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Son las nueve de la mañana. Son las nueve de la noche. Часовой пояс тут ни при чём: испанцы делят сутки по свету, а не по цифрам."
         }
       ]
     },

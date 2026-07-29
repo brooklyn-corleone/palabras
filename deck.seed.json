@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 11,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
@@ -7,7 +7,8 @@
     "casa": "Дом",
     "dormitorio": "Спальня",
     "descripcion": "Описание",
-    "rutina": "Распорядок дня"
+    "rutina": "Распорядок дня",
+    "tiempo": "Время и частота"
   },
   "words": [
     { "id": "ser-yo", "es": "soy", "ru": "я — ser (постоянный признак)", "pos": "v", "cat": "verbos" },
@@ -115,6 +116,28 @@
     { "id": "rutina-despertarse", "es": "despertarse", "ru": "просыпаться", "pos": "v", "cat": "rutina" },
     { "id": "rutina-levantarse", "es": "levantarse", "ru": "вставать, подниматься (levantarte — тебе вставать)", "pos": "v", "cat": "rutina" },
     { "id": "rutina-sales", "es": "sales", "ru": "ты выходишь, ты уходишь — salir", "pos": "v", "cat": "rutina" },
-    { "id": "rutina-despues", "es": "después", "ru": "потом, после", "pos": "adv", "cat": "rutina" }
+    { "id": "rutina-despues", "es": "después", "ru": "потом, после; después de — после", "pos": "adv", "cat": "tiempo" },
+    { "id": "rutina-ducharse", "es": "ducharse", "ru": "принимать душ", "pos": "v", "cat": "rutina" },
+    { "id": "rutina-desayunar", "es": "desayunar", "ru": "завтракать", "pos": "v", "cat": "rutina" },
+    { "id": "rutina-comer", "es": "comer", "ru": "обедать; есть", "pos": "v", "cat": "rutina" },
+    { "id": "rutina-cenar", "es": "cenar", "ru": "ужинать", "pos": "v", "cat": "rutina" },
+    { "id": "rutina-acostarse", "es": "acostarse", "ru": "ложиться спать", "pos": "v", "cat": "rutina" },
+
+    { "id": "tiempo-manana", "es": "por la mañana", "ru": "утром", "pos": "phrase", "cat": "tiempo" },
+    { "id": "tiempo-mediodia", "es": "al mediodía", "ru": "в полдень", "pos": "phrase", "cat": "tiempo" },
+    { "id": "tiempo-tarde-dia", "es": "por la tarde", "ru": "днём, вечером", "pos": "phrase", "cat": "tiempo" },
+    { "id": "tiempo-noche", "es": "por la noche", "ru": "ночью", "pos": "phrase", "cat": "tiempo" },
+    { "id": "tiempo-temprano", "es": "temprano", "ru": "рано", "pos": "adv", "cat": "tiempo" },
+    { "id": "tiempo-tarde", "es": "tarde", "ru": "поздно", "pos": "adv", "cat": "tiempo" },
+    { "id": "tiempo-antes", "es": "antes", "ru": "раньше, перед; antes de — до", "pos": "adv", "cat": "tiempo" },
+    { "id": "tiempo-siempre", "es": "siempre", "ru": "всегда", "pos": "adv", "cat": "tiempo" },
+    { "id": "tiempo-casi-siempre", "es": "casi siempre", "ru": "почти всегда", "pos": "phrase", "cat": "tiempo" },
+    { "id": "tiempo-a-menudo", "es": "a menudo", "ru": "часто", "pos": "phrase", "cat": "tiempo" },
+    { "id": "tiempo-frecuentemente", "es": "frecuentemente", "ru": "часто, регулярно", "pos": "adv", "cat": "tiempo" },
+    { "id": "tiempo-de-vez", "es": "de vez en cuando", "ru": "время от времени", "pos": "phrase", "cat": "tiempo" },
+    { "id": "tiempo-a-veces", "es": "a veces", "ru": "иногда", "pos": "phrase", "cat": "tiempo" },
+    { "id": "tiempo-pocas-veces", "es": "pocas veces", "ru": "редко", "pos": "phrase", "cat": "tiempo" },
+    { "id": "tiempo-nunca", "es": "nunca", "ru": "никогда", "pos": "adv", "cat": "tiempo" },
+    { "id": "tiempo-casi-nunca", "es": "casi nunca", "ru": "почти никогда", "pos": "phrase", "cat": "tiempo" }
   ]
 }
