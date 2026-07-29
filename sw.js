@@ -12,7 +12,7 @@
 // Страница после смены воркера сама перезагружается, см. ui.js: модули в памяти
 // должны совпасть с тем, что воркер теперь отдаёт.
 
-const CACHE = 'palabras-v9';
+const CACHE = 'palabras-v10';
 
 const SHELL = [
   './',
@@ -30,17 +30,31 @@ const SHELL = [
   'src/modes/letters.js',
   'src/modes/match.js',
   'src/modes/type.js',
-  'deck.seed.json',
-  'notes.seed.json',
   'icons/icon-180.png',
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/icon-maskable-512.png',
 ];
 
+// Колода и правила кладутся в кэш отдельно от оболочки: их надо тянуть в обход
+// HTTP-кэша браузера, а cache.addAll задать это не позволяет. Кэш нужен только
+// как запасной вариант для офлайна — при живой сети их всегда берут из сети.
+const DATA = ['deck.seed.json', 'notes.seed.json'];
+
+async function fillCache() {
+  const cache = await caches.open(CACHE);
+  await cache.addAll(SHELL);
+  await Promise.all(
+    DATA.map(async (path) => {
+      const response = await fetch(path, { cache: 'no-cache' });
+      if (response && response.ok) await cache.put(path, response);
+    }),
+  );
+}
+
 self.addEventListener('install', (event) => {
   self.skipWaiting();
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)));
+  event.waitUntil(fillCache());
 });
 
 self.addEventListener('activate', (event) => {

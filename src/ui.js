@@ -891,7 +891,17 @@ if ('serviceWorker' in navigator) {
 
   window.addEventListener('load', () => {
     navigator.serviceWorker
-      .register('sw.js')
+      // updateViaCache: 'none' — сам файл воркера всегда проверять на сервере.
+      // GitHub Pages отдаёт его с max-age=600, и без этого браузер до десяти минут
+      // не замечает, что вышла новая версия.
+      .register('sw.js', { updateViaCache: 'none' })
+      .then((reg) => {
+        // Приложение с домашнего экрана живёт неделями и страницу не перезагружает.
+        // Проверяем обновление каждый раз, когда его открывают заново.
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') reg.update().catch(() => {});
+        });
+      })
       .catch((e) => console.warn('service worker не зарегистрировался:', e));
   });
 }
