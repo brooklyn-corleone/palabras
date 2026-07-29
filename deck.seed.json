@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
@@ -93,6 +93,20 @@
     { "id": "desc-suave", "es": "suave", "ru": "мягкая, приятная на ощупь", "pos": "adj", "cat": "descripcion" },
     { "id": "desc-diseno", "es": "el diseño", "ru": "дизайн", "pos": "n", "cat": "descripcion" },
     { "id": "desc-estampados", "es": "los estampados", "ru": "узоры (на ткани)", "pos": "n", "cat": "descripcion" },
-    { "id": "desc-espacio", "es": "tiene mucho espacio", "ru": "есть много места", "pos": "phrase", "cat": "descripcion" }
+    { "id": "desc-espacio", "es": "tiene mucho espacio", "ru": "есть много места", "pos": "phrase", "cat": "descripcion" },
+    { "id": "desc-antiguo", "es": "antiguo", "ru": "старый", "pos": "adj", "cat": "descripcion" },
+    { "id": "desc-grande", "es": "grande", "ru": "большой, большая", "pos": "adj", "cat": "descripcion" },
+    { "id": "desc-bonito", "es": "bonito", "ru": "красивый", "pos": "adj", "cat": "descripcion" },
+    { "id": "desc-tranquilo", "es": "tranquilo", "ru": "тихий, спокойный", "pos": "adj", "cat": "descripcion" },
+    { "id": "desc-exterior", "es": "exterior", "ru": "окнами на улицу", "pos": "adj", "cat": "descripcion" },
+    { "id": "desc-frio", "es": "frío", "ru": "холодный", "pos": "adj", "cat": "descripcion" },
+    { "id": "desc-moderna", "es": "moderna", "ru": "современная", "pos": "adj", "cat": "descripcion" },
+    { "id": "desc-pequena", "es": "pequeña", "ru": "маленькая", "pos": "adj", "cat": "descripcion" },
+    { "id": "desc-fea", "es": "fea", "ru": "некрасивая, уродливая", "pos": "adj", "cat": "descripcion" },
+    { "id": "desc-ruidosa", "es": "ruidosa", "ru": "шумная", "pos": "adj", "cat": "descripcion" },
+    { "id": "desc-interior", "es": "interior", "ru": "окнами во двор", "pos": "adj", "cat": "descripcion" },
+    { "id": "desc-calurosa", "es": "calurosa", "ru": "жаркая, душная", "pos": "adj", "cat": "descripcion" },
+    { "id": "desc-muy", "es": "muy", "ru": "очень", "pos": "adv", "cat": "descripcion" },
+    { "id": "desc-bastante", "es": "bastante", "ru": "довольно, достаточно", "pos": "adv", "cat": "descripcion" }
   ]
 }
