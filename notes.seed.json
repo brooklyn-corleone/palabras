@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "groups": {
     "presente": "Настоящее время",
     "irregulares": "Неправильные глаголы",
@@ -378,6 +378,41 @@
         {
           "kind": "text",
           "body": "На письме z переходит в c: lápiz — lápices."
+        }
+      ]
+    },
+
+    {
+      "id": "colores",
+      "group": "sustantivos",
+      "title": "Цвета",
+      "blocks": [
+        {
+          "kind": "text",
+          "body": "Цвет — это прилагательное: согласуется с существительным и стоит после него. Un coche rojo, una casa roja."
+        },
+        {
+          "kind": "table",
+          "head": ["", "м. р.", "ж. р.", "мн. ч."],
+          "rows": [
+            ["красный", "rojo", "roja", "rojos / rojas"],
+            ["чёрный", "negro", "negra", "negros / negras"],
+            ["белый", "blanco", "blanca", "blancos / blancas"],
+            ["жёлтый", "amarillo", "amarilla", "amarillos / amarillas"]
+          ]
+        },
+        {
+          "kind": "list",
+          "title": "Не меняются по роду",
+          "items": [
+            "На -e: verde — un coche verde, una casa verde",
+            "На согласную: azul, gris, marrón — во множественном azules, grises, marrones",
+            "Названия предметов: naranja, rosa — una camisa rosa, unos zapatos naranja"
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Спросить про цвет — ¿De qué color es? Ответ — Es rojo. «Тёмный» и «светлый» добавляются словами: azul oscuro, azul claro."
         }
       ]
     },
