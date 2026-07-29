@@ -1,5 +1,5 @@
 {
-  "version": 8,
+  "version": 9,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
@@ -107,6 +107,8 @@
     { "id": "desc-interior", "es": "interior", "ru": "окнами во двор", "pos": "adj", "cat": "descripcion" },
     { "id": "desc-calurosa", "es": "calurosa", "ru": "жаркая, душная", "pos": "adj", "cat": "descripcion" },
     { "id": "desc-muy", "es": "muy", "ru": "очень", "pos": "adv", "cat": "descripcion" },
-    { "id": "desc-bastante", "es": "bastante", "ru": "довольно, достаточно", "pos": "adv", "cat": "descripcion" }
+    { "id": "desc-bastante", "es": "bastante", "ru": "довольно, достаточно", "pos": "adv", "cat": "descripcion" },
+    { "id": "verbos-ensenar", "es": "enseñar", "ru": "учить, преподавать; показывать", "pos": "v", "cat": "verbos" },
+    { "id": "desc-al-lado", "es": "al lado", "ru": "рядом; al lado de — рядом с", "pos": "phrase", "cat": "descripcion" }
   ]
 }
