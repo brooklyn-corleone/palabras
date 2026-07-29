@@ -1,0 +1,489 @@
+{
+  "version": 1,
+  "words": [
+    {
+      "id": "llave",
+      "es": "la llave",
+      "ru": "ключ",
+      "pos": "n",
+      "ex": "No encuentro las llaves de casa.",
+      "mn": "«Ляве» ≈ ЛАВКА: ключи забыл на лавке."
+    },
+    {
+      "id": "piso",
+      "es": "el piso",
+      "ru": "квартира; этаж",
+      "pos": "n",
+      "ex": "Vivo en un piso pequeño."
+    },
+    {
+      "id": "alquiler",
+      "es": "el alquiler",
+      "ru": "аренда",
+      "pos": "n",
+      "ex": "El alquiler sube cada año."
+    },
+    {
+      "id": "factura",
+      "es": "la factura",
+      "ru": "счёт за услуги",
+      "pos": "n",
+      "ex": "Ha llegado la factura de la luz."
+    },
+    {
+      "id": "recibo",
+      "es": "el recibo",
+      "ru": "квитанция",
+      "pos": "n",
+      "ex": "Guarda el recibo, por favor."
+    },
+    {
+      "id": "cita",
+      "es": "la cita",
+      "ru": "приём, назначенная встреча",
+      "pos": "n",
+      "ex": "Tengo cita en el médico a las diez."
+    },
+    {
+      "id": "tramite",
+      "es": "el trámite",
+      "ru": "бюрократическая процедура",
+      "pos": "n",
+      "ex": "Es un trámite de media hora."
+    },
+    {
+      "id": "empadronamiento",
+      "es": "el empadronamiento",
+      "ru": "прописка",
+      "pos": "n",
+      "ex": "Necesito el empadronamiento para el NIE."
+    },
+    {
+      "id": "cola",
+      "es": "la cola",
+      "ru": "очередь",
+      "pos": "n",
+      "ex": "Hay mucha cola en el banco.",
+      "mn": "Очередь за КОЛОЙ."
+    },
+    {
+      "id": "mostrador",
+      "es": "el mostrador",
+      "ru": "прилавок, стойка",
+      "pos": "n",
+      "ex": "Pregunta en el mostrador.",
+      "mn": "МОСТ между тобой и продавцом."
+    },
+    {
+      "id": "caja",
+      "es": "la caja",
+      "ru": "касса; коробка",
+      "pos": "n",
+      "ex": "Pague en la caja, por favor."
+    },
+    {
+      "id": "efectivo",
+      "es": "el efectivo",
+      "ru": "наличные",
+      "pos": "n",
+      "ex": "¿Puedo pagar en efectivo?"
+    },
+    {
+      "id": "cuenta",
+      "es": "la cuenta",
+      "ru": "счёт (в кафе, в банке)",
+      "pos": "n",
+      "ex": "La cuenta, por favor."
+    },
+    {
+      "id": "propina",
+      "es": "la propina",
+      "ru": "чаевые",
+      "pos": "n",
+      "ex": "Dejamos propina en la mesa.",
+      "mn": "«ПРО ПИВО» — оставил на пиво."
+    },
+    {
+      "id": "descuento",
+      "es": "el descuento",
+      "ru": "скидка",
+      "pos": "n",
+      "ex": "Tiene un descuento del veinte por ciento."
+    },
+    {
+      "id": "tienda",
+      "es": "la tienda",
+      "ru": "магазин",
+      "pos": "n",
+      "ex": "La tienda cierra a las nueve."
+    },
+    {
+      "id": "panaderia",
+      "es": "la panadería",
+      "ru": "пекарня",
+      "pos": "n",
+      "ex": "Compro pan en la panadería de al lado."
+    },
+    {
+      "id": "carniceria",
+      "es": "la carnicería",
+      "ru": "мясная лавка",
+      "pos": "n",
+      "ex": "En la carnicería venden pollo fresco."
+    },
+    {
+      "id": "fruteria",
+      "es": "la frutería",
+      "ru": "овощная лавка",
+      "pos": "n",
+      "ex": "La frutería del mercado es más barata."
+    },
+    {
+      "id": "mercado",
+      "es": "el mercado",
+      "ru": "рынок",
+      "pos": "n",
+      "ex": "Vamos al mercado los sábados."
+    },
+    {
+      "id": "playa",
+      "es": "la playa",
+      "ru": "пляж",
+      "pos": "n",
+      "ex": "La playa está a diez minutos."
+    },
+    {
+      "id": "arena",
+      "es": "la arena",
+      "ru": "песок",
+      "pos": "n",
+      "ex": "La arena quema al mediodía."
+    },
+    {
+      "id": "ola",
+      "es": "la ola",
+      "ru": "волна",
+      "pos": "n",
+      "ex": "Hoy hay olas grandes.",
+      "mn": "Волна кричит «ОЛА!»"
+    },
+    {
+      "id": "toalla",
+      "es": "la toalla",
+      "ru": "полотенце",
+      "pos": "n",
+      "ex": "He olvidado la toalla en casa."
+    },
+    {
+      "id": "paseo",
+      "es": "el paseo",
+      "ru": "набережная; прогулка",
+      "pos": "n",
+      "ex": "Damos un paseo por la playa."
+    },
+    {
+      "id": "barrio",
+      "es": "el barrio",
+      "ru": "район",
+      "pos": "n",
+      "ex": "Mi barrio es muy tranquilo."
+    },
+    {
+      "id": "acera",
+      "es": "la acera",
+      "ru": "тротуар",
+      "pos": "n",
+      "ex": "No aparques en la acera."
+    },
+    {
+      "id": "semaforo",
+      "es": "el semáforo",
+      "ru": "светофор",
+      "pos": "n",
+      "ex": "Gira a la derecha en el semáforo.",
+      "mn": "Почти как русское «семафор»."
+    },
+    {
+      "id": "parada",
+      "es": "la parada",
+      "ru": "остановка",
+      "pos": "n",
+      "ex": "La parada del tranvía está allí."
+    },
+    {
+      "id": "tranvia",
+      "es": "el tranvía",
+      "ru": "трамвай",
+      "pos": "n",
+      "ex": "Cojo el tranvía para ir al centro."
+    },
+    {
+      "id": "billete",
+      "es": "el billete",
+      "ru": "билет",
+      "pos": "n",
+      "ex": "Un billete de ida y vuelta, por favor."
+    },
+    {
+      "id": "horario",
+      "es": "el horario",
+      "ru": "расписание",
+      "pos": "n",
+      "ex": "¿Cuál es el horario de la tienda?"
+    },
+    {
+      "id": "retraso",
+      "es": "el retraso",
+      "ru": "опоздание, задержка",
+      "pos": "n",
+      "ex": "El tren lleva veinte minutos de retraso.",
+      "mn": "РЕТРО-поезд вечно опаздывает."
+    },
+    {
+      "id": "salida",
+      "es": "la salida",
+      "ru": "выход; отправление",
+      "pos": "n",
+      "ex": "La salida está al fondo."
+    },
+    {
+      "id": "atasco",
+      "es": "el atasco",
+      "ru": "пробка на дороге",
+      "pos": "n",
+      "ex": "Hay atasco en la entrada de la ciudad.",
+      "mn": "«А ТАСКАть» машины в пробке."
+    },
+    {
+      "id": "aparcamiento",
+      "es": "el aparcamiento",
+      "ru": "парковка",
+      "pos": "n",
+      "ex": "El aparcamiento es gratis los domingos."
+    },
+    {
+      "id": "vecino",
+      "es": "el vecino",
+      "ru": "сосед",
+      "pos": "n",
+      "ex": "Mi vecino tiene un perro ruidoso."
+    },
+    {
+      "id": "ascensor",
+      "es": "el ascensor",
+      "ru": "лифт",
+      "pos": "n",
+      "ex": "El ascensor no funciona hoy.",
+      "mn": "От англ. ASCEND — подниматься."
+    },
+    {
+      "id": "basura",
+      "es": "la basura",
+      "ru": "мусор",
+      "pos": "n",
+      "ex": "Saca la basura, por favor.",
+      "mn": "«БА, СОР!»"
+    },
+    {
+      "id": "contenedor",
+      "es": "el contenedor",
+      "ru": "мусорный контейнер",
+      "pos": "n",
+      "ex": "El contenedor amarillo es para plástico."
+    },
+    {
+      "id": "lavadora",
+      "es": "la lavadora",
+      "ru": "стиральная машина",
+      "pos": "n",
+      "ex": "La lavadora tarda dos horas.",
+      "mn": "Внутри крутится ЛАВА."
+    },
+    {
+      "id": "grifo",
+      "es": "el grifo",
+      "ru": "кран",
+      "pos": "n",
+      "ex": "Cierra el grifo, gotea.",
+      "mn": "ГРИФ сидит на кране и пьёт."
+    },
+    {
+      "id": "nevera",
+      "es": "la nevera",
+      "ru": "холодильник",
+      "pos": "n",
+      "ex": "No queda nada en la nevera.",
+      "mn": "«НЕ ВЕРЮ, что пусто!»"
+    },
+    {
+      "id": "enchufe",
+      "es": "el enchufe",
+      "ru": "розетка",
+      "pos": "n",
+      "ex": "¿Hay un enchufe cerca de la mesa?",
+      "mn": "«ЧУФ!» — искра из розетки."
+    },
+    {
+      "id": "bombilla",
+      "es": "la bombilla",
+      "ru": "лампочка",
+      "pos": "n",
+      "ex": "Se ha fundido la bombilla del baño.",
+      "mn": "БОМБА-лампочка взорвалась."
+    },
+    {
+      "id": "ventana",
+      "es": "la ventana",
+      "ru": "окно",
+      "pos": "n",
+      "ex": "Abre la ventana, hace calor."
+    },
+    {
+      "id": "almohada",
+      "es": "la almohada",
+      "ru": "подушка",
+      "pos": "n",
+      "ex": "Esta almohada es demasiado dura.",
+      "mn": "АЛЬМА (душа) отдыхает на подушке."
+    },
+    {
+      "id": "manta",
+      "es": "la manta",
+      "ru": "одеяло, плед",
+      "pos": "n",
+      "ex": "Por la noche necesito una manta.",
+      "mn": "МАНТА-скат укрывает как плед."
+    },
+    {
+      "id": "sombra",
+      "es": "la sombra",
+      "ru": "тень",
+      "pos": "n",
+      "ex": "Nos sentamos a la sombra.",
+      "mn": "СОМБРЕро даёт тень."
+    },
+    {
+      "id": "calor",
+      "es": "el calor",
+      "ru": "жара",
+      "pos": "n",
+      "ex": "En agosto hace un calor horrible."
+    },
+    {
+      "id": "resaca",
+      "es": "la resaca",
+      "ru": "похмелье",
+      "pos": "n",
+      "ex": "Tengo resaca desde ayer.",
+      "mn": "Перебрал РЕ-САКЕ — вот и похмелье."
+    },
+    {
+      "id": "huelga",
+      "es": "la huelga",
+      "ru": "забастовка",
+      "pos": "n",
+      "ex": "Mañana hay huelga de transporte.",
+      "mn": "«У ЭЛЬГИ забастовка.»"
+    },
+    {
+      "id": "desayunar",
+      "es": "desayunar",
+      "ru": "завтракать",
+      "pos": "v",
+      "ex": "Desayuno café y tostada."
+    },
+    {
+      "id": "cenar",
+      "es": "cenar",
+      "ru": "ужинать",
+      "pos": "v",
+      "ex": "Cenamos sobre las diez."
+    },
+    {
+      "id": "probar",
+      "es": "probar",
+      "ru": "пробовать, примерять",
+      "pos": "v",
+      "ex": "¿Puedo probar esta camisa?"
+    },
+    {
+      "id": "pedir",
+      "es": "pedir",
+      "ru": "просить; заказывать",
+      "pos": "v",
+      "ex": "Voy a pedir la cuenta."
+    },
+    {
+      "id": "tardar",
+      "es": "tardar",
+      "ru": "занимать время, задерживаться",
+      "pos": "v",
+      "ex": "¿Cuánto tarda el autobús?",
+      "mn": "ТОРМОЗит — значит tarda."
+    },
+    {
+      "id": "quedar",
+      "es": "quedar",
+      "ru": "договориться о встрече",
+      "pos": "v",
+      "ex": "Quedamos a las ocho en la plaza."
+    },
+    {
+      "id": "echar-de-menos",
+      "es": "echar de menos",
+      "ru": "скучать по",
+      "pos": "phrase",
+      "ex": "Echo de menos a mi familia."
+    },
+    {
+      "id": "a-lo-mejor",
+      "es": "a lo mejor",
+      "ru": "может быть",
+      "pos": "phrase",
+      "ex": "A lo mejor viene mañana."
+    },
+    {
+      "id": "de-repente",
+      "es": "de repente",
+      "ru": "вдруг",
+      "pos": "phrase",
+      "ex": "De repente empezó a llover."
+    },
+    {
+      "id": "en-seguida",
+      "es": "en seguida",
+      "ru": "сейчас же, сразу",
+      "pos": "phrase",
+      "ex": "Vuelvo en seguida."
+    },
+    {
+      "id": "hace-falta",
+      "es": "hace falta",
+      "ru": "нужно, требуется",
+      "pos": "phrase",
+      "ex": "Hace falta más sal."
+    },
+    {
+      "id": "me-da-igual",
+      "es": "me da igual",
+      "ru": "мне всё равно",
+      "pos": "phrase",
+      "ex": "Me da igual, elige tú."
+    },
+    {
+      "id": "vale",
+      "es": "vale",
+      "ru": "ладно, ок",
+      "pos": "phrase",
+      "ex": "Vale, nos vemos allí.",
+      "mn": "«ВАЛЕ» ≈ «валяй»."
+    },
+    {
+      "id": "venga",
+      "es": "venga",
+      "ru": "давай, ну же",
+      "pos": "phrase",
+      "ex": "Venga, vámonos ya."
+    }
+  ]
+}
