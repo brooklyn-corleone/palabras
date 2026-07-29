@@ -817,6 +817,18 @@ async function init() {
 }
 
 if ('serviceWorker' in navigator) {
+  // Воркер забирает управление сразу (skipWaiting в sw.js), поэтому страница может
+  // остаться с модулями старой версии в памяти, а получать файлы уже от новой.
+  // Перезагружаемся ровно один раз, когда управление сменилось. Прогресс лежит
+  // в IndexedDB и переживает это без потерь.
+  const hadController = !!navigator.serviceWorker.controller;
+  let reloading = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController || reloading) return; // первая установка — перезагружать нечего
+    reloading = true;
+    location.reload();
+  });
+
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register('sw.js')
