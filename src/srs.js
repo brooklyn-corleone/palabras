@@ -30,10 +30,9 @@ function pickOne(list) {
 // Какое направление карточки требует режим, если его выбрали руками.
 // null — режим работает в обе стороны. type и letters всегда RU→ES (воспроизведение),
 // flip всегда ES→RU (узнавание), иначе задание теряет смысл.
-export const MODE_DIR = { type: 'ru', letters: 'ru', flip: 'es', choice: null, match: null, auto: null };
+export const MODE_DIR = { type: 'ru', letters: 'ru', flip: 'es', choice: null, match: null };
 
 export const MODE_LABEL = {
-  auto: 'Авто',
   choice: 'Квиз',
   type: 'Ввод',
   letters: 'Из букв',
@@ -41,14 +40,34 @@ export const MODE_LABEL = {
   match: 'Пары',
 };
 
-export function pickMode(key, forced) {
-  // Режим, выбранный руками, важнее лестницы коробок: пользователь знает, что хочет
-  // потренировать. Веса MAX_BOX при этом остаются в силе, так что схитрить не выйдет.
-  if (forced && forced !== 'auto' && forced !== 'match' && MAX_BOX[forced] !== undefined) {
-    return forced;
-  }
+// Режимы, которые сами задают карточку. `match` работает пачками, а не карточками,
+// поэтому в выборе режима для очереди не участвует.
+function cardModes(modes) {
+  if (!modes || !modes.size) return [];
+  return [...modes].filter((m) => m !== 'match' && MAX_BOX[m] !== undefined);
+}
 
+// Направления, которые нужны выбранным режимам. null — годятся любые.
+// Если выбраны и «ввод» (RU→ES), и «карточки» (ES→RU), в занятие идут оба направления.
+export function allowedDirs(modes) {
+  const chosen = cardModes(modes);
+  if (!chosen.length) return null;
+  const dirs = new Set();
+  for (const m of chosen) {
+    if (!MODE_DIR[m]) return null; // choice работает в обе стороны — ограничивать нечем
+    dirs.add(MODE_DIR[m]);
+  }
+  return dirs;
+}
+
+export function pickMode(key, modes) {
   const { dir } = parseKey(key);
+
+  // Режимы, выбранные руками, важнее лестницы коробок: пользователь знает, что хочет
+  // потренировать. Веса MAX_BOX при этом остаются в силе, так что схитрить не выйдет.
+  const chosen = cardModes(modes).filter((m) => !MODE_DIR[m] || MODE_DIR[m] === dir);
+  if (chosen.length) return pickOne(chosen);
+
   const card = state.cards[key];
   const box = card ? card.box : 1;
 
@@ -136,8 +155,9 @@ function archivedKeys() {
 
 // Настройки текущего занятия. Пустые — обычный режим «что созрело к повторению».
 //   source: 'due' | 'random' | 'picked'
+//   cats:   Set с кодами тем (пустой — все темы)
 //   size:   сколько слов взять (0 — сколько есть)
-//   mode:   'auto' или конкретный режим
+//   modes:  Set с режимами (пустой — авто, по лестнице коробок)
 //   picked: Set с id слов для source: 'picked'
 let session = {};
 
@@ -164,8 +184,8 @@ function limitByWords(keys, size) {
 export function buildQueue(options) {
   if (options) session = options;
   const source = session.source || 'due';
-  const dir = MODE_DIR[session.mode || 'auto'] || null;
-  const cat = session.cat || '';
+  const dirs = allowedDirs(session.modes);
+  const cats = session.cats && session.cats.size ? session.cats : null;
   const t = today();
 
   let out = Object.keys(state.cards).filter(isLiveKey);
@@ -176,12 +196,12 @@ export function buildQueue(options) {
   } else if (source !== 'random') {
     out = out.filter((key) => !state.cards[key].arch && state.cards[key].due <= t);
   }
-  if (dir) out = out.filter((key) => parseKey(key).dir === dir);
-  // Тема выбирается независимо от источника: «случайные 20 из семьи» — обычный запрос.
-  if (cat) {
+  if (dirs) out = out.filter((key) => dirs.has(parseKey(key).dir));
+  // Темы выбираются независимо от источника: «случайные 20 из семьи и дома» — обычный запрос.
+  if (cats) {
     out = out.filter((key) => {
       const w = wordById(parseKey(key).wordId);
-      return w && w.cat === cat;
+      return w && cats.has(w.cat);
     });
   }
 
@@ -191,11 +211,11 @@ export function buildQueue(options) {
   // или заказано «двадцать случайных», подмешивать к ним чужое было бы самоуправством.
   if (source === 'due') {
     const arch = shuffle(archivedKeys()).filter((key) => {
-      const { wordId, dir: keyDir } = parseKey(key);
-      if (dir && keyDir !== dir) return false;
-      if (!cat) return true;
+      const { wordId, dir } = parseKey(key);
+      if (dirs && !dirs.has(dir)) return false;
+      if (!cats) return true;
       const w = wordById(wordId);
-      return w && w.cat === cat;
+      return w && cats.has(w.cat);
     });
     const take = out.length ? Math.min(arch.length, Math.max(1, Math.round(out.length / 10))) : 0;
     for (let i = 0; i < take; i++) {

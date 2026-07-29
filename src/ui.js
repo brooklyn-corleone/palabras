@@ -52,9 +52,9 @@ let view = 'learn';
 // после перезагрузки логично начинать с обычного повторения.
 const session = {
   source: 'due', // 'due' — что созрело, 'random' — случайные, 'picked' — выбранные руками
-  cat: '', // код темы, пустой — все
+  cats: new Set(), // коды тем; пусто — все темы
   size: 0, // 0 — сколько наберётся
-  mode: 'auto',
+  modes: new Set(), // режимы; пусто — авто, по лестнице коробок
   picked: new Set(),
 };
 
@@ -84,12 +84,18 @@ function catLabel(code) {
   return found ? found[1] : code;
 }
 
+function listOf(set, label, fallback) {
+  if (!set.size) return fallback;
+  return [...set].map((v) => label(v).toLowerCase()).join(' + ');
+}
+
 function sessionSummary() {
-  const parts = [SOURCE_LABEL[session.source]];
-  if (session.cat) parts.push(catLabel(session.cat).toLowerCase());
-  parts.push(session.size ? session.size + ' слов' : 'все');
-  parts.push(srs.MODE_LABEL[session.mode].toLowerCase());
-  return parts.join(' · ');
+  return [
+    SOURCE_LABEL[session.source],
+    listOf(session.cats, catLabel, 'все темы'),
+    session.size ? session.size + ' слов' : 'все',
+    listOf(session.modes, (m) => srs.MODE_LABEL[m], 'авто'),
+  ].join(' · ');
 }
 
 function renderSessionBar() {
@@ -164,29 +170,64 @@ function nextCard() {
 // настройка занятия
 // ---------------------------------------------------------------------------
 
-// Группа кнопок-переключателей: один выбранный вариант, подпись слева.
-function chooser(label, options, current, onPick) {
+function chooserBox(label, buttons) {
   return el(
     'div',
     { class: 'chooser' },
     el('span', { class: 'cap', text: label }),
-    el(
-      'div',
-      { class: 'chooser-row' },
-      options.map(([value, text, disabled]) =>
-        el('button', {
-          class: 'pill',
-          text,
-          disabled: disabled || undefined,
-          'aria-pressed': String(value === current),
-          onclick: () => {
-            onPick(value);
-            renderSetup();
-          },
-        }),
-      ),
+    el('div', { class: 'chooser-row' }, buttons),
+  );
+}
+
+// Группа кнопок с одним выбранным вариантом.
+function chooser(label, options, current, onPick) {
+  return chooserBox(
+    label,
+    options.map(([value, text, disabled]) =>
+      el('button', {
+        class: 'pill',
+        text,
+        disabled: disabled || undefined,
+        'aria-pressed': String(value === current),
+        onclick: () => {
+          onPick(value);
+          renderSetup();
+        },
+      }),
     ),
   );
+}
+
+// Группа с множественным выбором: можно взять и квиз, и карточки сразу.
+// Пустой набор — это «всё»/«авто», поэтому первая кнопка просто его очищает.
+function multiChooser(label, allText, options, selected) {
+  const buttons = [
+    el('button', {
+      class: 'pill',
+      text: allText,
+      'aria-pressed': String(selected.size === 0),
+      onclick: () => {
+        selected.clear();
+        renderSetup();
+      },
+    }),
+  ];
+  for (const [value, text, disabled] of options) {
+    buttons.push(
+      el('button', {
+        class: 'pill',
+        text,
+        disabled: disabled || undefined,
+        'aria-pressed': String(selected.has(value)),
+        onclick: () => {
+          if (selected.has(value)) selected.delete(value);
+          else selected.add(value);
+          renderSetup();
+        },
+      }),
+    );
+  }
+  return chooserBox(label, buttons);
 }
 
 function renderSetup() {
@@ -212,16 +253,7 @@ function renderSetup() {
         },
       ),
 
-      cats.length
-        ? chooser(
-            'Тема',
-            [['', 'Все темы'], ...cats],
-            session.cat,
-            (v) => {
-              session.cat = v;
-            },
-          )
-        : null,
+      cats.length ? multiChooser('Тема', 'Все темы', cats, session.cats) : null,
 
       chooser(
         'Сколько слов',
@@ -232,13 +264,11 @@ function renderSetup() {
         },
       ),
 
-      chooser(
+      multiChooser(
         'Формат',
+        'Авто',
         Object.keys(srs.MODE_LABEL).map((m) => [m, srs.MODE_LABEL[m]]),
-        session.mode,
-        (v) => {
-          session.mode = v;
-        },
+        session.modes,
       ),
 
       session.source === 'picked' && picked === 0
@@ -263,30 +293,40 @@ function renderSetup() {
 function startSession() {
   srs.setSession({
     source: session.source,
-    cat: session.cat,
+    cats: session.cats,
     size: session.size,
-    mode: session.mode,
+    modes: session.modes,
     picked: session.picked,
   });
   renderSessionBar();
   matchPacks = [];
   goalCelebrated = state.stats.done >= state.settings.goal;
 
-  if (session.mode === 'match') {
+  const wantsMatch = session.modes.has('match');
+  const onlyMatch = wantsMatch && session.modes.size === 1;
+
+  // «Пары» — единственный режим, который работает не карточками, а пачками по шесть.
+  // Выбран один — занятие целиком из пачек. Выбран вместе с другими — одна пачка
+  // как разминка, дальше обычная очередь.
+  if (wantsMatch) {
     const words = srs.sessionWords();
-    for (let i = 0; i + 1 < words.length; i += srs.MATCH_PAIRS) {
+    const limit = onlyMatch ? words.length : srs.MATCH_PAIRS;
+    for (let i = 0; i + 1 < Math.min(words.length, limit); i += srs.MATCH_PAIRS) {
       matchPacks.push(words.slice(i, i + srs.MATCH_PAIRS));
     }
+  }
+  if (onlyMatch) {
     nextCard();
     return;
   }
 
   srs.buildQueue();
-  // Разминка уместна только в обычном занятии: если формат выбран руками,
-  // подсовывать вместо него другой было бы неуважением к выбору.
-  const warmup = session.source === 'due' && session.mode === 'auto' ? srs.pickMatchWords() : null;
-  if (warmup) renderMatchPack(warmup);
-  else nextCard();
+  // В обычном занятии разминка приходит сама, если карточек хватает.
+  if (!matchPacks.length && session.source === 'due' && !session.modes.size) {
+    const warmup = srs.pickMatchWords();
+    if (warmup) matchPacks.push(warmup);
+  }
+  nextCard();
 }
 
 function renderStage() {
@@ -302,7 +342,7 @@ function renderStage() {
     renderEmpty();
     return;
   }
-  const mode = srs.pickMode(currentKey, session.mode);
+  const mode = srs.pickMode(currentKey, session.modes);
   replace(
     stage,
     MODES[mode]({
@@ -360,7 +400,7 @@ function renderNote() {
 
 function renderEmpty() {
   const hasWords = activeWords().length > 0;
-  const custom = session.source !== 'due' || session.mode !== 'auto';
+  const custom = session.source !== 'due' || session.modes.size > 0 || session.cats.size > 0;
 
   if (!hasWords) {
     replace(

@@ -1,9 +1,11 @@
 {
-  "version": 5,
+  "version": 6,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
-    "cuerpo": "Тело"
+    "cuerpo": "Тело",
+    "casa": "Дом",
+    "dormitorio": "Спальня"
   },
   "words": [
     { "id": "ser-yo", "es": "soy", "ru": "я — ser (постоянный признак)", "pos": "v", "cat": "verbos" },
@@ -52,6 +54,36 @@
     { "id": "cuerpo-boca", "es": "la boca", "ru": "рот", "pos": "n", "cat": "cuerpo" },
     { "id": "cuerpo-piernas", "es": "las piernas", "ru": "ноги", "pos": "n", "cat": "cuerpo" },
     { "id": "cuerpo-manos", "es": "las manos", "ru": "кисти рук", "pos": "n", "cat": "cuerpo" },
-    { "id": "cuerpo-pie", "es": "el pie", "ru": "ступня", "pos": "n", "cat": "cuerpo" }
+    { "id": "cuerpo-pie", "es": "el pie", "ru": "ступня", "pos": "n", "cat": "cuerpo" },
+
+    { "id": "casa-casa", "es": "la casa", "ru": "дом", "pos": "n", "cat": "casa" },
+    { "id": "casa-apartamento", "es": "el apartamento", "ru": "квартира", "pos": "n", "cat": "casa" },
+    { "id": "casa-habitacion", "es": "la habitación", "ru": "комната", "pos": "n", "cat": "casa" },
+    { "id": "casa-dormitorio", "es": "el dormitorio", "ru": "спальня", "pos": "n", "cat": "casa" },
+    { "id": "casa-salon", "es": "el salón", "ru": "гостиная", "pos": "n", "cat": "casa" },
+    { "id": "casa-cocina", "es": "la cocina", "ru": "кухня", "pos": "n", "cat": "casa" },
+    { "id": "casa-bano", "es": "el baño", "ru": "ванная; туалет", "pos": "n", "cat": "casa" },
+    { "id": "casa-pasillo", "es": "el pasillo", "ru": "коридор", "pos": "n", "cat": "casa" },
+    { "id": "casa-balcon", "es": "el balcón", "ru": "балкон", "pos": "n", "cat": "casa" },
+    { "id": "casa-puerta", "es": "la puerta", "ru": "дверь", "pos": "n", "cat": "casa" },
+    { "id": "casa-ventana", "es": "la ventana", "ru": "окно", "pos": "n", "cat": "casa" },
+    { "id": "casa-pared", "es": "la pared", "ru": "стена", "pos": "n", "cat": "casa" },
+    { "id": "casa-tejado", "es": "el tejado", "ru": "крыша", "pos": "n", "cat": "casa" },
+    { "id": "casa-suelo", "es": "el suelo", "ru": "пол", "pos": "n", "cat": "casa" },
+
+    { "id": "dorm-cama", "es": "la cama", "ru": "кровать", "pos": "n", "cat": "dormitorio" },
+    { "id": "dorm-colchon", "es": "el colchón", "ru": "матрас", "pos": "n", "cat": "dormitorio" },
+    { "id": "dorm-almohada", "es": "la almohada", "ru": "подушка", "pos": "n", "cat": "dormitorio" },
+    { "id": "dorm-sabana", "es": "la sábana", "ru": "простыня", "pos": "n", "cat": "dormitorio" },
+    { "id": "dorm-manta", "es": "la manta", "ru": "одеяло", "pos": "n", "cat": "dormitorio" },
+    { "id": "dorm-armario", "es": "el armario", "ru": "шкаф", "pos": "n", "cat": "dormitorio" },
+    { "id": "dorm-estanteria", "es": "la estantería", "ru": "стеллаж", "pos": "n", "cat": "dormitorio" },
+    { "id": "dorm-mesita", "es": "la mesita de noche", "ru": "тумбочка", "pos": "n", "cat": "dormitorio" },
+    { "id": "dorm-lampara", "es": "la lámpara", "ru": "лампа", "pos": "n", "cat": "dormitorio" },
+    { "id": "dorm-despertador", "es": "el despertador", "ru": "будильник", "pos": "n", "cat": "dormitorio" },
+    { "id": "dorm-cortina", "es": "la cortina", "ru": "шторы", "pos": "n", "cat": "dormitorio" },
+    { "id": "dorm-alfombra", "es": "la alfombra", "ru": "ковёр", "pos": "n", "cat": "dormitorio" },
+    { "id": "dorm-pijama", "es": "el pijama", "ru": "пижама", "pos": "n", "cat": "dormitorio" },
+    { "id": "dorm-monstruo", "es": "el monstruo", "ru": "монстр", "pos": "n", "cat": "dormitorio" }
   ]
 }

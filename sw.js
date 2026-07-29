@@ -4,7 +4,7 @@
 // вычищаются в activate. skipWaiting специально нет: новый воркер вступает в силу
 // со второго открытия, зато текущая сессия не окажется на полпути между версиями.
 
-const CACHE = 'palabras-v5';
+const CACHE = 'palabras-v6';
 
 const SHELL = [
   './',
