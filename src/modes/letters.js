@@ -18,9 +18,13 @@ function shuffle(a) {
 }
 
 // Артикль в головоломку не берём: он не про написание слова, а его отсутствие
-// в ответе всё равно засчитывается (см. norm в srs.js).
+// в ответе всё равно засчитывается (см. norm в srs.js). Вопросительные ¿ ? и
+// восклицательные ¡ ! тоже убираем — это не буквы, а лишние фишки в наборе.
 function puzzleTarget(es) {
-  return es.replace(/^(el|la|los|las|un|una)\s+/i, '').trim();
+  return es
+    .replace(/^(el|la|los|las|un|una)\s+/i, '')
+    .replace(/[¿?¡!]/g, '')
+    .trim();
 }
 
 // Буквы слова плюс несколько лишних, чтобы набор не выдавал длину ответа целиком.
@@ -34,7 +38,7 @@ function buildBank(target) {
   return shuffle(chars.concat(decoys));
 }
 
-export function render({ word, card, onAnswer, onArchive }) {
+export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initFlagged }) {
   const root = el('div', { class: 'mode' });
   const target = puzzleTarget(word.es);
   const bank = buildBank(target);
@@ -42,13 +46,31 @@ export function render({ word, card, onAnswer, onArchive }) {
   const picked = []; // индексы в порядке нажатия
 
   let answered = false;
+  let flagged = !!initFlagged;
 
+  // Кнопка «проблема» видна всегда, в отличие от «в архив»: собрать слово из букв —
+  // единственный режим, где сама головоломка (а не только перевод) может подвести,
+  // и пожаловаться на неё должно быть можно в любой момент, а не только на части экранов.
+  // Переключаем прямо в узле, не перерисовывая весь экран: иначе слетит набранное слово.
   function head() {
+    const flagBtn = el(
+      'button',
+      { class: 'mini' + (flagged ? ' flagged' : ''), 'aria-pressed': String(flagged) },
+      flagged ? '✓ проблема' : 'проблема',
+    );
+    flagBtn.addEventListener('click', () => {
+      flagged = !flagged;
+      onFlag(flagged);
+      flagBtn.classList.toggle('flagged', flagged);
+      flagBtn.setAttribute('aria-pressed', String(flagged));
+      flagBtn.textContent = flagged ? '✓ проблема' : 'проблема';
+    });
     return el(
       'div',
       { class: 'dir' },
       el('span', { text: DIR_LABEL + ' · ' + (card.arch ? 'архив' : 'коробка ' + card.box) }),
       onArchive ? el('button', { class: 'mini', onclick: onArchive }, 'в архив') : null,
+      flagBtn,
     );
   }
 
@@ -111,9 +133,16 @@ export function render({ word, card, onAnswer, onArchive }) {
     );
   }
 
+  // Пробелы между словами фишками не выдаются (см. buildBank), поэтому в наборе,
+  // собранном пользователем, их никогда нет. Сравнивать с целью нужно тоже без
+  // пробелов, иначе любая цель из нескольких слов была бы нерешаемой в принципе.
+  function flat(s) {
+    return norm(s).replace(/\s+/g, '');
+  }
+
   function check(giveUp) {
     if (answered) return;
-    const correct = giveUp !== true && norm(typed()) === norm(target);
+    const correct = giveUp !== true && flat(typed()) === flat(target);
     answered = true;
 
     replace(

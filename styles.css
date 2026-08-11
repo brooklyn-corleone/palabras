@@ -391,6 +391,8 @@ input.filter:focus{outline:none;border-bottom-color:var(--accent)}
 }
 .mini:hover{color:var(--text);border-color:var(--muted)}
 .mini.danger:hover{color:var(--err);border-color:var(--err)}
+.mini.flagged{color:var(--err);border-color:var(--err)}
+.item.flagged .es{color:var(--err)}
 
 /* ---------- служебное ---------- */
 .warn{

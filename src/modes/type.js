@@ -6,15 +6,29 @@ import { judge } from '../srs.js';
 
 const DIR_LABEL = 'Русский → Испанский';
 
-export function render({ word, card, onAnswer, onArchive }) {
+export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initFlagged }) {
   const root = el('div', { class: 'mode' });
+  let flagged = !!initFlagged;
 
   function head() {
+    const flagBtn = el(
+      'button',
+      { class: 'mini' + (flagged ? ' flagged' : ''), 'aria-pressed': String(flagged) },
+      flagged ? '✓ проблема' : 'проблема',
+    );
+    flagBtn.addEventListener('click', () => {
+      flagged = !flagged;
+      onFlag(flagged);
+      flagBtn.classList.toggle('flagged', flagged);
+      flagBtn.setAttribute('aria-pressed', String(flagged));
+      flagBtn.textContent = flagged ? '✓ проблема' : 'проблема';
+    });
     return el(
       'div',
       { class: 'dir' },
       el('span', { text: DIR_LABEL + ' · ' + (card.arch ? 'архив' : 'коробка ' + card.box) }),
       onArchive ? el('button', { class: 'mini', onclick: onArchive }, 'в архив') : null,
+      flagBtn,
     );
   }
 

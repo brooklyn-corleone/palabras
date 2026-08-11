@@ -87,6 +87,12 @@ export function pickMode(key, modes) {
 // Вариант, который не отличить от правильного, делает выбор бессмысленным, а слишком
 // далёкий — тривиальным. Поэтому берём по приоритету: та же часть речи → близкая длина
 // → что угодно. Слово с тем же переводом не берём никогда.
+//
+// Спряжение (ser/estar/tener, поле conj) отдельно от обычных слов: вариант вроде
+// «hablar» рядом с «tienen» не проверяет знание языка, а угадывается по виду — глагол
+// в инфинитиве и личная форма даже близко не похожи. Спряжения путаем только между
+// собой, обычные слова — только между собой; на «что угодно» скатываемся лишь если
+// кандидатов своего вида не хватило.
 export function pickDistractors(word, dir, n = 2) {
   const answerOf = (w) => (dir === 'es' ? w.ru : w.es);
   const correct = answerOf(word);
@@ -94,10 +100,12 @@ export function pickDistractors(word, dir, n = 2) {
   const usable = state.words.filter(
     (w) => !w.deleted && w.id !== word.id && w.es && w.ru && answerOf(w) !== correct,
   );
+  const sameKind = (w) => !!w.conj === !!word.conj;
 
   const tiers = [
-    shuffle(usable.filter((w) => w.pos && w.pos === word.pos)),
-    shuffle(usable.filter((w) => Math.abs(answerOf(w).length - correct.length) <= 3)),
+    shuffle(usable.filter((w) => sameKind(w) && w.pos && w.pos === word.pos)),
+    shuffle(usable.filter((w) => sameKind(w) && Math.abs(answerOf(w).length - correct.length) <= 3)),
+    shuffle(usable.filter(sameKind)),
     shuffle(usable.slice()),
   ];
 

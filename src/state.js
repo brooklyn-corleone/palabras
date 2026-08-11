@@ -228,6 +228,17 @@ export function deleteWord(id) {
   save();
 }
 
+// Пометка «есть проблема» — локальная памятка на потом, никуда не отправляется.
+// В отличие от updateWord не трогает `edited`: слово всё равно должно чиниться
+// пополнением колоды, а не замораживаться из-за жалобы на него.
+export function flagWord(id, on) {
+  const w = wordById(id);
+  if (!w) return;
+  w.flagged = !!on;
+  w.updated = now();
+  save();
+}
+
 // ---------------------------------------------------------------------------
 // пополнение колоды из репозитория
 // ---------------------------------------------------------------------------
@@ -282,6 +293,13 @@ export async function mergeSeed() {
           changed = true;
         }
       }
+      // conj — булев признак спряжения (см. pickDistractors в srs.js), а не строка,
+      // поэтому идёт отдельно от SEED_FIELDS и их общего `|| ''`.
+      const conj = !!sw.conj;
+      if (!!existing.conj !== conj) {
+        existing.conj = conj;
+        changed = true;
+      }
       // `updated` не двигаем: слово должно остаться нетронутым и для следующего пополнения.
       if (changed) refreshed++;
       continue;
@@ -296,6 +314,7 @@ export async function mergeSeed() {
       mn: sw.mn || '',
       pos: sw.pos || '',
       cat: sw.cat || '',
+      conj: !!sw.conj,
       created: stamp,
       updated: stamp,
       deleted: false,

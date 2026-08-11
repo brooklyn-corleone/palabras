@@ -20,6 +20,7 @@ import {
   activeWords,
   addWord,
   deleteWord,
+  flagWord,
   categories,
   DIRS,
 } from './state.js';
@@ -357,6 +358,10 @@ function renderStage() {
             srs.archiveWord(word.id, true);
             nextCard();
           },
+      // Переключатель живёт в самом режиме и правит DOM точечно (см. modes/*),
+      // поэтому здесь только пишем состояние — экран из-за жалобы не перерисовываем.
+      onFlag: (on) => flagWord(word.id, on),
+      flagged: !!word.flagged,
     }),
   );
 }
@@ -618,9 +623,9 @@ function renderList() {
 
       return el(
         'div',
-        { class: 'item' + (arch ? ' arch' : '') },
+        { class: 'item' + (arch ? ' arch' : '') + (w.flagged ? ' flagged' : '') },
         check,
-        el('div', { class: 'es', text: w.es }),
+        el('div', { class: 'es', text: (w.flagged ? '⚑ ' : '') + w.es }),
         el('div', { class: 'box-tag', text: arch ? 'архив' : 'коробка ' + srs.wordBox(w.id) }),
         el(
           'button',
@@ -635,6 +640,19 @@ function renderList() {
           },
           arch ? 'вернуть' : 'в архив',
         ),
+        w.flagged
+          ? el(
+              'button',
+              {
+                class: 'mini',
+                onclick: () => {
+                  flagWord(w.id, false);
+                  renderList();
+                },
+              },
+              'снять пометку',
+            )
+          : null,
         el('div', { class: 'ru', text: w.ru }),
         el(
           'button',

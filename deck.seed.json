@@ -1,5 +1,5 @@
 {
-  "version": 13,
+  "version": 14,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
@@ -13,29 +13,30 @@
     "colores": "Цвета",
     "adjetivos": "Прилагательные",
     "saludos": "Приветствия и вежливость",
-    "preguntas": "Вопросы"
+    "preguntas": "Вопросы",
+    "transporte": "Транспорт"
   },
   "words": [
-    { "id": "ser-yo", "es": "soy", "ru": "я — ser (постоянный признак)", "pos": "v", "cat": "verbos" },
-    { "id": "ser-tu", "es": "eres", "ru": "ты — ser", "pos": "v", "cat": "verbos" },
-    { "id": "ser-el", "es": "es", "ru": "он/она — ser", "pos": "v", "cat": "verbos" },
-    { "id": "ser-nosotros", "es": "somos", "ru": "мы — ser", "pos": "v", "cat": "verbos" },
-    { "id": "ser-vosotros", "es": "sois", "ru": "вы — ser (Испания)", "pos": "v", "cat": "verbos" },
-    { "id": "ser-ellos", "es": "son", "ru": "они — ser", "pos": "v", "cat": "verbos" },
+    { "id": "ser-yo", "es": "soy", "ru": "я — ser (постоянный признак)", "pos": "v", "cat": "verbos", "conj": true },
+    { "id": "ser-tu", "es": "eres", "ru": "ты — ser", "pos": "v", "cat": "verbos", "conj": true },
+    { "id": "ser-el", "es": "es", "ru": "он/она — ser", "pos": "v", "cat": "verbos", "conj": true },
+    { "id": "ser-nosotros", "es": "somos", "ru": "мы — ser", "pos": "v", "cat": "verbos", "conj": true },
+    { "id": "ser-vosotros", "es": "sois", "ru": "вы — ser (Испания)", "pos": "v", "cat": "verbos", "conj": true },
+    { "id": "ser-ellos", "es": "son", "ru": "они — ser", "pos": "v", "cat": "verbos", "conj": true },
 
-    { "id": "estar-yo", "es": "estoy", "ru": "я — estar (состояние, место)", "pos": "v", "cat": "verbos" },
-    { "id": "estar-tu", "es": "estás", "ru": "ты — estar", "pos": "v", "cat": "verbos" },
-    { "id": "estar-el", "es": "está", "ru": "он/она — estar", "pos": "v", "cat": "verbos" },
-    { "id": "estar-nosotros", "es": "estamos", "ru": "мы — estar", "pos": "v", "cat": "verbos" },
-    { "id": "estar-vosotros", "es": "estáis", "ru": "вы — estar (Испания)", "pos": "v", "cat": "verbos" },
-    { "id": "estar-ellos", "es": "están", "ru": "они — estar", "pos": "v", "cat": "verbos" },
+    { "id": "estar-yo", "es": "estoy", "ru": "я — estar (состояние, место)", "pos": "v", "cat": "verbos", "conj": true },
+    { "id": "estar-tu", "es": "estás", "ru": "ты — estar", "pos": "v", "cat": "verbos", "conj": true },
+    { "id": "estar-el", "es": "está", "ru": "он/она — estar", "pos": "v", "cat": "verbos", "conj": true },
+    { "id": "estar-nosotros", "es": "estamos", "ru": "мы — estar", "pos": "v", "cat": "verbos", "conj": true },
+    { "id": "estar-vosotros", "es": "estáis", "ru": "вы — estar (Испания)", "pos": "v", "cat": "verbos", "conj": true },
+    { "id": "estar-ellos", "es": "están", "ru": "они — estar", "pos": "v", "cat": "verbos", "conj": true },
 
-    { "id": "tener-yo", "es": "tengo", "ru": "я имею — tener", "pos": "v", "cat": "verbos" },
-    { "id": "tener-tu", "es": "tienes", "ru": "ты имеешь — tener", "pos": "v", "cat": "verbos" },
-    { "id": "tener-el", "es": "tiene", "ru": "он/она имеет — tener", "pos": "v", "cat": "verbos" },
-    { "id": "tener-nosotros", "es": "tenemos", "ru": "мы имеем — tener", "pos": "v", "cat": "verbos" },
-    { "id": "tener-vosotros", "es": "tenéis", "ru": "вы имеете — tener (Испания)", "pos": "v", "cat": "verbos" },
-    { "id": "tener-ellos", "es": "tienen", "ru": "они имеют — tener", "pos": "v", "cat": "verbos" },
+    { "id": "tener-yo", "es": "tengo", "ru": "я имею", "pos": "v", "cat": "verbos", "conj": true },
+    { "id": "tener-tu", "es": "tienes", "ru": "ты имеешь", "pos": "v", "cat": "verbos", "conj": true },
+    { "id": "tener-el", "es": "tiene", "ru": "он/она имеет", "pos": "v", "cat": "verbos", "conj": true },
+    { "id": "tener-nosotros", "es": "tenemos", "ru": "мы имеем", "pos": "v", "cat": "verbos", "conj": true },
+    { "id": "tener-vosotros", "es": "tenéis", "ru": "вы имеете (Испания)", "pos": "v", "cat": "verbos", "conj": true },
+    { "id": "tener-ellos", "es": "tienen", "ru": "они имеют", "pos": "v", "cat": "verbos", "conj": true },
 
     { "id": "familia-madre", "es": "la madre", "ru": "мать", "pos": "n", "cat": "familia" },
     { "id": "familia-padre", "es": "el padre", "ru": "отец", "pos": "n", "cat": "familia" },
@@ -139,11 +140,13 @@
     { "id": "tiempo-casi-siempre", "es": "casi siempre", "ru": "почти всегда", "pos": "phrase", "cat": "tiempo" },
     { "id": "tiempo-a-menudo", "es": "a menudo", "ru": "часто", "pos": "phrase", "cat": "tiempo" },
     { "id": "tiempo-frecuentemente", "es": "frecuentemente", "ru": "часто, регулярно", "pos": "adv", "cat": "tiempo" },
+    { "id": "tiempo-normalmente", "es": "normalmente", "ru": "обычно", "pos": "adv", "cat": "tiempo" },
     { "id": "tiempo-de-vez", "es": "de vez en cuando", "ru": "время от времени", "pos": "phrase", "cat": "tiempo" },
     { "id": "tiempo-a-veces", "es": "a veces", "ru": "иногда", "pos": "phrase", "cat": "tiempo" },
     { "id": "tiempo-pocas-veces", "es": "pocas veces", "ru": "редко", "pos": "phrase", "cat": "tiempo" },
     { "id": "tiempo-nunca", "es": "nunca", "ru": "никогда", "pos": "adv", "cat": "tiempo" },
     { "id": "tiempo-casi-nunca", "es": "casi nunca", "ru": "почти никогда", "pos": "phrase", "cat": "tiempo" },
+    { "id": "tiempo-jamas", "es": "jamás", "ru": "никогда, ни за что (сильнее nunca)", "pos": "adv", "cat": "tiempo" },
 
     { "id": "cal-lunes", "es": "el lunes", "ru": "понедельник", "pos": "n", "cat": "calendario" },
     { "id": "cal-martes", "es": "el martes", "ru": "вторник", "pos": "n", "cat": "calendario" },
@@ -244,6 +247,13 @@
     { "id": "verb-saber", "es": "saber", "ru": "знать", "pos": "v", "cat": "verbos" },
     { "id": "verb-necesitar", "es": "necesitar", "ru": "нуждаться", "pos": "v", "cat": "verbos" },
     { "id": "verb-gustar", "es": "gustar", "ru": "нравиться", "pos": "v", "cat": "verbos" },
-    { "id": "verb-ayudar", "es": "ayudar", "ru": "помогать", "pos": "v", "cat": "verbos" }
+    { "id": "verb-ayudar", "es": "ayudar", "ru": "помогать", "pos": "v", "cat": "verbos" },
+
+    { "id": "transp-moto", "es": "la moto", "ru": "мотоцикл", "pos": "n", "cat": "transporte" },
+    { "id": "transp-metro", "es": "el metro", "ru": "метро", "pos": "n", "cat": "transporte" },
+    { "id": "transp-bicicleta", "es": "la bicicleta", "ru": "велосипед", "pos": "n", "cat": "transporte" },
+    { "id": "transp-coche", "es": "el coche", "ru": "машина, автомобиль", "pos": "n", "cat": "transporte" },
+    { "id": "transp-autobus", "es": "el autobús", "ru": "автобус", "pos": "n", "cat": "transporte" },
+    { "id": "transp-andando", "es": "andando", "ru": "пешком (тж. a pie)", "pos": "adv", "cat": "transporte" }
   ]
 }
