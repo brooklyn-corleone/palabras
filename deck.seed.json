@@ -1,5 +1,5 @@
 {
-  "version": 14,
+  "version": 15,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
@@ -147,6 +147,8 @@
     { "id": "tiempo-nunca", "es": "nunca", "ru": "никогда", "pos": "adv", "cat": "tiempo" },
     { "id": "tiempo-casi-nunca", "es": "casi nunca", "ru": "почти никогда", "pos": "phrase", "cat": "tiempo" },
     { "id": "tiempo-jamas", "es": "jamás", "ru": "никогда, ни за что (сильнее nunca)", "pos": "adv", "cat": "tiempo" },
+    { "id": "tiempo-luego", "es": "luego", "ru": "потом, затем", "pos": "adv", "cat": "tiempo" },
+    { "id": "tiempo-alrededor", "es": "alrededor", "ru": "вокруг; alrededor de — около, приблизительно", "pos": "adv", "cat": "tiempo" },
 
     { "id": "cal-lunes", "es": "el lunes", "ru": "понедельник", "pos": "n", "cat": "calendario" },
     { "id": "cal-martes", "es": "el martes", "ru": "вторник", "pos": "n", "cat": "calendario" },
@@ -203,6 +205,7 @@
     { "id": "adje-fuerte", "es": "fuerte", "ru": "сильный", "pos": "adj", "cat": "adjetivos" },
     { "id": "adje-rapido", "es": "rápido", "ru": "быстрый", "pos": "adj", "cat": "adjetivos" },
     { "id": "adje-lento", "es": "lento", "ru": "медленный", "pos": "adj", "cat": "adjetivos" },
+    { "id": "adje-listo", "es": "listo", "ru": "готов(а) — listo/lista", "pos": "adj", "cat": "adjetivos" },
 
     { "id": "salu-hola", "es": "hola", "ru": "привет", "pos": "phrase", "cat": "saludos" },
     { "id": "salu-adios", "es": "adiós", "ru": "пока, до свидания", "pos": "phrase", "cat": "saludos" },
@@ -248,6 +251,9 @@
     { "id": "verb-necesitar", "es": "necesitar", "ru": "нуждаться", "pos": "v", "cat": "verbos" },
     { "id": "verb-gustar", "es": "gustar", "ru": "нравиться", "pos": "v", "cat": "verbos" },
     { "id": "verb-ayudar", "es": "ayudar", "ru": "помогать", "pos": "v", "cat": "verbos" },
+    { "id": "verb-empezar", "es": "empezar", "ru": "начинать", "pos": "v", "cat": "verbos" },
+    { "id": "verb-terminar", "es": "terminar", "ru": "заканчивать, заканчиваться", "pos": "v", "cat": "verbos" },
+    { "id": "verb-se-queda", "es": "se queda", "ru": "он/она остаётся — quedarse", "pos": "v", "cat": "verbos" },
 
     { "id": "transp-moto", "es": "la moto", "ru": "мотоцикл", "pos": "n", "cat": "transporte" },
     { "id": "transp-metro", "es": "el metro", "ru": "метро", "pos": "n", "cat": "transporte" },
