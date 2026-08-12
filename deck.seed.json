@@ -1,5 +1,5 @@
 {
-  "version": 15,
+  "version": 16,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
@@ -128,6 +128,7 @@
     { "id": "rutina-comer", "es": "comer", "ru": "обедать; есть", "pos": "v", "cat": "rutina" },
     { "id": "rutina-cenar", "es": "cenar", "ru": "ужинать", "pos": "v", "cat": "rutina" },
     { "id": "rutina-acostarse", "es": "acostarse", "ru": "ложиться спать", "pos": "v", "cat": "rutina" },
+    { "id": "rutina-paseo", "es": "el paseo", "ru": "прогулка", "pos": "n", "cat": "rutina" },
 
     { "id": "tiempo-manana", "es": "por la mañana", "ru": "утром", "pos": "phrase", "cat": "tiempo" },
     { "id": "tiempo-mediodia", "es": "al mediodía", "ru": "в полдень", "pos": "phrase", "cat": "tiempo" },
@@ -206,6 +207,7 @@
     { "id": "adje-rapido", "es": "rápido", "ru": "быстрый", "pos": "adj", "cat": "adjetivos" },
     { "id": "adje-lento", "es": "lento", "ru": "медленный", "pos": "adj", "cat": "adjetivos" },
     { "id": "adje-listo", "es": "listo", "ru": "готов(а) — listo/lista", "pos": "adj", "cat": "adjetivos" },
+    { "id": "adje-divertido", "es": "divertido", "ru": "весёлый, интересный — о занятии", "pos": "adj", "cat": "adjetivos" },
 
     { "id": "salu-hola", "es": "hola", "ru": "привет", "pos": "phrase", "cat": "saludos" },
     { "id": "salu-adios", "es": "adiós", "ru": "пока, до свидания", "pos": "phrase", "cat": "saludos" },
@@ -254,12 +256,15 @@
     { "id": "verb-empezar", "es": "empezar", "ru": "начинать", "pos": "v", "cat": "verbos" },
     { "id": "verb-terminar", "es": "terminar", "ru": "заканчивать, заканчиваться", "pos": "v", "cat": "verbos" },
     { "id": "verb-se-queda", "es": "se queda", "ru": "он/она остаётся — quedarse", "pos": "v", "cat": "verbos" },
+    { "id": "verb-decide", "es": "decide", "ru": "он/она решает — decidir", "pos": "v", "cat": "verbos" },
+    { "id": "verb-caminar", "es": "caminar", "ru": "идти пешком, гулять", "pos": "v", "cat": "verbos" },
 
     { "id": "transp-moto", "es": "la moto", "ru": "мотоцикл", "pos": "n", "cat": "transporte" },
     { "id": "transp-metro", "es": "el metro", "ru": "метро", "pos": "n", "cat": "transporte" },
     { "id": "transp-bicicleta", "es": "la bicicleta", "ru": "велосипед", "pos": "n", "cat": "transporte" },
     { "id": "transp-coche", "es": "el coche", "ru": "машина, автомобиль", "pos": "n", "cat": "transporte" },
     { "id": "transp-autobus", "es": "el autobús", "ru": "автобус", "pos": "n", "cat": "transporte" },
-    { "id": "transp-andando", "es": "andando", "ru": "пешком (тж. a pie)", "pos": "adv", "cat": "transporte" }
+    { "id": "transp-andando", "es": "andando", "ru": "пешком (тж. a pie)", "pos": "adv", "cat": "transporte" },
+    { "id": "transp-medios", "es": "los medios de transporte", "ru": "виды транспорта", "pos": "n", "cat": "transporte" }
   ]
 }
