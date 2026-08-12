@@ -1,5 +1,5 @@
 {
-  "version": 16,
+  "version": 17,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
@@ -118,6 +118,7 @@
     { "id": "desc-bastante", "es": "bastante", "ru": "довольно, достаточно", "pos": "adv", "cat": "descripcion" },
     { "id": "verbos-ensenar", "es": "enseñar", "ru": "учить, преподавать; показывать", "pos": "v", "cat": "verbos" },
     { "id": "desc-al-lado", "es": "al lado", "ru": "рядом; al lado de — рядом с", "pos": "phrase", "cat": "descripcion" },
+    { "id": "desc-tantas", "es": "tantas", "ru": "так много, столько (ж.р. мн.ч.) — tanto/tanta/tantos/tantas", "pos": "adj", "cat": "descripcion" },
 
     { "id": "rutina-despertarse", "es": "despertarse", "ru": "просыпаться", "pos": "v", "cat": "rutina" },
     { "id": "rutina-levantarse", "es": "levantarse", "ru": "вставать, подниматься (levantarte — тебе вставать)", "pos": "v", "cat": "rutina" },
@@ -129,6 +130,12 @@
     { "id": "rutina-cenar", "es": "cenar", "ru": "ужинать", "pos": "v", "cat": "rutina" },
     { "id": "rutina-acostarse", "es": "acostarse", "ru": "ложиться спать", "pos": "v", "cat": "rutina" },
     { "id": "rutina-paseo", "es": "el paseo", "ru": "прогулка", "pos": "n", "cat": "rutina" },
+    { "id": "rutina-barrer", "es": "barrer el piso", "ru": "подметать пол", "pos": "phrase", "cat": "rutina" },
+    { "id": "rutina-lavar-ropa", "es": "lavar la ropa", "ru": "стирать одежду", "pos": "phrase", "cat": "rutina" },
+    { "id": "rutina-trapear", "es": "trapear el piso", "ru": "мыть пол (шваброй)", "pos": "phrase", "cat": "rutina" },
+    { "id": "rutina-fregar", "es": "fregar los platos", "ru": "мыть посуду", "pos": "phrase", "cat": "rutina" },
+    { "id": "rutina-compras", "es": "hacer las compras", "ru": "ходить за покупками", "pos": "phrase", "cat": "rutina" },
+    { "id": "rutina-aspirar", "es": "aspirar la alfombra", "ru": "пылесосить ковёр", "pos": "phrase", "cat": "rutina" },
 
     { "id": "tiempo-manana", "es": "por la mañana", "ru": "утром", "pos": "phrase", "cat": "tiempo" },
     { "id": "tiempo-mediodia", "es": "al mediodía", "ru": "в полдень", "pos": "phrase", "cat": "tiempo" },
@@ -150,6 +157,7 @@
     { "id": "tiempo-jamas", "es": "jamás", "ru": "никогда, ни за что (сильнее nunca)", "pos": "adv", "cat": "tiempo" },
     { "id": "tiempo-luego", "es": "luego", "ru": "потом, затем", "pos": "adv", "cat": "tiempo" },
     { "id": "tiempo-alrededor", "es": "alrededor", "ru": "вокруг; alrededor de — около, приблизительно", "pos": "adv", "cat": "tiempo" },
+    { "id": "tiempo-durante", "es": "durante", "ru": "в течение, во время", "pos": "adv", "cat": "tiempo" },
 
     { "id": "cal-lunes", "es": "el lunes", "ru": "понедельник", "pos": "n", "cat": "calendario" },
     { "id": "cal-martes", "es": "el martes", "ru": "вторник", "pos": "n", "cat": "calendario" },

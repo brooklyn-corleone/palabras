@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "groups": {
     "presente": "Настоящее время",
     "irregulares": "Неправильные глаголы",
@@ -259,6 +259,75 @@
         {
           "kind": "text",
           "body": "venir — приходить, ver — видеть."
+        }
+      ]
+    },
+    {
+      "id": "irr-cambio-raiz",
+      "group": "irregulares",
+      "title": "pedir, dormir, mover, jugar",
+      "blocks": [
+        {
+          "kind": "table",
+          "head": ["", "pedir", "dormir", "mover", "jugar"],
+          "rows": [
+            ["yo", "pido", "duermo", "muevo", "juego"],
+            ["tú", "pides", "duermes", "mueves", "juegas"],
+            ["él, ella, usted", "pide", "duerme", "mueve", "juega"],
+            ["nosotros/as", "pedimos", "dormimos", "movemos", "jugamos"],
+            ["vosotros/as", "pedís", "dormís", "movéis", "jugáis"],
+            ["ellos/as, ustedes", "piden", "duermen", "mueven", "juegan"]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "pedir — просить (e→i), dormir — спать (o→ue), mover — двигать (o→ue), jugar — играть (u→ue). Как querer (e→ie), корень меняется везде, кроме nosotros и vosotros."
+        }
+      ]
+    },
+    {
+      "id": "irr-elegir-seguir",
+      "group": "irregulares",
+      "title": "elegir, seguir",
+      "blocks": [
+        {
+          "kind": "table",
+          "head": ["", "elegir", "seguir"],
+          "rows": [
+            ["yo", "elijo", "sigo"],
+            ["tú", "eliges", "sigues"],
+            ["él, ella, usted", "elige", "sigue"],
+            ["nosotros/as", "elegimos", "seguimos"],
+            ["vosotros/as", "elegís", "seguís"],
+            ["ellos/as, ustedes", "eligen", "siguen"]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "elegir — выбирать, seguir — продолжать, следовать. В yo меняется написание: -gir → -jo, -guir → -go — звук остаётся тем же, что и в decir → digo."
+        }
+      ]
+    },
+    {
+      "id": "irr-conocer-conducir",
+      "group": "irregulares",
+      "title": "conocer, conducir",
+      "blocks": [
+        {
+          "kind": "table",
+          "head": ["", "conocer", "conducir"],
+          "rows": [
+            ["yo", "conozco", "conduzco"],
+            ["tú", "conoces", "conduces"],
+            ["él, ella, usted", "conoce", "conduce"],
+            ["nosotros/as", "conocemos", "conducimos"],
+            ["vosotros/as", "conocéis", "conducís"],
+            ["ellos/as, ustedes", "conocen", "conducen"]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "conocer — быть знакомым, знать (место, человека), conducir — водить (машину). В yo добавляется z перед c: -zco."
         }
       ]
     },
