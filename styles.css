@@ -246,6 +246,9 @@ input.pick{
 /* ---------- letters: сборка слова из букв ---------- */
 .assembled{
   font-size:clamp(24px,6vw,34px);font-weight:400;letter-spacing:.06em;
+  /* Буквы разряжены, поэтому обычный пробел между словами почти не читается —
+     границу слов приходится делать заметно шире межбуквенного просвета. */
+  word-spacing:.5em;
   min-height:1.6em;padding-bottom:10px;margin-bottom:22px;
   border-bottom:1px solid var(--line);
   overflow-wrap:break-word;

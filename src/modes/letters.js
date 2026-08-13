@@ -27,6 +27,23 @@ function puzzleTarget(es) {
     .trim();
 }
 
+// Где в цели стоят пробелы, в координатах строки без пробелов: число — сколько букв
+// стоит слева от пробела. Пробел фишкой не выдаётся, поэтому в собранное слово его
+// подставляет сам режим: иначе «de vez en cuando» читается как «devezencuando»
+// и проверить себя перед нажатием «Проверить» невозможно.
+//
+// Границы слов открываются постепенно, по мере набора, а общая длина ответа
+// по-прежнему не видна — ради этого в наборе и лежат лишние буквы.
+function spaceGaps(target) {
+  const gaps = new Set();
+  let letters = 0;
+  for (const ch of target) {
+    if (ch === ' ') gaps.add(letters);
+    else letters++;
+  }
+  return gaps;
+}
+
 // Буквы слова плюс несколько лишних, чтобы набор не выдавал длину ответа целиком.
 function buildBank(target) {
   const chars = [...target].filter((c) => c !== ' ');
@@ -42,6 +59,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
   const root = el('div', { class: 'mode' });
   const target = puzzleTarget(word.es);
   const bank = buildBank(target);
+  const gaps = spaceGaps(target);
   const used = new Set(); // индексы букв, уже поставленных в ответ
   const picked = []; // индексы в порядке нажатия
 
@@ -75,7 +93,9 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
   }
 
   function typed() {
-    return picked.map((i) => bank[i]).join('');
+    // Пробел ставим перед буквой, а не после: так в конце строки не висит лишний,
+    // когда набор остановился ровно на границе слов.
+    return picked.map((idx, i) => (i > 0 && gaps.has(i) ? ' ' : '') + bank[idx]).join('');
   }
 
   function draw() {
@@ -133,9 +153,10 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
     );
   }
 
-  // Пробелы между словами фишками не выдаются (см. buildBank), поэтому в наборе,
-  // собранном пользователем, их никогда нет. Сравнивать с целью нужно тоже без
-  // пробелов, иначе любая цель из нескольких слов была бы нерешаемой в принципе.
+  // Пробелы в собранной строке расставлены автоматически (см. spaceGaps), а не выбраны
+  // пользователем, так что спрашивать их при сравнении нечестно и незачем: сверяем
+  // только буквы. Заодно любая цель из нескольких слов остаётся решаемой,
+  // даже если её пробелы разойдутся с пробелами в цели.
   function flat(s) {
     return norm(s).replace(/\s+/g, '');
   }
