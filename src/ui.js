@@ -21,7 +21,6 @@ import {
   addWord,
   deleteWord,
   flagWord,
-  skipLetters,
   categories,
   DIRS,
 } from './state.js';
@@ -400,14 +399,6 @@ function renderStage() {
       // Переключатель живёт в самом режиме и правит DOM точечно (см. modes/*),
       // поэтому здесь только пишем состояние — экран из-за жалобы не перерисовываем.
       onFlag: (on) => flagWord(word.id, on),
-      // Жалоба на формат, а не на слово: помечаем и сразу идём дальше. Очередь после
-      // этого не пересобираем — слово в ней могло остаться, но pickMode для него
-      // режим letters уже не выберет.
-      onSkipFormat: (on) => {
-        skipLetters(word.id, on);
-        if (view === 'words') renderList();
-        nextCard();
-      },
       flagged: !!word.flagged,
     }),
   );
@@ -788,11 +779,7 @@ function renderList() {
         { class: 'item' + (arch ? ' arch' : '') + (w.flagged ? ' flagged' : '') },
         check,
         el('div', { class: 'es', text: (w.flagged ? '⚑ ' : '') + w.es }),
-        el('div', {
-          class: 'box-tag',
-          text:
-            (arch ? 'архив' : 'коробка ' + srs.wordBox(w.id)) + (w.noLetters ? ' · без букв' : ''),
-        }),
+        el('div', { class: 'box-tag', text: arch ? 'архив' : 'коробка ' + srs.wordBox(w.id) }),
         el(
           'button',
           {
@@ -817,21 +804,6 @@ function renderList() {
                 },
               },
               'снять пометку',
-            )
-          : null,
-        // Пометка «не из букв» ставится на карточке одним тапом, поэтому снять её тоже
-        // должно быть где-то можно — иначе это дверь в одну сторону.
-        w.noLetters
-          ? el(
-              'button',
-              {
-                class: 'mini',
-                onclick: () => {
-                  skipLetters(w.id, false);
-                  renderList();
-                },
-              },
-              'вернуть буквы',
             )
           : null,
         el('div', { class: 'ru', text: w.ru }),

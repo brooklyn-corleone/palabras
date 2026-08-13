@@ -55,15 +55,7 @@ function buildBank(target) {
   return shuffle(chars.concat(decoys));
 }
 
-export function render({
-  word,
-  card,
-  onAnswer,
-  onArchive,
-  onFlag,
-  onSkipFormat,
-  flagged: initFlagged,
-}) {
+export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initFlagged }) {
   const root = el('div', { class: 'mode' });
   const target = puzzleTarget(word.es);
   const bank = buildBank(target);
@@ -91,21 +83,12 @@ export function render({
       flagBtn.setAttribute('aria-pressed', String(flagged));
       flagBtn.textContent = flagged ? '✓ проблема' : 'проблема';
     });
-    // «не из букв» — жалоба не на слово, а на формат: перевод в порядке, а головоломка
-    // не работает. Слово остаётся в колоде и в остальных форматах, а здесь больше
-    // не появится. Сразу уходим на следующую карточку: доигрывать пазл, который только
-    // что назвали негодным, незачем.
-    const skipBtn = onSkipFormat
-      ? el('button', { class: 'mini', onclick: () => onSkipFormat(true) }, 'не из букв')
-      : null;
-
     return el(
       'div',
-      { class: 'dir dir-crowded' },
+      { class: 'dir' },
       el('span', { text: DIR_LABEL + ' · ' + (card.arch ? 'архив' : 'коробка ' + card.box) }),
       onArchive ? el('button', { class: 'mini', onclick: onArchive }, 'в архив') : null,
       flagBtn,
-      skipBtn,
     );
   }
 

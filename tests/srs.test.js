@@ -142,57 +142,6 @@ test('в дневную цель идут только верные ответы
   assert.equal(state.stats.done, before + 1);
 });
 
-test('пометка «не из букв» убирает letters из выбора режима', () => {
-  resetDeck();
-  const w = makeWord('de vez en cuando', 'время от времени');
-  const key = w.id + '|ru';
-  updateWord(w.id, { noLetters: true });
-
-  // Лестница коробок: в первой коробке вместо choice/letters остаётся только choice,
-  // во второй и третьей вместо letters/type — только type.
-  assert.equal(srs.pickMode(key, new Set()), 'choice');
-  state.cards[key].box = 2;
-  assert.equal(srs.pickMode(key, new Set()), 'type');
-
-  // Формат, выбранный руками, пометку тоже уважает: остаётся второй выбранный режим.
-  assert.equal(srs.pickMode(key, new Set(['letters', 'type'])), 'type');
-
-  // А слово без пометки в тех же условиях letters получить может.
-  const plain = makeWord('llave', 'ключ');
-  assert.equal(srs.pickMode(plain.id + '|ru', new Set(['letters'])), 'letters');
-});
-
-test('занятие только форматом «Из букв» пропускает помеченные слова', () => {
-  resetDeck();
-  const skipped = makeWord('a menudo', 'часто');
-  const plain = makeWord('llave', 'ключ');
-  updateWord(skipped.id, { noLetters: true });
-
-  // Вычерпываем ровно то, что собралось: nextKey для обычного занятия пересобирает
-  // пустую очередь заново, и цикл «пока есть ключи» не кончился бы никогда.
-  function drainIds() {
-    const ids = new Set();
-    for (let n = srs.queueLength(); n > 0; n--) {
-      const key = srs.nextKey();
-      if (!key) break;
-      ids.add(key.slice(0, key.lastIndexOf('|')));
-    }
-    return ids;
-  }
-
-  srs.setSession({ modes: new Set(['letters']) });
-  srs.buildQueue();
-  const ids = drainIds();
-  assert.equal(ids.has(plain.id), true);
-  assert.equal(ids.has(skipped.id), false, 'помеченное слово в занятие из букв не идёт');
-
-  // Если выбран ещё формат, слово остаётся: придёт им, а не буквами.
-  srs.setSession({ modes: new Set(['letters', 'type']) });
-  srs.buildQueue();
-  assert.equal(drainIds().has(skipped.id), true);
-  srs.setSession({});
-});
-
 test('archiveWords убирает пачку и возвращает пачку', () => {
   resetDeck();
   const a = makeWord('uno', 'один');
