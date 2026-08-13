@@ -60,12 +60,24 @@ export function allowedDirs(modes) {
   return dirs;
 }
 
+// Слово, помеченное «не собирается из букв», в режим letters не попадает никогда:
+// ни лестницей коробок, ни выбором формата руками.
+export function modeAllowed(word, mode) {
+  return !(mode === 'letters' && word && word.noLetters);
+}
+
+// Годится ли режим этой карточке: и по направлению, и по пометкам слова.
+function usable(word, dir, mode) {
+  return (!MODE_DIR[mode] || MODE_DIR[mode] === dir) && modeAllowed(word, mode);
+}
+
 export function pickMode(key, modes) {
   const { dir } = parseKey(key);
+  const word = wordOf(key);
 
   // Режимы, выбранные руками, важнее лестницы коробок: пользователь знает, что хочет
   // потренировать. Веса MAX_BOX при этом остаются в силе, так что схитрить не выйдет.
-  const chosen = cardModes(modes).filter((m) => !MODE_DIR[m] || MODE_DIR[m] === dir);
+  const chosen = cardModes(modes).filter((m) => usable(word, dir, m));
   if (chosen.length) return pickOne(chosen);
 
   const card = state.cards[key];
@@ -75,8 +87,10 @@ export function pickMode(key, modes) {
 
   if (dir === 'es') return pickOne(['flip', 'choice']);
 
-  if (box === 1) return pickOne(['choice', 'letters']);
-  if (box <= 3) return pickOne(['letters', 'type']);
+  // Лестницу фильтруем, а не подменяем: в обеих парах кроме letters есть второй режим,
+  // поэтому выбирать всегда остаётся из чего.
+  if (box === 1) return pickOne(['choice', 'letters'].filter((m) => modeAllowed(word, m)));
+  if (box <= 3) return pickOne(['letters', 'type'].filter((m) => modeAllowed(word, m)));
   return 'type';
 }
 
@@ -208,6 +222,19 @@ export function buildQueue(options) {
     out = out.filter((key) => !state.cards[key].arch && state.cards[key].due <= t);
   }
   if (dirs) out = out.filter((key) => dirs.has(parseKey(key).dir));
+
+  // Занятие только форматом «Из букв» не должно тащить слова, помеченные «не собирается
+  // из букв»: иначе такое слово молча пришло бы другим форматом, и выбор формата
+  // перестал бы что-то значить. Когда выбран ещё какой-то формат, слово остаётся —
+  // придёт им.
+  const chosenModes = cardModes(session.modes);
+  if (chosenModes.length) {
+    out = out.filter((key) => {
+      const { wordId, dir } = parseKey(key);
+      const w = wordById(wordId);
+      return chosenModes.some((m) => usable(w, dir, m));
+    });
+  }
   // Темы выбираются независимо от источника: «случайные 20 из семьи и дома» — обычный запрос.
   if (cats) {
     out = out.filter((key) => {
@@ -416,8 +443,12 @@ export function grade(key, mode, correct) {
   c.due = correct ? addDays(INTERVALS[c.box - 1]) : today();
   c.updated = now();
   if (!correct) requeue(key); // вернуть в конец сессии
-  // Разминка в дневную цель не идёт: она про то, чтобы войти в ритм, а не про повторение.
-  const counted = mode !== 'match';
+  // В цель идут только верные ответы. Неверная карточка возвращается в очередь и будет
+  // отвечена ещё раз — считая обе попытки, цель набиралась бы вдвое быстрее промахов,
+  // а число на экране перестало бы значить «столько карточек я вспомнил».
+  //
+  // Разминка не идёт в цель вообще: она про то, чтобы войти в ритм, а не про повторение.
+  const counted = mode !== 'match' && correct;
   if (counted) state.stats.done++;
   save();
   return { box: c.box, arch: false, counted, correct };

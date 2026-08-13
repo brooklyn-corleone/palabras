@@ -123,6 +123,12 @@ nav button:hover{color:var(--text)}
   margin-bottom:20px;text-transform:uppercase;
 }
 .dir .mini{margin-left:auto;text-transform:none;letter-spacing:0}
+/* Три кнопки в шапке (режим «Из букв») на телефон в одну строку с подписью не влезают.
+   Отдаём подписи всю строку, а кнопки кладём под ней одной группой: если пустить их
+   переноситься самостоятельно, одна остаётся справа сверху, а две уезжают влево вниз. */
+.dir-crowded{flex-wrap:wrap;gap:8px 12px}
+.dir-crowded>span{flex-basis:100%}
+.dir-crowded .mini{margin-left:0}
 
 /* переворот карточки в режиме flip: две половины, содержимое меняется в середине */
 .mode.flip-out{animation:flipOut .12s ease-in both}

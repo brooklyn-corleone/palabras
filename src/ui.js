@@ -21,6 +21,7 @@ import {
   addWord,
   deleteWord,
   flagWord,
+  skipLetters,
   categories,
   DIRS,
 } from './state.js';
@@ -330,6 +331,15 @@ function startSession() {
   renderSessionBar();
   matchPacks = [];
   resetSessionResults();
+
+  // Счёт цели начинается заново с каждым занятием — и при сборке нового, и при запуске
+  // приложения (init тоже идёт сюда). Раньше он был дневным и после двадцати продолжал
+  // расти: на экране висело «49 / 20», и понять, сколько сделано в этом занятии,
+  // было нельзя. Смена даты по-прежнему обнуляет его сама (state.js) — на случай
+  // приложения с домашнего экрана, которое не перезагружается неделями.
+  state.stats.done = 0;
+  save();
+
   goalCelebrated = state.stats.done >= state.settings.goal;
 
   const wantsMatch = session.modes.has('match');
@@ -390,6 +400,14 @@ function renderStage() {
       // Переключатель живёт в самом режиме и правит DOM точечно (см. modes/*),
       // поэтому здесь только пишем состояние — экран из-за жалобы не перерисовываем.
       onFlag: (on) => flagWord(word.id, on),
+      // Жалоба на формат, а не на слово: помечаем и сразу идём дальше. Очередь после
+      // этого не пересобираем — слово в ней могло остаться, но pickMode для него
+      // режим letters уже не выберет.
+      onSkipFormat: (on) => {
+        skipLetters(word.id, on);
+        if (view === 'words') renderList();
+        nextCard();
+      },
       flagged: !!word.flagged,
     }),
   );
@@ -657,7 +675,9 @@ function renderGoal() {
   const ticks = [];
   for (let i = 0; i < goal; i++) ticks.push(el('div', { class: 'tick' + (i < done ? ' on' : '') }));
   replace(ticksEl, ticks);
-  goalNum.textContent = state.stats.done + ' / ' + goal;
+  // Число обрезаем по цели, как и полоску: цель достигнута — значит «20 / 20», а не
+  // «49 / 20». Занятие после этого можно продолжать, но счётчик уже ничего не измеряет.
+  goalNum.textContent = done + ' / ' + goal;
 }
 
 // Шесть сегментов шириной пропорционально числу карточек. Подпись не висит постоянно —
@@ -768,7 +788,11 @@ function renderList() {
         { class: 'item' + (arch ? ' arch' : '') + (w.flagged ? ' flagged' : '') },
         check,
         el('div', { class: 'es', text: (w.flagged ? '⚑ ' : '') + w.es }),
-        el('div', { class: 'box-tag', text: arch ? 'архив' : 'коробка ' + srs.wordBox(w.id) }),
+        el('div', {
+          class: 'box-tag',
+          text:
+            (arch ? 'архив' : 'коробка ' + srs.wordBox(w.id)) + (w.noLetters ? ' · без букв' : ''),
+        }),
         el(
           'button',
           {
@@ -793,6 +817,21 @@ function renderList() {
                 },
               },
               'снять пометку',
+            )
+          : null,
+        // Пометка «не из букв» ставится на карточке одним тапом, поэтому снять её тоже
+        // должно быть где-то можно — иначе это дверь в одну сторону.
+        w.noLetters
+          ? el(
+              'button',
+              {
+                class: 'mini',
+                onclick: () => {
+                  skipLetters(w.id, false);
+                  renderList();
+                },
+              },
+              'вернуть буквы',
             )
           : null,
         el('div', { class: 'ru', text: w.ru }),
