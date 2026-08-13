@@ -125,6 +125,28 @@ test('архив: угадал — остался, забыл — вернулс
   assert.equal(state.cards[key].due, today());
 });
 
+test('archiveWords убирает пачку и возвращает пачку', () => {
+  resetDeck();
+  const a = makeWord('uno', 'один');
+  const b = makeWord('dos', 'два');
+  const c = makeWord('tres', 'три');
+
+  srs.archiveWords([a.id, b.id], true);
+  assert.equal(srs.isArchived(a.id), true);
+  assert.equal(srs.isArchived(b.id), true);
+  assert.equal(srs.isArchived(c.id), false, 'неотмеченное слово не трогаем');
+  // Оба направления слова уходят вместе: архив — состояние слова, не одной карточки.
+  for (const key of [a.id + '|es', a.id + '|ru']) {
+    assert.equal(state.cards[key].box, 5);
+    assert.equal(state.cards[key].due, addDays(16));
+  }
+
+  srs.archiveWords([a.id, b.id], false);
+  assert.equal(srs.isArchived(a.id), false);
+  assert.equal(state.cards[b.id + '|ru'].box, 2, 'из архива возвращаемся во вторую коробку');
+  assert.equal(state.cards[b.id + '|ru'].due, today());
+});
+
 test('дневная цель считает только неархивные ответы', () => {
   resetDeck();
   const a = makeWord('uno', 'один');

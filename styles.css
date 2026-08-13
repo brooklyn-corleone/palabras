@@ -310,6 +310,19 @@ input.pick{
 .empty h2{font-size:22px;font-weight:400;letter-spacing:-.01em;margin:0 0 8px}
 .empty p{color:var(--muted);margin:0 0 24px}
 
+/* Блок «убрать выученное в архив» в конце занятия. Отделён линией и заметно ниже
+   кнопок: это предложение, а не то, что нужно сделать перед выходом. */
+.end-archive{
+  margin-top:40px;padding-top:24px;
+  border-top:1px solid var(--line);
+}
+.end-archive-head{display:flex;align-items:center;gap:8px}
+.end-archive-head .cap{margin-right:auto;text-transform:uppercase}
+/* Отступ у .empty p слишком велик для подписи внутри блока. */
+.empty .end-archive p{margin:8px 0 4px}
+.end-archive .row-inline{justify-content:flex-start;margin-top:12px}
+.btn:disabled{opacity:.4;cursor:default}
+
 .note-title{font-size:22px;font-weight:400;letter-spacing:-.01em;margin:0 0 20px}
 .note-block{margin-top:22px}
 .note-block-title{display:block;margin-bottom:8px;text-transform:uppercase}

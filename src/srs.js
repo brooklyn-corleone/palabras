@@ -351,7 +351,8 @@ export function judge(input, target) {
 // ---------------------------------------------------------------------------
 
 // Архив — шестое состояние поверх пяти коробок: слово выучено, но изредка проверяется.
-export function archiveWord(id, on) {
+// Само переключение — без save и пересборки очереди, чтобы пачка обошлась одним разом.
+function setArchived(id, on) {
   for (const suffix of ['|es', '|ru']) {
     const c = state.cards[id + suffix];
     if (!c) continue;
@@ -366,6 +367,18 @@ export function archiveWord(id, on) {
     }
     c.updated = now();
   }
+}
+
+export function archiveWord(id, on) {
+  setArchived(id, on);
+  save();
+  buildQueue();
+}
+
+// Пачкой: на экране конца занятия отмечают сразу по десятку слов, и делать
+// столько же записей в базу и пересборок очереди незачем.
+export function archiveWords(ids, on) {
+  for (const id of ids) setArchived(id, on);
   save();
   buildQueue();
 }
