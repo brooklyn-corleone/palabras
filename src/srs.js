@@ -351,7 +351,8 @@ export function judge(input, target) {
 // ---------------------------------------------------------------------------
 
 // Архив — шестое состояние поверх пяти коробок: слово выучено, но изредка проверяется.
-export function archiveWord(id, on) {
+// Само переключение — без save и пересборки очереди, чтобы пачка обошлась одним разом.
+function setArchived(id, on) {
   for (const suffix of ['|es', '|ru']) {
     const c = state.cards[id + suffix];
     if (!c) continue;
@@ -366,6 +367,18 @@ export function archiveWord(id, on) {
     }
     c.updated = now();
   }
+}
+
+export function archiveWord(id, on) {
+  setArchived(id, on);
+  save();
+  buildQueue();
+}
+
+// Пачкой: на экране конца занятия отмечают сразу по десятку слов, и делать
+// столько же записей в базу и пересборок очереди незачем.
+export function archiveWords(ids, on) {
+  for (const id of ids) setArchived(id, on);
   save();
   buildQueue();
 }
@@ -403,8 +416,12 @@ export function grade(key, mode, correct) {
   c.due = correct ? addDays(INTERVALS[c.box - 1]) : today();
   c.updated = now();
   if (!correct) requeue(key); // вернуть в конец сессии
-  // Разминка в дневную цель не идёт: она про то, чтобы войти в ритм, а не про повторение.
-  const counted = mode !== 'match';
+  // В цель идут только верные ответы. Неверная карточка возвращается в очередь и будет
+  // отвечена ещё раз — считая обе попытки, цель набиралась бы вдвое быстрее промахов,
+  // а число на экране перестало бы значить «столько карточек я вспомнил».
+  //
+  // Разминка не идёт в цель вообще: она про то, чтобы войти в ритм, а не про повторение.
+  const counted = mode !== 'match' && correct;
   if (counted) state.stats.done++;
   save();
   return { box: c.box, arch: false, counted, correct };

@@ -70,6 +70,34 @@ let goalCelebrated = false;
 // а группами по шесть, поэтому идёт мимо обычной очереди.
 let matchPacks = [];
 
+// Итог занятия по слову: id → верно ли отвечено. Нужен экрану в конце, который
+// предлагает убрать выученное в архив.
+//
+// Одного промаха хватает, чтобы слово перестало считаться верным, даже если со второго
+// раза оно вспомнилось: архив — это «знаю наизусть», а слово, которое пришлось
+// вытаскивать дважды, к нему не готово. Поэтому false всегда перебивает true,
+// в каком порядке ни приходи, — а у слова направлений два, и порядок не предсказать.
+const sessionRight = new Map();
+
+// Сколько слов ушло в архив с экрана конца занятия. Держим счёт только затем, чтобы
+// после нажатия на экране осталась строчка о том, что произошло: список отмеченных
+// сжимается, и без неё непонятно, сработало ли.
+let archivedAtEnd = 0;
+
+function recordAnswer(wordId, ok) {
+  if (!ok) sessionRight.set(wordId, false);
+  else if (!sessionRight.has(wordId)) sessionRight.set(wordId, true);
+}
+
+function resetSessionResults() {
+  sessionRight.clear();
+  archivedAtEnd = 0;
+}
+
+function wordIdOf(key) {
+  return key.slice(0, key.lastIndexOf('|'));
+}
+
 // Русское склонение после числа: 1 карточка, 2 карточки, 5 карточек, 21 карточка.
 function plural(n, one, few, many) {
   const mod100 = n % 100;
@@ -301,6 +329,16 @@ function startSession() {
   });
   renderSessionBar();
   matchPacks = [];
+  resetSessionResults();
+
+  // Счёт цели начинается заново с каждым занятием — и при сборке нового, и при запуске
+  // приложения (init тоже идёт сюда). Раньше он был дневным и после двадцати продолжал
+  // расти: на экране висело «49 / 20», и понять, сколько сделано в этом занятии,
+  // было нельзя. Смена даты по-прежнему обнуляет его сама (state.js) — на случай
+  // приложения с домашнего экрана, которое не перезагружается неделями.
+  state.stats.done = 0;
+  save();
+
   goalCelebrated = state.stats.done >= state.settings.goal;
 
   const wantsMatch = session.modes.has('match');
@@ -374,8 +412,12 @@ function renderMatchPack(words) {
     renderMatch({
       words,
       // Верную пару в прогресс не пишем вообще: соединить два столбца — не то же самое,
-      // что вспомнить слово, и срок повтора за это сдвигать нечестно.
-      onMiss: (wordId) => srs.grade(wordId + '|es', 'match', false),
+      // что вспомнить слово, и срок повтора за это сдвигать нечестно. А промах пишем —
+      // и в прогресс, и в итоги занятия, чтобы слово не предлагалось в архив.
+      onMiss: (wordId) => {
+        srs.grade(wordId + '|es', 'match', false);
+        recordAnswer(wordId, false);
+      },
       onDone: () => {
         renderRail();
         nextCard();
@@ -400,6 +442,108 @@ function renderNote() {
       note,
       onDone: () => nextCard(),
     }),
+  );
+}
+
+// Блок в конце занятия: отметить галочками то, что и так знаешь наизусть, и убрать
+// пачкой в архив. Кнопка «в архив» есть и на самой карточке, но там решение приходится
+// принимать в момент ответа и по одному слову; здесь весь список сразу и на свежую голову.
+//
+// Показываем только отвеченное верно и ни разу не промаханное — см. recordAnswer.
+function renderArchiveOffer() {
+  const byId = new Map(activeWords().map((w) => [w.id, w]));
+  const words = [...sessionRight.keys()]
+    .filter((id) => sessionRight.get(id) && !srs.isArchived(id))
+    .map((id) => byId.get(id))
+    .filter(Boolean);
+
+  const note = archivedAtEnd
+    ? el('p', {
+        class: 'hint',
+        text:
+          'Убрано в архив: ' +
+          archivedAtEnd +
+          ' ' +
+          plural(archivedAtEnd, 'слово', 'слова', 'слов') +
+          '.',
+      })
+    : null;
+
+  // Убрали всё, что предлагалось: список пуст, но строчку об этом оставляем —
+  // и внутри той же рамки, иначе она читается как часть текста экрана.
+  if (!words.length) return note && el('div', { class: 'end-archive' }, note);
+
+  const chosen = new Set();
+  const checks = [];
+
+  const apply = el('button', { class: 'btn' });
+  const toggleAll = el('button', { class: 'mini' });
+
+  function sync() {
+    apply.disabled = chosen.size === 0;
+    apply.textContent = chosen.size ? 'В архив · ' + chosen.size : 'В архив';
+    toggleAll.textContent = chosen.size === words.length ? 'Снять все' : 'Выбрать все';
+  }
+
+  const items = words.map((w) => {
+    const check = el('input', {
+      type: 'checkbox',
+      class: 'pick',
+      'aria-label': 'В архив: ' + w.es,
+    });
+    check.addEventListener('change', () => {
+      if (check.checked) chosen.add(w.id);
+      else chosen.delete(w.id);
+      sync();
+    });
+    checks.push(check);
+    return el(
+      'div',
+      { class: 'item' },
+      check,
+      el('div', { class: 'es', text: w.es }),
+      el('div', { class: 'ru', text: w.ru }),
+    );
+  });
+
+  toggleAll.addEventListener('click', () => {
+    const on = chosen.size < words.length;
+    chosen.clear();
+    checks.forEach((check, i) => {
+      check.checked = on;
+      if (on) chosen.add(words[i].id);
+    });
+    sync();
+  });
+
+  apply.addEventListener('click', () => {
+    if (!chosen.size) return;
+    archivedAtEnd += chosen.size;
+    srs.archiveWords([...chosen], true);
+    renderRail();
+    pulseSeg('arch');
+    renderScope();
+    renderList();
+    // Перерисовываем экран целиком: убранные слова должны из списка исчезнуть,
+    // а состояние галочек живёт в замыкании и переживать перерисовку не должно.
+    renderEmpty();
+  });
+
+  sync();
+
+  return el(
+    'div',
+    { class: 'end-archive' },
+    el(
+      'div',
+      { class: 'end-archive-head' },
+      el('span', { class: 'cap', text: 'Ответил верно · ' + words.length }),
+      toggleAll,
+    ),
+    el('p', { class: 'hint', text: 'Отметь то, что уже знаешь наизусть, — уйдёт в архив.' }),
+    items,
+    note,
+    el('div', { class: 'row row-inline' }, apply),
   );
 }
 
@@ -442,12 +586,14 @@ function renderEmpty() {
             onclick: () => {
               srs.setSession({});
               srs.buildExtraQueue();
+              resetSessionResults();
               nextCard();
             },
           },
           'Повторить ещё раз',
         ),
       ),
+      renderArchiveOffer(),
     ),
   );
 }
@@ -455,6 +601,11 @@ function renderEmpty() {
 function answer(mode, correct) {
   const res = srs.grade(currentKey, mode, correct);
   notes.countCard();
+
+  // Слово, которое уже в архиве и там же осталось, в итоги не пишем: предлагать
+  // архив тому, что в нём лежит, нечего. А вот выпавшее из архива — это промах,
+  // и он записывается как промах.
+  if (res && !res.arch) recordAnswer(wordIdOf(currentKey), correct);
 
   // Дневная цель должна быть точкой, а не цифрой, которая молча уезжает в 21, 22, 23.
   // Останавливаемся один раз и спрашиваем, продолжать ли.
@@ -515,7 +666,9 @@ function renderGoal() {
   const ticks = [];
   for (let i = 0; i < goal; i++) ticks.push(el('div', { class: 'tick' + (i < done ? ' on' : '') }));
   replace(ticksEl, ticks);
-  goalNum.textContent = state.stats.done + ' / ' + goal;
+  // Число обрезаем по цели, как и полоску: цель достигнута — значит «20 / 20», а не
+  // «49 / 20». Занятие после этого можно продолжать, но счётчик уже ничего не измеряет.
+  goalNum.textContent = done + ' / ' + goal;
 }
 
 // Шесть сегментов шириной пропорционально числу карточек. Подпись не висит постоянно —

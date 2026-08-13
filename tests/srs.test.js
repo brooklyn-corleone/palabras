@@ -5,9 +5,13 @@
 // с {"type": "module"}, а CLAUDE.md запрещает всё, что похоже на шаг к npm.
 // Поэтому запуск — во временной папке, одной командой:
 //
-//   T=$(mktemp -d) && cp -R src tests/srs.test.js "$T"/ \
+//   T=$(mktemp -d) && mkdir -p "$T/tests" \
+//     && cp -R src "$T"/ && cp tests/srs.test.js "$T/tests"/ \
 //     && echo '{"type":"module"}' > "$T/package.json" \
 //     && (cd "$T" && node --test)
+//
+// Папку tests в копии нужно сохранить: файл импортирует ../src/state.js, и если
+// положить его прямо в корень временной папки, путь уедет наружу.
 //
 // Если решишь, что package.json в репозитории всё-таки не грех, — положи его рядом
 // и запускай просто `node --test`. Сайту он не мешает: Pages его не читает.
@@ -119,6 +123,45 @@ test('архив: угадал — остался, забыл — вернулс
   assert.equal(res.arch, false);
   assert.equal(res.box, 2);
   assert.equal(state.cards[key].due, today());
+});
+
+test('в дневную цель идут только верные ответы', () => {
+  resetDeck();
+  const w = makeWord();
+  const key = w.id + '|ru';
+
+  const before = state.stats.done;
+  assert.equal(srs.grade(key, 'type', false).counted, false, 'промах цель не двигает');
+  assert.equal(state.stats.done, before);
+
+  assert.equal(srs.grade(key, 'type', true).counted, true);
+  assert.equal(state.stats.done, before + 1);
+
+  // Разминка не идёт в цель даже когда пара соединена верно.
+  assert.equal(srs.grade(key, 'match', true).counted, false);
+  assert.equal(state.stats.done, before + 1);
+});
+
+test('archiveWords убирает пачку и возвращает пачку', () => {
+  resetDeck();
+  const a = makeWord('uno', 'один');
+  const b = makeWord('dos', 'два');
+  const c = makeWord('tres', 'три');
+
+  srs.archiveWords([a.id, b.id], true);
+  assert.equal(srs.isArchived(a.id), true);
+  assert.equal(srs.isArchived(b.id), true);
+  assert.equal(srs.isArchived(c.id), false, 'неотмеченное слово не трогаем');
+  // Оба направления слова уходят вместе: архив — состояние слова, не одной карточки.
+  for (const key of [a.id + '|es', a.id + '|ru']) {
+    assert.equal(state.cards[key].box, 5);
+    assert.equal(state.cards[key].due, addDays(16));
+  }
+
+  srs.archiveWords([a.id, b.id], false);
+  assert.equal(srs.isArchived(a.id), false);
+  assert.equal(state.cards[b.id + '|ru'].box, 2, 'из архива возвращаемся во вторую коробку');
+  assert.equal(state.cards[b.id + '|ru'].due, today());
 });
 
 test('дневная цель считает только неархивные ответы', () => {
