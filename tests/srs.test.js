@@ -317,6 +317,41 @@ test('кэш ответов замечает правку колоды', () => {
   assert.equal(srs.judge('llavve', 'la llave'), 'almost');
 });
 
+test('занятие с лимитом заканчивается, а без лимита продолжается', () => {
+  resetDeck();
+  for (let i = 0; i < 8; i++) makeWord('palabra' + i, 'слово' + i);
+
+  // С лимитом: очередь кончилась — занятие кончилось. Без этого nextKey собирал её
+  // заново на следующие N слов, и лимит не значил ничего: на свежей колоде занятие
+  // продолжалось, пока не кончатся все созревшие карточки.
+  srs.buildQueue({ source: 'due', size: 3, modes: new Set(), cats: new Set() });
+  const limited = drain(40);
+  assert.equal(limited.length, 6, 'три слова по два направления — и всё');
+  assert.equal(srs.nextKey(), null, 'очередь не должна пересобираться сама');
+
+  // Без лимита — наоборот: пересобирается, пока есть что повторять.
+  srs.buildQueue({ source: 'due', size: 0, modes: new Set(), cats: new Set() });
+  drain(16);
+  assert.ok(srs.nextKey() !== null, 'безлимитное занятие идёт, пока карточки созревшие');
+  srs.setSession({});
+});
+
+test('dueWordCount считает слова, а не карточки, и не берёт архив', () => {
+  resetDeck();
+  const a = makeWord('uno', 'один');
+  const b = makeWord('dos', 'два');
+  const c = makeWord('tres', 'три');
+  assert.equal(srs.dueWordCount(), 3, 'у каждого слова две карточки, но слово одно');
+
+  srs.archiveWord(c.id, true);
+  assert.equal(srs.dueWordCount(), 2, 'архив ждать повторения не считается');
+
+  state.cards[b.id + '|es'].due = addDays(5);
+  state.cards[b.id + '|ru'].due = addDays(5);
+  assert.equal(srs.dueWordCount(), 1, 'несозревшее не считается');
+  assert.ok(a);
+});
+
 test('удалённое слово исчезает из очереди и не воскресает из колоды', async () => {
   resetDeck();
   const seed = {

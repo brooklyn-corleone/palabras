@@ -67,7 +67,25 @@ const session = {
 };
 
 const SOURCE_LABEL = { due: 'к повторению', random: 'случайные', picked: 'выбранные' };
-const SIZES = [0, 10, 20, 30];
+const SIZES = [0, 10, 20, 30, 40];
+
+// Длина урока — сколько верных ответов он занимает (state.settings.goal). У слова два
+// направления, то есть две карточки, и каждая верная даёт один шаг: урок на двадцать
+// шагов — это десять слов. Считаем размер занятия отсюда, чтобы урок заканчивался
+// там же, где счётчик: иначе «урок на 10» означал бы цель на десятом шаге
+// и ещё тридцать карточек следом.
+const GOALS = [10, 20, 30, 40];
+
+function lessonWords() {
+  return Math.max(1, Math.ceil(state.settings.goal / 2));
+}
+
+// Пока размер занятия не выбран руками, он едет за длиной урока.
+let sizeFromGoal = true;
+
+function applyLessonSize() {
+  if (sizeFromGoal) session.size = lessonWords();
+}
 
 // Цель дня празднуем один раз: дальше пользователь сам решает, продолжать или нет.
 // Флаг сбрасывается вместе со счётчиком — при смене дня и при сборке нового занятия.
@@ -129,7 +147,7 @@ function sessionSummary() {
   return [
     SOURCE_LABEL[session.source],
     listOf(session.cats, catLabel, 'все темы'),
-    session.size ? session.size + ' слов' : 'все',
+    session.size ? session.size + ' слов' : 'все слова',
     listOf(session.modes, (m) => srs.MODE_LABEL[m], 'авто'),
   ].join(' · ');
 }
@@ -169,6 +187,35 @@ function setTheme(theme) {
     /* приватный режим — обойдёмся без мгновенной темы */
   }
   applyTheme(theme);
+}
+
+// ---------------------------------------------------------------------------
+// длина урока
+// ---------------------------------------------------------------------------
+
+function applyGoalChoice() {
+  for (const btn of document.querySelectorAll('[data-goal-choice]')) {
+    btn.setAttribute('aria-pressed', String(Number(btn.dataset.goalChoice) === state.settings.goal));
+  }
+}
+
+function setGoal(n) {
+  if (!GOALS.includes(n) || n === state.settings.goal) return;
+  state.settings.goal = n;
+  save();
+  // Новая длина применяется со следующего занятия, но знаменатель в счётчике
+  // и подпись занятия честнее поменять сразу — иначе непонятно, сработал ли выбор.
+  applyLessonSize();
+  applyGoalChoice();
+  renderGoal();
+  renderSessionBar();
+}
+
+function bindGoalChoice() {
+  for (const btn of document.querySelectorAll('[data-goal-choice]')) {
+    btn.addEventListener('click', () => setGoal(Number(btn.dataset.goalChoice)));
+  }
+  applyGoalChoice();
 }
 
 function bindTheme() {
@@ -296,6 +343,8 @@ function renderSetup() {
         SIZES.map((n) => [n, n === 0 ? 'Все' : String(n)]),
         session.size,
         (v) => {
+          // Выбрал руками — дальше размер живёт сам по себе и за длиной урока не ходит.
+          sizeFromGoal = false;
           session.size = v;
         },
       ),
@@ -1104,6 +1153,8 @@ async function init() {
   if (firstRun) await mergeSeed();
 
   warnAboutStorage();
+  bindGoalChoice();
+  applyLessonSize();
   bindWordsView();
   bindKeyboard();
   for (const name of VIEWS) {

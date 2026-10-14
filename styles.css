@@ -429,6 +429,9 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line)}
 }
 .theme button[aria-pressed="true"]{color:var(--text)}
 .theme button:hover{color:var(--text)}
+/* Подпись к выбору длины урока: единицы измерения, а не кнопка. */
+.goal-hint{margin-left:6px}
+#goal-choice{margin-bottom:4px}
 .keys{margin-top:12px}
 
 /* ---------- адаптив ---------- */
@@ -444,6 +447,10 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line)}
   .item .ru{padding-left:0}
   /* Кнопки — в зоне большого пальца, у нижнего края экрана. */
   .row{position:sticky;bottom:0;background:var(--bg);padding-bottom:8px}
+  /* Кроме кнопки под списком архива: она часть списка, а не панель действий карточки.
+     Липкой ей быть нельзя — уезжает к верхнему краю видимой области и наезжает
+     на слова, которые как раз предлагает отметить. */
+  .end-archive .row{position:static;background:none;padding-bottom:0}
   .keys{display:none}
   .add{grid-template-columns:1fr;gap:0}
   .add .btn{margin-top:16px;width:100%;justify-content:center}
