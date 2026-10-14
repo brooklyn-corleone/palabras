@@ -1,12 +1,13 @@
 {
-  "version": 8,
+  "version": 9,
   "groups": {
     "presente": "Настоящее время",
     "irregulares": "Неправильные глаголы",
     "sustantivos": "Существительные и прилагательные",
     "numeros": "Цифры",
     "hora": "Время",
-    "alfabeto": "Алфавит"
+    "alfabeto": "Алфавит",
+    "preposiciones": "Предлоги и конструкции"
   },
   "notes": [
     {
@@ -16,14 +17,49 @@
       "blocks": [
         {
           "kind": "table",
-          "head": ["", "hablar · -ar", "comer · -er", "vivir · -ir"],
+          "head": [
+            "",
+            "hablar · -ar",
+            "comer · -er",
+            "vivir · -ir"
+          ],
           "rows": [
-            ["yo", "hablo", "como", "vivo"],
-            ["tú", "hablas", "comes", "vives"],
-            ["él, ella, usted", "habla", "come", "vive"],
-            ["nosotros/as", "hablamos", "comemos", "vivimos"],
-            ["vosotros/as", "habláis", "coméis", "vivís"],
-            ["ellos/as, ustedes", "hablan", "comen", "viven"]
+            [
+              "yo",
+              "hablo",
+              "como",
+              "vivo"
+            ],
+            [
+              "tú",
+              "hablas",
+              "comes",
+              "vives"
+            ],
+            [
+              "él, ella, usted",
+              "habla",
+              "come",
+              "vive"
+            ],
+            [
+              "nosotros/as",
+              "hablamos",
+              "comemos",
+              "vivimos"
+            ],
+            [
+              "vosotros/as",
+              "habláis",
+              "coméis",
+              "vivís"
+            ],
+            [
+              "ellos/as, ustedes",
+              "hablan",
+              "comen",
+              "viven"
+            ]
           ]
         },
         {
@@ -39,14 +75,42 @@
       "blocks": [
         {
           "kind": "table",
-          "head": ["", "ser", "estar"],
+          "head": [
+            "",
+            "ser",
+            "estar"
+          ],
           "rows": [
-            ["yo", "soy", "estoy"],
-            ["tú", "eres", "estás"],
-            ["él, ella, usted", "es", "está"],
-            ["nosotros/as", "somos", "estamos"],
-            ["vosotros/as", "sois", "estáis"],
-            ["ellos/as, ustedes", "son", "están"]
+            [
+              "yo",
+              "soy",
+              "estoy"
+            ],
+            [
+              "tú",
+              "eres",
+              "estás"
+            ],
+            [
+              "él, ella, usted",
+              "es",
+              "está"
+            ],
+            [
+              "nosotros/as",
+              "somos",
+              "estamos"
+            ],
+            [
+              "vosotros/as",
+              "sois",
+              "estáis"
+            ],
+            [
+              "ellos/as, ustedes",
+              "son",
+              "están"
+            ]
           ]
         },
         {
@@ -62,20 +126,44 @@
       "blocks": [
         {
           "kind": "table",
-          "head": ["", "tener"],
+          "head": [
+            "",
+            "tener"
+          ],
           "rows": [
-            ["yo", "tengo"],
-            ["tú", "tienes"],
-            ["él, ella, usted", "tiene"],
-            ["nosotros/as", "tenemos"],
-            ["vosotros/as", "tenéis"],
-            ["ellos/as, ustedes", "tienen"]
+            [
+              "yo",
+              "tengo"
+            ],
+            [
+              "tú",
+              "tienes"
+            ],
+            [
+              "él, ella, usted",
+              "tiene"
+            ],
+            [
+              "nosotros/as",
+              "tenemos"
+            ],
+            [
+              "vosotros/as",
+              "tenéis"
+            ],
+            [
+              "ellos/as, ustedes",
+              "tienen"
+            ]
           ]
         },
         {
           "kind": "list",
           "title": "Примеры",
-          "items": ["Yo tengo un gato.", "Ellos tienen una casa grande."]
+          "items": [
+            "Yo tengo un gato.",
+            "Ellos tienen una casa grande."
+          ]
         },
         {
           "kind": "text",
@@ -90,14 +178,35 @@
       "blocks": [
         {
           "kind": "table",
-          "head": ["", "llamarse"],
+          "head": [
+            "",
+            "llamarse"
+          ],
           "rows": [
-            ["yo", "me llamo"],
-            ["tú", "te llamas"],
-            ["él, ella, usted", "se llama"],
-            ["nosotros/as", "nos llamamos"],
-            ["vosotros/as", "os llamáis"],
-            ["ellos/as, ustedes", "se llaman"]
+            [
+              "yo",
+              "me llamo"
+            ],
+            [
+              "tú",
+              "te llamas"
+            ],
+            [
+              "él, ella, usted",
+              "se llama"
+            ],
+            [
+              "nosotros/as",
+              "nos llamamos"
+            ],
+            [
+              "vosotros/as",
+              "os llamáis"
+            ],
+            [
+              "ellos/as, ustedes",
+              "se llaman"
+            ]
           ]
         },
         {
@@ -106,7 +215,6 @@
         }
       ]
     },
-
     {
       "id": "reflexivos",
       "group": "presente",
@@ -118,14 +226,42 @@
         },
         {
           "kind": "table",
-          "head": ["", "местоимение", "bañarse"],
+          "head": [
+            "",
+            "местоимение",
+            "bañarse"
+          ],
           "rows": [
-            ["yo", "me", "baño"],
-            ["tú", "te", "bañas"],
-            ["él, ella, usted", "se", "baña"],
-            ["nosotros/as", "nos", "bañamos"],
-            ["vosotros/as", "os", "bañáis"],
-            ["ellos/as, ustedes", "se", "bañan"]
+            [
+              "yo",
+              "me",
+              "baño"
+            ],
+            [
+              "tú",
+              "te",
+              "bañas"
+            ],
+            [
+              "él, ella, usted",
+              "se",
+              "baña"
+            ],
+            [
+              "nosotros/as",
+              "nos",
+              "bañamos"
+            ],
+            [
+              "vosotros/as",
+              "os",
+              "bañáis"
+            ],
+            [
+              "ellos/as, ustedes",
+              "se",
+              "bañan"
+            ]
           ]
         },
         {
@@ -146,7 +282,6 @@
         }
       ]
     },
-
     {
       "id": "irr-caber-decir",
       "group": "irregulares",
@@ -154,14 +289,56 @@
       "blocks": [
         {
           "kind": "table",
-          "head": ["", "caber", "caer", "dar", "decir"],
+          "head": [
+            "",
+            "caber",
+            "caer",
+            "dar",
+            "decir"
+          ],
           "rows": [
-            ["yo", "quepo", "caigo", "doy", "digo"],
-            ["tú", "cabes", "caes", "das", "dices"],
-            ["él, ella, usted", "cabe", "cae", "da", "dice"],
-            ["nosotros/as", "cabemos", "caemos", "damos", "decimos"],
-            ["vosotros/as", "cabéis", "caéis", "dais", "decís"],
-            ["ellos/as, ustedes", "caben", "caen", "dan", "dicen"]
+            [
+              "yo",
+              "quepo",
+              "caigo",
+              "doy",
+              "digo"
+            ],
+            [
+              "tú",
+              "cabes",
+              "caes",
+              "das",
+              "dices"
+            ],
+            [
+              "él, ella, usted",
+              "cabe",
+              "cae",
+              "da",
+              "dice"
+            ],
+            [
+              "nosotros/as",
+              "cabemos",
+              "caemos",
+              "damos",
+              "decimos"
+            ],
+            [
+              "vosotros/as",
+              "cabéis",
+              "caéis",
+              "dais",
+              "decís"
+            ],
+            [
+              "ellos/as, ustedes",
+              "caben",
+              "caen",
+              "dan",
+              "dicen"
+            ]
           ]
         },
         {
@@ -177,14 +354,56 @@
       "blocks": [
         {
           "kind": "table",
-          "head": ["", "estar", "hacer", "ir", "oír"],
+          "head": [
+            "",
+            "estar",
+            "hacer",
+            "ir",
+            "oír"
+          ],
           "rows": [
-            ["yo", "estoy", "hago", "voy", "oigo"],
-            ["tú", "estás", "haces", "vas", "oyes"],
-            ["él, ella, usted", "está", "hace", "va", "oye"],
-            ["nosotros/as", "estamos", "hacemos", "vamos", "oímos"],
-            ["vosotros/as", "estáis", "hacéis", "vais", "oís"],
-            ["ellos/as, ustedes", "están", "hacen", "van", "oyen"]
+            [
+              "yo",
+              "estoy",
+              "hago",
+              "voy",
+              "oigo"
+            ],
+            [
+              "tú",
+              "estás",
+              "haces",
+              "vas",
+              "oyes"
+            ],
+            [
+              "él, ella, usted",
+              "está",
+              "hace",
+              "va",
+              "oye"
+            ],
+            [
+              "nosotros/as",
+              "estamos",
+              "hacemos",
+              "vamos",
+              "oímos"
+            ],
+            [
+              "vosotros/as",
+              "estáis",
+              "hacéis",
+              "vais",
+              "oís"
+            ],
+            [
+              "ellos/as, ustedes",
+              "están",
+              "hacen",
+              "van",
+              "oyen"
+            ]
           ]
         },
         {
@@ -200,14 +419,56 @@
       "blocks": [
         {
           "kind": "table",
-          "head": ["", "poder", "poner", "querer", "saber"],
+          "head": [
+            "",
+            "poder",
+            "poner",
+            "querer",
+            "saber"
+          ],
           "rows": [
-            ["yo", "puedo", "pongo", "quiero", "sé"],
-            ["tú", "puedes", "pones", "quieres", "sabes"],
-            ["él, ella, usted", "puede", "pone", "quiere", "sabe"],
-            ["nosotros/as", "podemos", "ponemos", "queremos", "sabemos"],
-            ["vosotros/as", "podéis", "ponéis", "queréis", "sabéis"],
-            ["ellos/as, ustedes", "pueden", "ponen", "quieren", "saben"]
+            [
+              "yo",
+              "puedo",
+              "pongo",
+              "quiero",
+              "sé"
+            ],
+            [
+              "tú",
+              "puedes",
+              "pones",
+              "quieres",
+              "sabes"
+            ],
+            [
+              "él, ella, usted",
+              "puede",
+              "pone",
+              "quiere",
+              "sabe"
+            ],
+            [
+              "nosotros/as",
+              "podemos",
+              "ponemos",
+              "queremos",
+              "sabemos"
+            ],
+            [
+              "vosotros/as",
+              "podéis",
+              "ponéis",
+              "queréis",
+              "sabéis"
+            ],
+            [
+              "ellos/as, ustedes",
+              "pueden",
+              "ponen",
+              "quieren",
+              "saben"
+            ]
           ]
         },
         {
@@ -223,14 +484,56 @@
       "blocks": [
         {
           "kind": "table",
-          "head": ["", "salir", "ser", "tener", "traer"],
+          "head": [
+            "",
+            "salir",
+            "ser",
+            "tener",
+            "traer"
+          ],
           "rows": [
-            ["yo", "salgo", "soy", "tengo", "traigo"],
-            ["tú", "sales", "eres", "tienes", "traes"],
-            ["él, ella, usted", "sale", "es", "tiene", "trae"],
-            ["nosotros/as", "salimos", "somos", "tenemos", "traemos"],
-            ["vosotros/as", "salís", "sois", "tenéis", "traéis"],
-            ["ellos/as, ustedes", "salen", "son", "tienen", "traen"]
+            [
+              "yo",
+              "salgo",
+              "soy",
+              "tengo",
+              "traigo"
+            ],
+            [
+              "tú",
+              "sales",
+              "eres",
+              "tienes",
+              "traes"
+            ],
+            [
+              "él, ella, usted",
+              "sale",
+              "es",
+              "tiene",
+              "trae"
+            ],
+            [
+              "nosotros/as",
+              "salimos",
+              "somos",
+              "tenemos",
+              "traemos"
+            ],
+            [
+              "vosotros/as",
+              "salís",
+              "sois",
+              "tenéis",
+              "traéis"
+            ],
+            [
+              "ellos/as, ustedes",
+              "salen",
+              "son",
+              "tienen",
+              "traen"
+            ]
           ]
         },
         {
@@ -246,14 +549,42 @@
       "blocks": [
         {
           "kind": "table",
-          "head": ["", "venir", "ver"],
+          "head": [
+            "",
+            "venir",
+            "ver"
+          ],
           "rows": [
-            ["yo", "vengo", "veo"],
-            ["tú", "vienes", "ves"],
-            ["él, ella, usted", "viene", "ve"],
-            ["nosotros/as", "venimos", "vemos"],
-            ["vosotros/as", "venís", "veis"],
-            ["ellos/as, ustedes", "vienen", "ven"]
+            [
+              "yo",
+              "vengo",
+              "veo"
+            ],
+            [
+              "tú",
+              "vienes",
+              "ves"
+            ],
+            [
+              "él, ella, usted",
+              "viene",
+              "ve"
+            ],
+            [
+              "nosotros/as",
+              "venimos",
+              "vemos"
+            ],
+            [
+              "vosotros/as",
+              "venís",
+              "veis"
+            ],
+            [
+              "ellos/as, ustedes",
+              "vienen",
+              "ven"
+            ]
           ]
         },
         {
@@ -269,14 +600,56 @@
       "blocks": [
         {
           "kind": "table",
-          "head": ["", "pedir", "dormir", "mover", "jugar"],
+          "head": [
+            "",
+            "pedir",
+            "dormir",
+            "mover",
+            "jugar"
+          ],
           "rows": [
-            ["yo", "pido", "duermo", "muevo", "juego"],
-            ["tú", "pides", "duermes", "mueves", "juegas"],
-            ["él, ella, usted", "pide", "duerme", "mueve", "juega"],
-            ["nosotros/as", "pedimos", "dormimos", "movemos", "jugamos"],
-            ["vosotros/as", "pedís", "dormís", "movéis", "jugáis"],
-            ["ellos/as, ustedes", "piden", "duermen", "mueven", "juegan"]
+            [
+              "yo",
+              "pido",
+              "duermo",
+              "muevo",
+              "juego"
+            ],
+            [
+              "tú",
+              "pides",
+              "duermes",
+              "mueves",
+              "juegas"
+            ],
+            [
+              "él, ella, usted",
+              "pide",
+              "duerme",
+              "mueve",
+              "juega"
+            ],
+            [
+              "nosotros/as",
+              "pedimos",
+              "dormimos",
+              "movemos",
+              "jugamos"
+            ],
+            [
+              "vosotros/as",
+              "pedís",
+              "dormís",
+              "movéis",
+              "jugáis"
+            ],
+            [
+              "ellos/as, ustedes",
+              "piden",
+              "duermen",
+              "mueven",
+              "juegan"
+            ]
           ]
         },
         {
@@ -292,14 +665,42 @@
       "blocks": [
         {
           "kind": "table",
-          "head": ["", "elegir", "seguir"],
+          "head": [
+            "",
+            "elegir",
+            "seguir"
+          ],
           "rows": [
-            ["yo", "elijo", "sigo"],
-            ["tú", "eliges", "sigues"],
-            ["él, ella, usted", "elige", "sigue"],
-            ["nosotros/as", "elegimos", "seguimos"],
-            ["vosotros/as", "elegís", "seguís"],
-            ["ellos/as, ustedes", "eligen", "siguen"]
+            [
+              "yo",
+              "elijo",
+              "sigo"
+            ],
+            [
+              "tú",
+              "eliges",
+              "sigues"
+            ],
+            [
+              "él, ella, usted",
+              "elige",
+              "sigue"
+            ],
+            [
+              "nosotros/as",
+              "elegimos",
+              "seguimos"
+            ],
+            [
+              "vosotros/as",
+              "elegís",
+              "seguís"
+            ],
+            [
+              "ellos/as, ustedes",
+              "eligen",
+              "siguen"
+            ]
           ]
         },
         {
@@ -315,14 +716,42 @@
       "blocks": [
         {
           "kind": "table",
-          "head": ["", "conocer", "conducir"],
+          "head": [
+            "",
+            "conocer",
+            "conducir"
+          ],
           "rows": [
-            ["yo", "conozco", "conduzco"],
-            ["tú", "conoces", "conduces"],
-            ["él, ella, usted", "conoce", "conduce"],
-            ["nosotros/as", "conocemos", "conducimos"],
-            ["vosotros/as", "conocéis", "conducís"],
-            ["ellos/as, ustedes", "conocen", "conducen"]
+            [
+              "yo",
+              "conozco",
+              "conduzco"
+            ],
+            [
+              "tú",
+              "conoces",
+              "conduces"
+            ],
+            [
+              "él, ella, usted",
+              "conoce",
+              "conduce"
+            ],
+            [
+              "nosotros/as",
+              "conocemos",
+              "conducimos"
+            ],
+            [
+              "vosotros/as",
+              "conocéis",
+              "conducís"
+            ],
+            [
+              "ellos/as, ustedes",
+              "conocen",
+              "conducen"
+            ]
           ]
         },
         {
@@ -331,7 +760,6 @@
         }
       ]
     },
-
     {
       "id": "genero",
       "group": "sustantivos",
@@ -403,7 +831,11 @@
         {
           "kind": "list",
           "title": "Только во множественном числе",
-          "items": ["las gafas — очки", "las tijeras — ножницы", "las vacaciones — отпуск, каникулы"]
+          "items": [
+            "las gafas — очки",
+            "las tijeras — ножницы",
+            "las vacaciones — отпуск, каникулы"
+          ]
         },
         {
           "kind": "list",
@@ -428,10 +860,22 @@
         },
         {
           "kind": "table",
-          "head": ["", "мужской род", "женский род"],
+          "head": [
+            "",
+            "мужской род",
+            "женский род"
+          ],
           "rows": [
-            ["ед. ч.", "-o: un coche bonito", "-a: una mesa blanca"],
-            ["мн. ч.", "-os: unos coches bonitos", "-as: unas mesas blancas"]
+            [
+              "ед. ч.",
+              "-o: un coche bonito",
+              "-a: una mesa blanca"
+            ],
+            [
+              "мн. ч.",
+              "-os: unos coches bonitos",
+              "-as: unas mesas blancas"
+            ]
           ]
         },
         {
@@ -450,7 +894,6 @@
         }
       ]
     },
-
     {
       "id": "colores",
       "group": "sustantivos",
@@ -462,12 +905,37 @@
         },
         {
           "kind": "table",
-          "head": ["", "м. р.", "ж. р.", "мн. ч."],
+          "head": [
+            "",
+            "м. р.",
+            "ж. р.",
+            "мн. ч."
+          ],
           "rows": [
-            ["красный", "rojo", "roja", "rojos / rojas"],
-            ["чёрный", "negro", "negra", "negros / negras"],
-            ["белый", "blanco", "blanca", "blancos / blancas"],
-            ["жёлтый", "amarillo", "amarilla", "amarillos / amarillas"]
+            [
+              "красный",
+              "rojo",
+              "roja",
+              "rojos / rojas"
+            ],
+            [
+              "чёрный",
+              "negro",
+              "negra",
+              "negros / negras"
+            ],
+            [
+              "белый",
+              "blanco",
+              "blanca",
+              "blancos / blancas"
+            ],
+            [
+              "жёлтый",
+              "amarillo",
+              "amarilla",
+              "amarillos / amarillas"
+            ]
           ]
         },
         {
@@ -485,7 +953,54 @@
         }
       ]
     },
-
+    {
+      "id": "con-de",
+      "group": "preposiciones",
+      "title": "Конструкции с de",
+      "blocks": [
+        {
+          "kind": "text",
+          "body": "Наречие само по себе отвечает на «когда» или «где». Добавь de — и получится предлог, после которого идёт то, относительно чего считаем."
+        },
+        {
+          "kind": "table",
+          "head": [
+            "само по себе",
+            "с de"
+          ],
+          "rows": [
+            [
+              "antes — раньше, перед",
+              "antes de comer — до еды"
+            ],
+            [
+              "después — потом, после",
+              "después de comer — после еды"
+            ],
+            [
+              "al lado — рядом",
+              "al lado de la casa — рядом с домом"
+            ],
+            [
+              "alrededor — вокруг, около",
+              "alrededor de las ocho — около восьми"
+            ],
+            [
+              "cerca — близко",
+              "cerca de aquí — недалеко отсюда"
+            ],
+            [
+              "lejos — далеко",
+              "lejos de casa — далеко от дома"
+            ]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "После de идёт инфинитив, а не личная форма: antes de salir, а не antes de sales. С артиклем el предлог сливается: alrededor del parque."
+        }
+      ]
+    },
     {
       "id": "numeros-0-9",
       "group": "numeros",
@@ -562,7 +1077,6 @@
         }
       ]
     },
-
     {
       "id": "la-hora",
       "group": "hora",
@@ -574,16 +1088,43 @@
         },
         {
           "kind": "table",
-          "head": ["", "как сказать"],
+          "head": [
+            "",
+            "как сказать"
+          ],
           "rows": [
-            ["2:00", "Son las dos en punto"],
-            ["2:05", "Son las dos y cinco"],
-            ["2:15", "Son las dos y cuarto"],
-            ["2:20", "Son las dos y veinte"],
-            ["2:30", "Son las dos y media"],
-            ["2:35", "Son las tres menos veinticinco"],
-            ["2:45", "Son las tres menos cuarto"],
-            ["2:50", "Son las tres menos diez"]
+            [
+              "2:00",
+              "Son las dos en punto"
+            ],
+            [
+              "2:05",
+              "Son las dos y cinco"
+            ],
+            [
+              "2:15",
+              "Son las dos y cuarto"
+            ],
+            [
+              "2:20",
+              "Son las dos y veinte"
+            ],
+            [
+              "2:30",
+              "Son las dos y media"
+            ],
+            [
+              "2:35",
+              "Son las tres menos veinticinco"
+            ],
+            [
+              "2:45",
+              "Son las tres menos cuarto"
+            ],
+            [
+              "2:50",
+              "Son las tres menos diez"
+            ]
           ]
         },
         {
@@ -614,7 +1155,6 @@
         }
       ]
     },
-
     {
       "id": "dias-meses",
       "group": "hora",
@@ -622,15 +1162,39 @@
       "blocks": [
         {
           "kind": "table",
-          "head": ["день", "перевод"],
+          "head": [
+            "день",
+            "перевод"
+          ],
           "rows": [
-            ["el lunes", "понедельник"],
-            ["el martes", "вторник"],
-            ["el miércoles", "среда"],
-            ["el jueves", "четверг"],
-            ["el viernes", "пятница"],
-            ["el sábado", "суббота"],
-            ["el domingo", "воскресенье"]
+            [
+              "el lunes",
+              "понедельник"
+            ],
+            [
+              "el martes",
+              "вторник"
+            ],
+            [
+              "el miércoles",
+              "среда"
+            ],
+            [
+              "el jueves",
+              "четверг"
+            ],
+            [
+              "el viernes",
+              "пятница"
+            ],
+            [
+              "el sábado",
+              "суббота"
+            ],
+            [
+              "el domingo",
+              "воскресенье"
+            ]
           ]
         },
         {
@@ -674,7 +1238,6 @@
         }
       ]
     },
-
     {
       "id": "alfabeto",
       "group": "alfabeto",

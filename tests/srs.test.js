@@ -3,18 +3,12 @@
 //
 // В обычном виде не запускается: node не съест ES-модули из src/ без package.json
 // с {"type": "module"}, а CLAUDE.md запрещает всё, что похоже на шаг к npm.
-// Поэтому запуск — во временной папке, одной командой:
+// Поэтому запуск — во временной папке:
 //
-//   T=$(mktemp -d) && mkdir -p "$T/tests" \
-//     && cp -R src "$T"/ && cp tests/srs.test.js "$T/tests"/ \
-//     && echo '{"type":"module"}' > "$T/package.json" \
-//     && (cd "$T" && node --test)
+//   sh tests/run.sh
 //
-// Папку tests в копии нужно сохранить: файл импортирует ../src/state.js, и если
-// положить его прямо в корень временной папки, путь уедет наружу.
-//
-// Если решишь, что package.json в репозитории всё-таки не грех, — положи его рядом
-// и запускай просто `node --test`. Сайту он не мешает: Pages его не читает.
+// Скрипт делает ровно это: копирует src, колоду и тесты во временную папку,
+// кладёт туда package.json и зовёт node --test оттуда.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -66,19 +60,41 @@ test('type поднимает карточку до коробки 5 и там �
   assert.equal(state.cards[key].due, addDays(16));
 });
 
-test('flip не поднимает выше коробки 3 и не опускает того, кто уже выше', () => {
+test('flip доводит es-карточку до пятой коробки и там останавливается', () => {
   resetDeck();
   const w = makeWord();
   const key = w.id + '|es';
 
-  assert.equal(srs.grade(key, 'flip', true).box, 2);
-  assert.equal(srs.grade(key, 'flip', true).box, 3);
-  assert.equal(srs.grade(key, 'flip', true).box, 3); // потолок режима
-  assert.equal(srs.grade(key, 'flip', true).box, 3);
+  for (const expected of [2, 3, 4, 5, 5]) {
+    assert.equal(srs.grade(key, 'flip', true).box, expected);
+  }
+});
 
-  // Карточка, добравшаяся до 5 через ввод, не должна проседать от верного flip.
-  state.cards[key].box = 5;
-  assert.equal(srs.grade(key, 'flip', true).box, 5);
+// Это была дыра в конструкции, а не настройка: у flip потолок стоял на 3, а type
+// и letters привязаны к RU→ES (MODE_DIR), поэтому es-карточку не мог поднять выше
+// третьей коробки вообще ни один режим. Половина колоды возвращалась каждые четыре дня
+// вечно, а wordBox (минимум двух направлений) никогда не показывал больше тройки.
+test('es-направление достижимо до пятой коробки хоть каким-то режимом', () => {
+  const reachable = (dir) => {
+    const modes = Object.keys(srs.MODE_DIR).filter(
+      (m) => m !== 'match' && (!srs.MODE_DIR[m] || srs.MODE_DIR[m] === dir),
+    );
+    return Math.max(...modes.map((m) => srs.MAX_BOX[m]));
+  };
+  assert.equal(reachable('ru'), 5);
+  assert.equal(reachable('es'), 5, 'иначе es-карточка упирается в потолок навсегда');
+});
+
+test('слово целиком доходит до пятой коробки в обоих направлениях', () => {
+  resetDeck();
+  const w = makeWord();
+  for (let i = 0; i < 5; i++) {
+    srs.grade(w.id + '|ru', 'type', true);
+    srs.grade(w.id + '|es', 'flip', true);
+  }
+  assert.equal(state.cards[w.id + '|ru'].box, 5);
+  assert.equal(state.cards[w.id + '|es'].box, 5);
+  assert.equal(srs.wordBox(w.id), 5, 'коробка слова — минимум направлений, и он достижим');
 });
 
 test('ошибка сбрасывает в коробку 1 и возвращает карточку в сессию', () => {
@@ -200,6 +216,99 @@ test('очередь берёт только созревшие карточки
     keys.some((k) => k.startsWith(archived.id)),
     'хотя бы одна архивная подмешивается',
   );
+});
+
+// --- автоархив ---------------------------------------------------------------
+
+test('слово уходит в архив само, когда обе стороны дошли до пятой коробки', () => {
+  resetDeck();
+  const w = makeWord();
+  for (let i = 0; i < 5; i++) srs.grade(w.id + '|ru', 'type', true);
+  // Пятёрка только в одном направлении — рано.
+  assert.equal(srs.isArchived(w.id), false);
+
+  // Ловим именно тот ответ, который довёл слово до архива: следующие уже идут
+  // по архивной ветке и в цель не считаются.
+  let res = null;
+  while (!srs.isArchived(w.id)) res = srs.grade(w.id + '|es', 'flip', true);
+
+  assert.equal(srs.isArchived(w.id), true, 'обе стороны на пятёрке — слово выучено');
+  assert.equal(res.arch, true);
+  assert.equal(res.box, 5);
+  assert.equal(res.counted, true, 'ответ, который довёл до архива, всё равно идёт в цель');
+  assert.equal(state.cards[w.id + '|ru'].arch, true, 'архив накрывает оба направления');
+});
+
+test('разминка не отправляет слово в архив', () => {
+  resetDeck();
+  const w = makeWord();
+  for (const key of [w.id + '|ru', w.id + '|es']) state.cards[key].box = 5;
+  srs.grade(w.id + '|es', 'match', true);
+  assert.equal(srs.isArchived(w.id), false, 'match коробки не двигает и судьбу слова не решает');
+});
+
+// --- источники очереди ---------------------------------------------------------
+
+test('случайное занятие не тащит архивные карточки', () => {
+  resetDeck();
+  const a = makeWord('uno', 'один');
+  const b = makeWord('dos', 'два');
+  srs.archiveWord(b.id, true);
+
+  srs.buildQueue({ source: 'random', size: 0, modes: new Set(), picked: null });
+  const keys = drain();
+  assert.ok(keys.some((k) => k.startsWith(a.id)));
+  assert.ok(
+    !keys.some((k) => k.startsWith(b.id)),
+    'архивные дают counted:false — цель на таком занятии не набралась бы',
+  );
+  srs.setSession({});
+});
+
+test('занятие из выбранных слов берёт и архивное, если его отметили', () => {
+  resetDeck();
+  const w = makeWord('archivado', 'в архиве');
+  srs.archiveWord(w.id, true);
+  srs.buildQueue({ source: 'picked', size: 0, modes: new Set(), picked: new Set([w.id]) });
+  assert.ok(drain().length > 0, 'просил именно его — прятать нечего');
+  srs.setSession({});
+});
+
+test('«повторить ещё раз» берёт только слова занятия, а не всю колоду', () => {
+  resetDeck();
+  const a = makeWord('uno', 'один');
+  const b = makeWord('dos', 'два');
+  const c = makeWord('tres', 'три');
+  state.cards[c.id + '|es'].due = addDays(9); // несозревшее — но повторить его всё равно можно
+
+  const n = srs.buildExtraQueue([a.id, c.id]);
+  assert.equal(n, 4, 'два слова по два направления');
+  // Читаем ровно столько, сколько собралось: на пустой очереди source:'due'
+  // пересобирается сам и дотянул бы сюда обычное занятие.
+  const ids = new Set(drain(n).map((k) => k.slice(0, k.lastIndexOf('|'))));
+  assert.deepEqual([...ids].sort(), [a.id, c.id].sort());
+  assert.equal(ids.has(b.id), false);
+
+  assert.equal(srs.buildExtraQueue([]), 0, 'повторять нечего — очередь пустая');
+});
+
+// --- кэш проверки ответа ---------------------------------------------------------
+
+test('кэш ответов замечает правку колоды', () => {
+  resetDeck();
+  makeWord('la llave', 'ключ');
+  // Опечатка в одну букву прощается...
+  assert.equal(srs.judge('llavve', 'la llave'), 'almost');
+
+  // ...но не тогда, когда получившееся — другое слово колоды.
+  const other = makeWord('llaves', 'ключи');
+  assert.equal(srs.judge('llaves', 'la llave'), 'no', 'кэш обязан увидеть новое слово');
+
+  updateWord(other.id, { es: 'cerradura' });
+  assert.equal(srs.judge('llaves', 'la llave'), 'almost', 'и правку тоже');
+
+  deleteWord(other.id);
+  assert.equal(srs.judge('llavve', 'la llave'), 'almost');
 });
 
 test('удалённое слово исчезает из очереди и не воскресает из колоды', async () => {
@@ -359,8 +468,9 @@ test('выбранный руками режим задаёт направлен
   assert.ok(flipped.every((k) => k.endsWith('|es')), 'карточки — это всегда ES→RU');
   assert.equal(srs.pickMode(flipped[0], new Set(['flip'])), 'flip');
 
-  // Веса режимов принудительный выбор не отменяет.
-  assert.equal(srs.MAX_BOX.flip, 3);
+  // Веса режимов принудительный выбор не отменяет: choice остаётся узнаванием
+  // из трёх вариантов и выше третьей коробки не поднимает никого.
+  assert.equal(srs.MAX_BOX.choice, 3);
   srs.setSession({});
 });
 

@@ -55,8 +55,23 @@ function uuid() {
 
 let index = new Map();
 
+// Счётчик правок колоды. Нужен только как ключ кэша: srs.js держит множество
+// нормализованных ответов, чтобы не пересобирать его на каждый неверный ответ,
+// и обязан заметить, когда слово добавили, поправили или удалили.
+// Живёт в памяти и не сохраняется: после перезагрузки кэш всё равно пустой.
+let deckRev = 0;
+
+export function deckRevision() {
+  return deckRev;
+}
+
+export function bumpDeck() {
+  deckRev++;
+}
+
 function reindex() {
   index = new Map(state.words.map((w) => [w.id, w]));
+  bumpDeck();
 }
 
 export function wordById(id) {
@@ -204,6 +219,7 @@ export function addWord({ es, ru, ex = '', mn = '', pos = '' }) {
   };
   state.words.push(word);
   index.set(word.id, word);
+  bumpDeck();
   makeCards(word.id);
   save();
   return word;
@@ -215,6 +231,7 @@ export function updateWord(id, patch) {
   const w = wordById(id);
   if (!w) return null;
   Object.assign(w, patch, { updated: now(), edited: true });
+  bumpDeck();
   save();
   return w;
 }
@@ -225,6 +242,7 @@ export function deleteWord(id) {
   if (!w) return;
   w.deleted = true;
   w.updated = now();
+  bumpDeck();
   save();
 }
 
@@ -331,6 +349,8 @@ export async function mergeSeed() {
 
   if (added || refreshed || catsChanged) {
     state.seedVersion = seed.version;
+    // Пополнение меняет тексты слов — кэш ответов в srs.js обязан это заметить.
+    bumpDeck();
     save();
   }
   return added;
