@@ -16,7 +16,13 @@ import assert from 'node:assert/strict';
 import { state, load, today, addDays, addWord, updateWord, deleteWord, mergeSeed } from '../src/state.js';
 import * as srs from '../src/srs.js';
 
+// В node нет ни IndexedDB, ни localStorage. db.js это переживает и уходит в память,
+// но честно печатает об этом два стека — на каждый прогон. Глушим ровно на время
+// загрузки, чтобы не топить в них список тестов.
+const realWarn = console.warn;
+console.warn = () => {};
 await load();
+console.warn = realWarn;
 
 function resetDeck() {
   state.words.length = 0;
