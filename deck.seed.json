@@ -1,5 +1,5 @@
 {
-  "version": 17,
+  "version": 19,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
@@ -17,262 +17,1703 @@
     "transporte": "Транспорт"
   },
   "words": [
-    { "id": "ser-yo", "es": "soy", "ru": "я — ser (постоянный признак)", "pos": "v", "cat": "verbos", "conj": true },
-    { "id": "ser-tu", "es": "eres", "ru": "ты — ser", "pos": "v", "cat": "verbos", "conj": true },
-    { "id": "ser-el", "es": "es", "ru": "он/она — ser", "pos": "v", "cat": "verbos", "conj": true },
-    { "id": "ser-nosotros", "es": "somos", "ru": "мы — ser", "pos": "v", "cat": "verbos", "conj": true },
-    { "id": "ser-vosotros", "es": "sois", "ru": "вы — ser (Испания)", "pos": "v", "cat": "verbos", "conj": true },
-    { "id": "ser-ellos", "es": "son", "ru": "они — ser", "pos": "v", "cat": "verbos", "conj": true },
-
-    { "id": "estar-yo", "es": "estoy", "ru": "я — estar (состояние, место)", "pos": "v", "cat": "verbos", "conj": true },
-    { "id": "estar-tu", "es": "estás", "ru": "ты — estar", "pos": "v", "cat": "verbos", "conj": true },
-    { "id": "estar-el", "es": "está", "ru": "он/она — estar", "pos": "v", "cat": "verbos", "conj": true },
-    { "id": "estar-nosotros", "es": "estamos", "ru": "мы — estar", "pos": "v", "cat": "verbos", "conj": true },
-    { "id": "estar-vosotros", "es": "estáis", "ru": "вы — estar (Испания)", "pos": "v", "cat": "verbos", "conj": true },
-    { "id": "estar-ellos", "es": "están", "ru": "они — estar", "pos": "v", "cat": "verbos", "conj": true },
-
-    { "id": "tener-yo", "es": "tengo", "ru": "я имею", "pos": "v", "cat": "verbos", "conj": true },
-    { "id": "tener-tu", "es": "tienes", "ru": "ты имеешь", "pos": "v", "cat": "verbos", "conj": true },
-    { "id": "tener-el", "es": "tiene", "ru": "он/она имеет", "pos": "v", "cat": "verbos", "conj": true },
-    { "id": "tener-nosotros", "es": "tenemos", "ru": "мы имеем", "pos": "v", "cat": "verbos", "conj": true },
-    { "id": "tener-vosotros", "es": "tenéis", "ru": "вы имеете (Испания)", "pos": "v", "cat": "verbos", "conj": true },
-    { "id": "tener-ellos", "es": "tienen", "ru": "они имеют", "pos": "v", "cat": "verbos", "conj": true },
-
-    { "id": "familia-madre", "es": "la madre", "ru": "мать", "pos": "n", "cat": "familia" },
-    { "id": "familia-padre", "es": "el padre", "ru": "отец", "pos": "n", "cat": "familia" },
-    { "id": "familia-hijo", "es": "el hijo", "ru": "сын", "pos": "n", "cat": "familia" },
-    { "id": "familia-hija", "es": "la hija", "ru": "дочь", "pos": "n", "cat": "familia" },
-    { "id": "familia-hermano", "es": "el hermano", "ru": "брат", "pos": "n", "cat": "familia" },
-    { "id": "familia-hermana", "es": "la hermana", "ru": "сестра", "pos": "n", "cat": "familia" },
-    { "id": "familia-abuela", "es": "la abuela", "ru": "бабушка", "pos": "n", "cat": "familia" },
-    { "id": "familia-abuelo", "es": "el abuelo", "ru": "дедушка", "pos": "n", "cat": "familia" },
-    { "id": "familia-tia", "es": "la tía", "ru": "тётя", "pos": "n", "cat": "familia" },
-    { "id": "familia-tio", "es": "el tío", "ru": "дядя", "pos": "n", "cat": "familia" },
-    { "id": "familia-primo", "es": "el primo", "ru": "двоюродный брат", "pos": "n", "cat": "familia" },
-    { "id": "familia-prima", "es": "la prima", "ru": "двоюродная сестра", "pos": "n", "cat": "familia" },
-    { "id": "familia-sobrino", "es": "el sobrino", "ru": "племянник", "pos": "n", "cat": "familia" },
-    { "id": "familia-sobrina", "es": "la sobrina", "ru": "племянница", "pos": "n", "cat": "familia" },
-
-    { "id": "cuerpo-cuerpo", "es": "el cuerpo", "ru": "тело", "pos": "n", "cat": "cuerpo" },
-    { "id": "cuerpo-cabeza", "es": "la cabeza", "ru": "голова", "pos": "n", "cat": "cuerpo" },
-    { "id": "cuerpo-ojos", "es": "los ojos", "ru": "глаза", "pos": "n", "cat": "cuerpo" },
-    { "id": "cuerpo-oreja", "es": "la oreja", "ru": "ухо", "pos": "n", "cat": "cuerpo" },
-    { "id": "cuerpo-labios", "es": "los labios", "ru": "губы", "pos": "n", "cat": "cuerpo" },
-    { "id": "cuerpo-nariz", "es": "la nariz", "ru": "нос", "pos": "n", "cat": "cuerpo" },
-    { "id": "cuerpo-brazo", "es": "el brazo", "ru": "рука", "pos": "n", "cat": "cuerpo" },
-    { "id": "cuerpo-boca", "es": "la boca", "ru": "рот", "pos": "n", "cat": "cuerpo" },
-    { "id": "cuerpo-piernas", "es": "las piernas", "ru": "ноги", "pos": "n", "cat": "cuerpo" },
-    { "id": "cuerpo-manos", "es": "las manos", "ru": "кисти рук", "pos": "n", "cat": "cuerpo" },
-    { "id": "cuerpo-pie", "es": "el pie", "ru": "ступня", "pos": "n", "cat": "cuerpo" },
-
-    { "id": "casa-casa", "es": "la casa", "ru": "дом", "pos": "n", "cat": "casa" },
-    { "id": "casa-apartamento", "es": "el apartamento", "ru": "квартира", "pos": "n", "cat": "casa" },
-    { "id": "casa-habitacion", "es": "la habitación", "ru": "комната", "pos": "n", "cat": "casa" },
-    { "id": "casa-dormitorio", "es": "el dormitorio", "ru": "спальня", "pos": "n", "cat": "casa" },
-    { "id": "casa-salon", "es": "el salón", "ru": "гостиная", "pos": "n", "cat": "casa" },
-    { "id": "casa-cocina", "es": "la cocina", "ru": "кухня", "pos": "n", "cat": "casa" },
-    { "id": "casa-bano", "es": "el baño", "ru": "ванная; туалет", "pos": "n", "cat": "casa" },
-    { "id": "casa-pasillo", "es": "el pasillo", "ru": "коридор", "pos": "n", "cat": "casa" },
-    { "id": "casa-balcon", "es": "el balcón", "ru": "балкон", "pos": "n", "cat": "casa" },
-    { "id": "casa-puerta", "es": "la puerta", "ru": "дверь", "pos": "n", "cat": "casa" },
-    { "id": "casa-ventana", "es": "la ventana", "ru": "окно", "pos": "n", "cat": "casa" },
-    { "id": "casa-pared", "es": "la pared", "ru": "стена", "pos": "n", "cat": "casa" },
-    { "id": "casa-tejado", "es": "el tejado", "ru": "крыша", "pos": "n", "cat": "casa" },
-    { "id": "casa-suelo", "es": "el suelo", "ru": "пол", "pos": "n", "cat": "casa" },
-
-    { "id": "dorm-cama", "es": "la cama", "ru": "кровать", "pos": "n", "cat": "dormitorio" },
-    { "id": "dorm-colchon", "es": "el colchón", "ru": "матрас", "pos": "n", "cat": "dormitorio" },
-    { "id": "dorm-almohada", "es": "la almohada", "ru": "подушка", "pos": "n", "cat": "dormitorio" },
-    { "id": "dorm-sabana", "es": "la sábana", "ru": "простыня", "pos": "n", "cat": "dormitorio" },
-    { "id": "dorm-manta", "es": "la manta", "ru": "одеяло", "pos": "n", "cat": "dormitorio" },
-    { "id": "dorm-armario", "es": "el armario", "ru": "шкаф", "pos": "n", "cat": "dormitorio" },
-    { "id": "dorm-estanteria", "es": "la estantería", "ru": "стеллаж", "pos": "n", "cat": "dormitorio" },
-    { "id": "dorm-mesita", "es": "la mesita de noche", "ru": "тумбочка", "pos": "n", "cat": "dormitorio" },
-    { "id": "dorm-lampara", "es": "la lámpara", "ru": "лампа", "pos": "n", "cat": "dormitorio" },
-    { "id": "dorm-despertador", "es": "el despertador", "ru": "будильник", "pos": "n", "cat": "dormitorio" },
-    { "id": "dorm-cortina", "es": "la cortina", "ru": "шторы", "pos": "n", "cat": "dormitorio" },
-    { "id": "dorm-alfombra", "es": "la alfombra", "ru": "ковёр", "pos": "n", "cat": "dormitorio" },
-    { "id": "dorm-pijama", "es": "el pijama", "ru": "пижама", "pos": "n", "cat": "dormitorio" },
-    { "id": "dorm-monstruo", "es": "el monstruo", "ru": "монстр", "pos": "n", "cat": "dormitorio" },
-
-    { "id": "desc-espaciosa", "es": "espaciosa", "ru": "просторная", "pos": "adj", "cat": "descripcion" },
-    { "id": "desc-luminosa", "es": "luminosa", "ru": "светлая, солнечная", "pos": "adj", "cat": "descripcion" },
-    { "id": "desc-practico", "es": "práctico", "ru": "практичный", "pos": "adj", "cat": "descripcion" },
-    { "id": "desc-suave", "es": "suave", "ru": "мягкая, приятная на ощупь", "pos": "adj", "cat": "descripcion" },
-    { "id": "desc-diseno", "es": "el diseño", "ru": "дизайн", "pos": "n", "cat": "descripcion" },
-    { "id": "desc-estampados", "es": "los estampados", "ru": "узоры (на ткани)", "pos": "n", "cat": "descripcion" },
-    { "id": "desc-espacio", "es": "tiene mucho espacio", "ru": "есть много места", "pos": "phrase", "cat": "descripcion" },
-    { "id": "desc-antiguo", "es": "antiguo", "ru": "старый", "pos": "adj", "cat": "descripcion" },
-    { "id": "desc-grande", "es": "grande", "ru": "большой, большая", "pos": "adj", "cat": "descripcion" },
-    { "id": "desc-bonito", "es": "bonito", "ru": "красивый", "pos": "adj", "cat": "descripcion" },
-    { "id": "desc-tranquilo", "es": "tranquilo", "ru": "тихий, спокойный", "pos": "adj", "cat": "descripcion" },
-    { "id": "desc-exterior", "es": "exterior", "ru": "окнами на улицу", "pos": "adj", "cat": "descripcion" },
-    { "id": "desc-frio", "es": "frío", "ru": "холодный", "pos": "adj", "cat": "descripcion" },
-    { "id": "desc-moderna", "es": "moderna", "ru": "современная", "pos": "adj", "cat": "descripcion" },
-    { "id": "desc-pequena", "es": "pequeña", "ru": "маленькая", "pos": "adj", "cat": "descripcion" },
-    { "id": "desc-fea", "es": "fea", "ru": "некрасивая, уродливая", "pos": "adj", "cat": "descripcion" },
-    { "id": "desc-ruidosa", "es": "ruidosa", "ru": "шумная", "pos": "adj", "cat": "descripcion" },
-    { "id": "desc-interior", "es": "interior", "ru": "окнами во двор", "pos": "adj", "cat": "descripcion" },
-    { "id": "desc-calurosa", "es": "calurosa", "ru": "жаркая, душная", "pos": "adj", "cat": "descripcion" },
-    { "id": "desc-muy", "es": "muy", "ru": "очень", "pos": "adv", "cat": "descripcion" },
-    { "id": "desc-bastante", "es": "bastante", "ru": "довольно, достаточно", "pos": "adv", "cat": "descripcion" },
-    { "id": "verbos-ensenar", "es": "enseñar", "ru": "учить, преподавать; показывать", "pos": "v", "cat": "verbos" },
-    { "id": "desc-al-lado", "es": "al lado", "ru": "рядом; al lado de — рядом с", "pos": "phrase", "cat": "descripcion" },
-    { "id": "desc-tantas", "es": "tantas", "ru": "так много, столько (ж.р. мн.ч.) — tanto/tanta/tantos/tantas", "pos": "adj", "cat": "descripcion" },
-
-    { "id": "rutina-despertarse", "es": "despertarse", "ru": "просыпаться", "pos": "v", "cat": "rutina" },
-    { "id": "rutina-levantarse", "es": "levantarse", "ru": "вставать, подниматься (levantarte — тебе вставать)", "pos": "v", "cat": "rutina" },
-    { "id": "rutina-sales", "es": "sales", "ru": "ты выходишь, ты уходишь — salir", "pos": "v", "cat": "rutina" },
-    { "id": "rutina-despues", "es": "después", "ru": "потом, после; después de — после", "pos": "adv", "cat": "tiempo" },
-    { "id": "rutina-ducharse", "es": "ducharse", "ru": "принимать душ", "pos": "v", "cat": "rutina" },
-    { "id": "rutina-desayunar", "es": "desayunar", "ru": "завтракать", "pos": "v", "cat": "rutina" },
-    { "id": "rutina-comer", "es": "comer", "ru": "обедать; есть", "pos": "v", "cat": "rutina" },
-    { "id": "rutina-cenar", "es": "cenar", "ru": "ужинать", "pos": "v", "cat": "rutina" },
-    { "id": "rutina-acostarse", "es": "acostarse", "ru": "ложиться спать", "pos": "v", "cat": "rutina" },
-    { "id": "rutina-paseo", "es": "el paseo", "ru": "прогулка", "pos": "n", "cat": "rutina" },
-    { "id": "rutina-barrer", "es": "barrer el piso", "ru": "подметать пол", "pos": "phrase", "cat": "rutina" },
-    { "id": "rutina-lavar-ropa", "es": "lavar la ropa", "ru": "стирать одежду", "pos": "phrase", "cat": "rutina" },
-    { "id": "rutina-trapear", "es": "trapear el piso", "ru": "мыть пол (шваброй)", "pos": "phrase", "cat": "rutina" },
-    { "id": "rutina-fregar", "es": "fregar los platos", "ru": "мыть посуду", "pos": "phrase", "cat": "rutina" },
-    { "id": "rutina-compras", "es": "hacer las compras", "ru": "ходить за покупками", "pos": "phrase", "cat": "rutina" },
-    { "id": "rutina-aspirar", "es": "aspirar la alfombra", "ru": "пылесосить ковёр", "pos": "phrase", "cat": "rutina" },
-
-    { "id": "tiempo-manana", "es": "por la mañana", "ru": "утром", "pos": "phrase", "cat": "tiempo" },
-    { "id": "tiempo-mediodia", "es": "al mediodía", "ru": "в полдень", "pos": "phrase", "cat": "tiempo" },
-    { "id": "tiempo-tarde-dia", "es": "por la tarde", "ru": "днём, вечером", "pos": "phrase", "cat": "tiempo" },
-    { "id": "tiempo-noche", "es": "por la noche", "ru": "ночью", "pos": "phrase", "cat": "tiempo" },
-    { "id": "tiempo-temprano", "es": "temprano", "ru": "рано", "pos": "adv", "cat": "tiempo" },
-    { "id": "tiempo-tarde", "es": "tarde", "ru": "поздно", "pos": "adv", "cat": "tiempo" },
-    { "id": "tiempo-antes", "es": "antes", "ru": "раньше, перед; antes de — до", "pos": "adv", "cat": "tiempo" },
-    { "id": "tiempo-siempre", "es": "siempre", "ru": "всегда", "pos": "adv", "cat": "tiempo" },
-    { "id": "tiempo-casi-siempre", "es": "casi siempre", "ru": "почти всегда", "pos": "phrase", "cat": "tiempo" },
-    { "id": "tiempo-a-menudo", "es": "a menudo", "ru": "часто", "pos": "phrase", "cat": "tiempo" },
-    { "id": "tiempo-frecuentemente", "es": "frecuentemente", "ru": "часто, регулярно", "pos": "adv", "cat": "tiempo" },
-    { "id": "tiempo-normalmente", "es": "normalmente", "ru": "обычно", "pos": "adv", "cat": "tiempo" },
-    { "id": "tiempo-de-vez", "es": "de vez en cuando", "ru": "время от времени", "pos": "phrase", "cat": "tiempo" },
-    { "id": "tiempo-a-veces", "es": "a veces", "ru": "иногда", "pos": "phrase", "cat": "tiempo" },
-    { "id": "tiempo-pocas-veces", "es": "pocas veces", "ru": "редко", "pos": "phrase", "cat": "tiempo" },
-    { "id": "tiempo-nunca", "es": "nunca", "ru": "никогда", "pos": "adv", "cat": "tiempo" },
-    { "id": "tiempo-casi-nunca", "es": "casi nunca", "ru": "почти никогда", "pos": "phrase", "cat": "tiempo" },
-    { "id": "tiempo-jamas", "es": "jamás", "ru": "никогда, ни за что (сильнее nunca)", "pos": "adv", "cat": "tiempo" },
-    { "id": "tiempo-luego", "es": "luego", "ru": "потом, затем", "pos": "adv", "cat": "tiempo" },
-    { "id": "tiempo-alrededor", "es": "alrededor", "ru": "вокруг; alrededor de — около, приблизительно", "pos": "adv", "cat": "tiempo" },
-    { "id": "tiempo-durante", "es": "durante", "ru": "в течение, во время", "pos": "adv", "cat": "tiempo" },
-
-    { "id": "cal-lunes", "es": "el lunes", "ru": "понедельник", "pos": "n", "cat": "calendario" },
-    { "id": "cal-martes", "es": "el martes", "ru": "вторник", "pos": "n", "cat": "calendario" },
-    { "id": "cal-miercoles", "es": "el miércoles", "ru": "среда", "pos": "n", "cat": "calendario" },
-    { "id": "cal-jueves", "es": "el jueves", "ru": "четверг", "pos": "n", "cat": "calendario" },
-    { "id": "cal-viernes", "es": "el viernes", "ru": "пятница", "pos": "n", "cat": "calendario" },
-    { "id": "cal-sabado", "es": "el sábado", "ru": "суббота", "pos": "n", "cat": "calendario" },
-    { "id": "cal-domingo", "es": "el domingo", "ru": "воскресенье", "pos": "n", "cat": "calendario" },
-
-    { "id": "cal-enero", "es": "enero", "ru": "январь", "pos": "n", "cat": "calendario" },
-    { "id": "cal-febrero", "es": "febrero", "ru": "февраль", "pos": "n", "cat": "calendario" },
-    { "id": "cal-marzo", "es": "marzo", "ru": "март", "pos": "n", "cat": "calendario" },
-    { "id": "cal-abril", "es": "abril", "ru": "апрель", "pos": "n", "cat": "calendario" },
-    { "id": "cal-mayo", "es": "mayo", "ru": "май", "pos": "n", "cat": "calendario" },
-    { "id": "cal-junio", "es": "junio", "ru": "июнь", "pos": "n", "cat": "calendario" },
-    { "id": "cal-julio", "es": "julio", "ru": "июль", "pos": "n", "cat": "calendario" },
-    { "id": "cal-agosto", "es": "agosto", "ru": "август", "pos": "n", "cat": "calendario" },
-    { "id": "cal-septiembre", "es": "septiembre", "ru": "сентябрь", "pos": "n", "cat": "calendario" },
-    { "id": "cal-octubre", "es": "octubre", "ru": "октябрь", "pos": "n", "cat": "calendario" },
-    { "id": "cal-noviembre", "es": "noviembre", "ru": "ноябрь", "pos": "n", "cat": "calendario" },
-    { "id": "cal-diciembre", "es": "diciembre", "ru": "декабрь", "pos": "n", "cat": "calendario" },
-
-    { "id": "colo-rojo", "es": "rojo", "ru": "красный", "pos": "n", "cat": "colores" },
-    { "id": "colo-azul", "es": "azul", "ru": "синий, голубой", "pos": "n", "cat": "colores" },
-    { "id": "colo-verde", "es": "verde", "ru": "зелёный", "pos": "n", "cat": "colores" },
-    { "id": "colo-amarillo", "es": "amarillo", "ru": "жёлтый", "pos": "n", "cat": "colores" },
-    { "id": "colo-negro", "es": "negro", "ru": "чёрный", "pos": "n", "cat": "colores" },
-    { "id": "colo-blanco", "es": "blanco", "ru": "белый", "pos": "n", "cat": "colores" },
-    { "id": "colo-gris", "es": "gris", "ru": "серый", "pos": "n", "cat": "colores" },
-    { "id": "colo-naranja", "es": "naranja", "ru": "оранжевый", "pos": "n", "cat": "colores" },
-    { "id": "colo-rosa", "es": "rosa", "ru": "розовый", "pos": "n", "cat": "colores" },
-    { "id": "colo-marron", "es": "marrón", "ru": "коричневый", "pos": "n", "cat": "colores" },
-    { "id": "colo-morado", "es": "morado", "ru": "фиолетовый", "pos": "n", "cat": "colores" },
-
-    { "id": "adje-guapo", "es": "guapo", "ru": "красивый, симпатичный — о человеке", "pos": "adj", "cat": "adjetivos" },
-    { "id": "adje-inteligente", "es": "inteligente", "ru": "умный", "pos": "adj", "cat": "adjetivos" },
-    { "id": "adje-comodo", "es": "cómodo", "ru": "удобный", "pos": "adj", "cat": "adjetivos" },
-    { "id": "adje-facil", "es": "fácil", "ru": "лёгкий, простой", "pos": "adj", "cat": "adjetivos" },
-    { "id": "adje-dificil", "es": "difícil", "ru": "трудный, сложный", "pos": "adj", "cat": "adjetivos" },
-    { "id": "adje-nuevo", "es": "nuevo", "ru": "новый", "pos": "adj", "cat": "adjetivos" },
-    { "id": "adje-viejo", "es": "viejo", "ru": "старый, пожилой", "pos": "adj", "cat": "adjetivos" },
-    { "id": "adje-bueno", "es": "bueno", "ru": "хороший", "pos": "adj", "cat": "adjetivos" },
-    { "id": "adje-malo", "es": "malo", "ru": "плохой", "pos": "adj", "cat": "adjetivos" },
-    { "id": "adje-alegre", "es": "alegre", "ru": "весёлый, радостный", "pos": "adj", "cat": "adjetivos" },
-    { "id": "adje-triste", "es": "triste", "ru": "грустный", "pos": "adj", "cat": "adjetivos" },
-    { "id": "adje-cansado", "es": "cansado", "ru": "уставший", "pos": "adj", "cat": "adjetivos" },
-    { "id": "adje-joven", "es": "joven", "ru": "молодой", "pos": "adj", "cat": "adjetivos" },
-    { "id": "adje-alto", "es": "alto", "ru": "высокий", "pos": "adj", "cat": "adjetivos" },
-    { "id": "adje-bajo", "es": "bajo", "ru": "низкий", "pos": "adj", "cat": "adjetivos" },
-    { "id": "adje-caro", "es": "caro", "ru": "дорогой", "pos": "adj", "cat": "adjetivos" },
-    { "id": "adje-barato", "es": "barato", "ru": "дешёвый", "pos": "adj", "cat": "adjetivos" },
-    { "id": "adje-limpio", "es": "limpio", "ru": "чистый", "pos": "adj", "cat": "adjetivos" },
-    { "id": "adje-sucio", "es": "sucio", "ru": "грязный", "pos": "adj", "cat": "adjetivos" },
-    { "id": "adje-fuerte", "es": "fuerte", "ru": "сильный", "pos": "adj", "cat": "adjetivos" },
-    { "id": "adje-rapido", "es": "rápido", "ru": "быстрый", "pos": "adj", "cat": "adjetivos" },
-    { "id": "adje-lento", "es": "lento", "ru": "медленный", "pos": "adj", "cat": "adjetivos" },
-    { "id": "adje-listo", "es": "listo", "ru": "готов(а) — listo/lista", "pos": "adj", "cat": "adjetivos" },
-    { "id": "adje-divertido", "es": "divertido", "ru": "весёлый, интересный — о занятии", "pos": "adj", "cat": "adjetivos" },
-
-    { "id": "salu-hola", "es": "hola", "ru": "привет", "pos": "phrase", "cat": "saludos" },
-    { "id": "salu-adios", "es": "adiós", "ru": "пока, до свидания", "pos": "phrase", "cat": "saludos" },
-    { "id": "salu-buenos-dias", "es": "buenos días", "ru": "доброе утро, добрый день", "pos": "phrase", "cat": "saludos" },
-    { "id": "salu-buenas-tardes", "es": "buenas tardes", "ru": "добрый день — после полудня", "pos": "phrase", "cat": "saludos" },
-    { "id": "salu-buenas-noches", "es": "buenas noches", "ru": "добрый вечер, спокойной ночи", "pos": "phrase", "cat": "saludos" },
-    { "id": "salu-hasta-luego", "es": "hasta luego", "ru": "до скорого", "pos": "phrase", "cat": "saludos" },
-    { "id": "salu-hasta-manana", "es": "hasta mañana", "ru": "до завтра", "pos": "phrase", "cat": "saludos" },
-    { "id": "salu-por-favor", "es": "por favor", "ru": "пожалуйста — просьба", "pos": "phrase", "cat": "saludos" },
-    { "id": "salu-gracias", "es": "gracias", "ru": "спасибо", "pos": "phrase", "cat": "saludos" },
-    { "id": "salu-muchas-gracias", "es": "muchas gracias", "ru": "большое спасибо", "pos": "phrase", "cat": "saludos" },
-    { "id": "salu-de-nada", "es": "de nada", "ru": "не за что", "pos": "phrase", "cat": "saludos" },
-    { "id": "salu-perdon", "es": "perdón", "ru": "извините, простите", "pos": "phrase", "cat": "saludos" },
-    { "id": "salu-lo-siento", "es": "lo siento", "ru": "мне жаль", "pos": "phrase", "cat": "saludos" },
-    { "id": "salu-mucho-gusto", "es": "mucho gusto", "ru": "очень приятно", "pos": "phrase", "cat": "saludos" },
-    { "id": "salu-que-tal", "es": "¿qué tal?", "ru": "как дела?", "pos": "phrase", "cat": "saludos" },
-    { "id": "salu-si", "es": "sí", "ru": "да", "pos": "phrase", "cat": "saludos" },
-    { "id": "salu-no", "es": "no", "ru": "нет", "pos": "phrase", "cat": "saludos" },
-    { "id": "salu-vale", "es": "vale", "ru": "ладно, хорошо", "pos": "phrase", "cat": "saludos" },
-
-    { "id": "preg-que", "es": "¿qué?", "ru": "что?", "pos": "phrase", "cat": "preguntas" },
-    { "id": "preg-quien", "es": "¿quién?", "ru": "кто?", "pos": "phrase", "cat": "preguntas" },
-    { "id": "preg-donde", "es": "¿dónde?", "ru": "где?", "pos": "phrase", "cat": "preguntas" },
-    { "id": "preg-adonde", "es": "¿adónde?", "ru": "куда?", "pos": "phrase", "cat": "preguntas" },
-    { "id": "preg-cuando", "es": "¿cuándo?", "ru": "когда?", "pos": "phrase", "cat": "preguntas" },
-    { "id": "preg-como", "es": "¿cómo?", "ru": "как?", "pos": "phrase", "cat": "preguntas" },
-    { "id": "preg-por-que", "es": "¿por qué?", "ru": "почему?", "pos": "phrase", "cat": "preguntas" },
-    { "id": "preg-porque", "es": "porque", "ru": "потому что", "pos": "phrase", "cat": "preguntas" },
-    { "id": "preg-cuanto", "es": "¿cuánto?", "ru": "сколько?", "pos": "phrase", "cat": "preguntas" },
-    { "id": "preg-cual", "es": "¿cuál?", "ru": "какой, который?", "pos": "phrase", "cat": "preguntas" },
-
-    { "id": "verb-hablar", "es": "hablar", "ru": "говорить", "pos": "v", "cat": "verbos" },
-    { "id": "verb-beber", "es": "beber", "ru": "пить", "pos": "v", "cat": "verbos" },
-    { "id": "verb-vivir", "es": "vivir", "ru": "жить", "pos": "v", "cat": "verbos" },
-    { "id": "verb-trabajar", "es": "trabajar", "ru": "работать", "pos": "v", "cat": "verbos" },
-    { "id": "verb-estudiar", "es": "estudiar", "ru": "учиться, изучать", "pos": "v", "cat": "verbos" },
-    { "id": "verb-querer", "es": "querer", "ru": "хотеть, любить", "pos": "v", "cat": "verbos" },
-    { "id": "verb-poder", "es": "poder", "ru": "мочь", "pos": "v", "cat": "verbos" },
-    { "id": "verb-ir", "es": "ir", "ru": "идти, ехать", "pos": "v", "cat": "verbos" },
-    { "id": "verb-hacer", "es": "hacer", "ru": "делать", "pos": "v", "cat": "verbos" },
-    { "id": "verb-ver", "es": "ver", "ru": "видеть", "pos": "v", "cat": "verbos" },
-    { "id": "verb-saber", "es": "saber", "ru": "знать", "pos": "v", "cat": "verbos" },
-    { "id": "verb-necesitar", "es": "necesitar", "ru": "нуждаться", "pos": "v", "cat": "verbos" },
-    { "id": "verb-gustar", "es": "gustar", "ru": "нравиться", "pos": "v", "cat": "verbos" },
-    { "id": "verb-ayudar", "es": "ayudar", "ru": "помогать", "pos": "v", "cat": "verbos" },
-    { "id": "verb-empezar", "es": "empezar", "ru": "начинать", "pos": "v", "cat": "verbos" },
-    { "id": "verb-terminar", "es": "terminar", "ru": "заканчивать, заканчиваться", "pos": "v", "cat": "verbos" },
-    { "id": "verb-se-queda", "es": "se queda", "ru": "он/она остаётся — quedarse", "pos": "v", "cat": "verbos" },
-    { "id": "verb-decide", "es": "decide", "ru": "он/она решает — decidir", "pos": "v", "cat": "verbos" },
-    { "id": "verb-caminar", "es": "caminar", "ru": "идти пешком, гулять", "pos": "v", "cat": "verbos" },
-
-    { "id": "transp-moto", "es": "la moto", "ru": "мотоцикл", "pos": "n", "cat": "transporte" },
-    { "id": "transp-metro", "es": "el metro", "ru": "метро", "pos": "n", "cat": "transporte" },
-    { "id": "transp-bicicleta", "es": "la bicicleta", "ru": "велосипед", "pos": "n", "cat": "transporte" },
-    { "id": "transp-coche", "es": "el coche", "ru": "машина, автомобиль", "pos": "n", "cat": "transporte" },
-    { "id": "transp-autobus", "es": "el autobús", "ru": "автобус", "pos": "n", "cat": "transporte" },
-    { "id": "transp-andando", "es": "andando", "ru": "пешком (тж. a pie)", "pos": "adv", "cat": "transporte" },
-    { "id": "transp-medios", "es": "los medios de transporte", "ru": "виды транспорта", "pos": "n", "cat": "transporte" }
+    {
+      "id": "ser-yo",
+      "es": "soy",
+      "ru": "я — ser (постоянный признак)",
+      "pos": "v",
+      "cat": "verbos",
+      "conj": true
+    },
+    {
+      "id": "ser-tu",
+      "es": "eres",
+      "ru": "ты — ser",
+      "pos": "v",
+      "cat": "verbos",
+      "conj": true
+    },
+    {
+      "id": "ser-el",
+      "es": "es",
+      "ru": "он/она — ser",
+      "pos": "v",
+      "cat": "verbos",
+      "conj": true
+    },
+    {
+      "id": "ser-nosotros",
+      "es": "somos",
+      "ru": "мы — ser",
+      "pos": "v",
+      "cat": "verbos",
+      "conj": true
+    },
+    {
+      "id": "ser-vosotros",
+      "es": "sois",
+      "ru": "вы — ser (Испания)",
+      "pos": "v",
+      "cat": "verbos",
+      "conj": true
+    },
+    {
+      "id": "ser-ellos",
+      "es": "son",
+      "ru": "они — ser",
+      "pos": "v",
+      "cat": "verbos",
+      "conj": true
+    },
+    {
+      "id": "estar-yo",
+      "es": "estoy",
+      "ru": "я — estar (состояние, место)",
+      "pos": "v",
+      "cat": "verbos",
+      "conj": true
+    },
+    {
+      "id": "estar-tu",
+      "es": "estás",
+      "ru": "ты — estar",
+      "pos": "v",
+      "cat": "verbos",
+      "conj": true
+    },
+    {
+      "id": "estar-el",
+      "es": "está",
+      "ru": "он/она — estar",
+      "pos": "v",
+      "cat": "verbos",
+      "conj": true
+    },
+    {
+      "id": "estar-nosotros",
+      "es": "estamos",
+      "ru": "мы — estar",
+      "pos": "v",
+      "cat": "verbos",
+      "conj": true
+    },
+    {
+      "id": "estar-vosotros",
+      "es": "estáis",
+      "ru": "вы — estar (Испания)",
+      "pos": "v",
+      "cat": "verbos",
+      "conj": true
+    },
+    {
+      "id": "estar-ellos",
+      "es": "están",
+      "ru": "они — estar",
+      "pos": "v",
+      "cat": "verbos",
+      "conj": true
+    },
+    {
+      "id": "tener-yo",
+      "es": "tengo",
+      "ru": "я имею",
+      "pos": "v",
+      "cat": "verbos",
+      "conj": true
+    },
+    {
+      "id": "tener-tu",
+      "es": "tienes",
+      "ru": "ты имеешь",
+      "pos": "v",
+      "cat": "verbos",
+      "conj": true
+    },
+    {
+      "id": "tener-el",
+      "es": "tiene",
+      "ru": "он/она имеет",
+      "pos": "v",
+      "cat": "verbos",
+      "conj": true
+    },
+    {
+      "id": "tener-nosotros",
+      "es": "tenemos",
+      "ru": "мы имеем",
+      "pos": "v",
+      "cat": "verbos",
+      "conj": true
+    },
+    {
+      "id": "tener-vosotros",
+      "es": "tenéis",
+      "ru": "вы имеете (Испания)",
+      "pos": "v",
+      "cat": "verbos",
+      "conj": true
+    },
+    {
+      "id": "tener-ellos",
+      "es": "tienen",
+      "ru": "они имеют",
+      "pos": "v",
+      "cat": "verbos",
+      "conj": true
+    },
+    {
+      "id": "familia-madre",
+      "es": "la madre",
+      "ru": "мать",
+      "pos": "n",
+      "cat": "familia"
+    },
+    {
+      "id": "familia-padre",
+      "es": "el padre",
+      "ru": "отец",
+      "pos": "n",
+      "cat": "familia"
+    },
+    {
+      "id": "familia-hijo",
+      "es": "el hijo",
+      "ru": "сын",
+      "pos": "n",
+      "cat": "familia"
+    },
+    {
+      "id": "familia-hija",
+      "es": "la hija",
+      "ru": "дочь",
+      "pos": "n",
+      "cat": "familia"
+    },
+    {
+      "id": "familia-hermano",
+      "es": "el hermano",
+      "ru": "брат",
+      "pos": "n",
+      "cat": "familia"
+    },
+    {
+      "id": "familia-hermana",
+      "es": "la hermana",
+      "ru": "сестра",
+      "pos": "n",
+      "cat": "familia"
+    },
+    {
+      "id": "familia-abuela",
+      "es": "la abuela",
+      "ru": "бабушка",
+      "pos": "n",
+      "cat": "familia"
+    },
+    {
+      "id": "familia-abuelo",
+      "es": "el abuelo",
+      "ru": "дедушка",
+      "pos": "n",
+      "cat": "familia"
+    },
+    {
+      "id": "familia-tia",
+      "es": "la tía",
+      "ru": "тётя",
+      "pos": "n",
+      "cat": "familia"
+    },
+    {
+      "id": "familia-tio",
+      "es": "el tío",
+      "ru": "дядя",
+      "pos": "n",
+      "cat": "familia"
+    },
+    {
+      "id": "familia-primo",
+      "es": "el primo",
+      "ru": "двоюродный брат",
+      "pos": "n",
+      "cat": "familia"
+    },
+    {
+      "id": "familia-prima",
+      "es": "la prima",
+      "ru": "двоюродная сестра",
+      "pos": "n",
+      "cat": "familia"
+    },
+    {
+      "id": "familia-sobrino",
+      "es": "el sobrino",
+      "ru": "племянник",
+      "pos": "n",
+      "cat": "familia"
+    },
+    {
+      "id": "familia-sobrina",
+      "es": "la sobrina",
+      "ru": "племянница",
+      "pos": "n",
+      "cat": "familia"
+    },
+    {
+      "id": "cuerpo-cuerpo",
+      "es": "el cuerpo",
+      "ru": "тело",
+      "pos": "n",
+      "cat": "cuerpo"
+    },
+    {
+      "id": "cuerpo-cabeza",
+      "es": "la cabeza",
+      "ru": "голова",
+      "pos": "n",
+      "cat": "cuerpo"
+    },
+    {
+      "id": "cuerpo-ojos",
+      "es": "los ojos",
+      "ru": "глаза",
+      "pos": "n",
+      "cat": "cuerpo"
+    },
+    {
+      "id": "cuerpo-oreja",
+      "es": "la oreja",
+      "ru": "ухо",
+      "pos": "n",
+      "cat": "cuerpo"
+    },
+    {
+      "id": "cuerpo-labios",
+      "es": "los labios",
+      "ru": "губы",
+      "pos": "n",
+      "cat": "cuerpo"
+    },
+    {
+      "id": "cuerpo-nariz",
+      "es": "la nariz",
+      "ru": "нос",
+      "pos": "n",
+      "cat": "cuerpo"
+    },
+    {
+      "id": "cuerpo-brazo",
+      "es": "el brazo",
+      "ru": "рука",
+      "pos": "n",
+      "cat": "cuerpo"
+    },
+    {
+      "id": "cuerpo-boca",
+      "es": "la boca",
+      "ru": "рот",
+      "pos": "n",
+      "cat": "cuerpo"
+    },
+    {
+      "id": "cuerpo-piernas",
+      "es": "las piernas",
+      "ru": "ноги",
+      "pos": "n",
+      "cat": "cuerpo"
+    },
+    {
+      "id": "cuerpo-manos",
+      "es": "las manos",
+      "ru": "кисти рук",
+      "pos": "n",
+      "cat": "cuerpo"
+    },
+    {
+      "id": "cuerpo-pie",
+      "es": "el pie",
+      "ru": "ступня",
+      "pos": "n",
+      "cat": "cuerpo"
+    },
+    {
+      "id": "casa-casa",
+      "es": "la casa",
+      "ru": "дом",
+      "pos": "n",
+      "cat": "casa"
+    },
+    {
+      "id": "casa-apartamento",
+      "es": "el apartamento",
+      "ru": "квартира",
+      "pos": "n",
+      "cat": "casa"
+    },
+    {
+      "id": "casa-habitacion",
+      "es": "la habitación",
+      "ru": "комната",
+      "pos": "n",
+      "cat": "casa"
+    },
+    {
+      "id": "casa-dormitorio",
+      "es": "el dormitorio",
+      "ru": "спальня",
+      "pos": "n",
+      "cat": "casa"
+    },
+    {
+      "id": "casa-salon",
+      "es": "el salón",
+      "ru": "гостиная",
+      "pos": "n",
+      "cat": "casa"
+    },
+    {
+      "id": "casa-cocina",
+      "es": "la cocina",
+      "ru": "кухня",
+      "pos": "n",
+      "cat": "casa"
+    },
+    {
+      "id": "casa-bano",
+      "es": "el baño",
+      "ru": "ванная; туалет",
+      "pos": "n",
+      "cat": "casa"
+    },
+    {
+      "id": "casa-pasillo",
+      "es": "el pasillo",
+      "ru": "коридор",
+      "pos": "n",
+      "cat": "casa"
+    },
+    {
+      "id": "casa-balcon",
+      "es": "el balcón",
+      "ru": "балкон",
+      "pos": "n",
+      "cat": "casa"
+    },
+    {
+      "id": "casa-puerta",
+      "es": "la puerta",
+      "ru": "дверь",
+      "pos": "n",
+      "cat": "casa"
+    },
+    {
+      "id": "casa-ventana",
+      "es": "la ventana",
+      "ru": "окно",
+      "pos": "n",
+      "cat": "casa"
+    },
+    {
+      "id": "casa-pared",
+      "es": "la pared",
+      "ru": "стена",
+      "pos": "n",
+      "cat": "casa"
+    },
+    {
+      "id": "casa-tejado",
+      "es": "el tejado",
+      "ru": "крыша",
+      "pos": "n",
+      "cat": "casa"
+    },
+    {
+      "id": "casa-suelo",
+      "es": "el suelo",
+      "ru": "пол",
+      "pos": "n",
+      "cat": "casa"
+    },
+    {
+      "id": "dorm-cama",
+      "es": "la cama",
+      "ru": "кровать",
+      "pos": "n",
+      "cat": "dormitorio"
+    },
+    {
+      "id": "dorm-colchon",
+      "es": "el colchón",
+      "ru": "матрас",
+      "pos": "n",
+      "cat": "dormitorio"
+    },
+    {
+      "id": "dorm-almohada",
+      "es": "la almohada",
+      "ru": "подушка",
+      "pos": "n",
+      "cat": "dormitorio"
+    },
+    {
+      "id": "dorm-sabana",
+      "es": "la sábana",
+      "ru": "простыня",
+      "pos": "n",
+      "cat": "dormitorio"
+    },
+    {
+      "id": "dorm-manta",
+      "es": "la manta",
+      "ru": "одеяло",
+      "pos": "n",
+      "cat": "dormitorio"
+    },
+    {
+      "id": "dorm-armario",
+      "es": "el armario",
+      "ru": "шкаф",
+      "pos": "n",
+      "cat": "dormitorio"
+    },
+    {
+      "id": "dorm-estanteria",
+      "es": "la estantería",
+      "ru": "стеллаж",
+      "pos": "n",
+      "cat": "dormitorio"
+    },
+    {
+      "id": "dorm-mesita",
+      "es": "la mesita de noche",
+      "ru": "тумбочка",
+      "pos": "n",
+      "cat": "dormitorio"
+    },
+    {
+      "id": "dorm-lampara",
+      "es": "la lámpara",
+      "ru": "лампа",
+      "pos": "n",
+      "cat": "dormitorio"
+    },
+    {
+      "id": "dorm-despertador",
+      "es": "el despertador",
+      "ru": "будильник",
+      "pos": "n",
+      "cat": "dormitorio"
+    },
+    {
+      "id": "dorm-cortina",
+      "es": "la cortina",
+      "ru": "шторы",
+      "pos": "n",
+      "cat": "dormitorio"
+    },
+    {
+      "id": "dorm-alfombra",
+      "es": "la alfombra",
+      "ru": "ковёр",
+      "pos": "n",
+      "cat": "dormitorio"
+    },
+    {
+      "id": "dorm-pijama",
+      "es": "el pijama",
+      "ru": "пижама",
+      "pos": "n",
+      "cat": "dormitorio"
+    },
+    {
+      "id": "dorm-monstruo",
+      "es": "el monstruo",
+      "ru": "монстр",
+      "pos": "n",
+      "cat": "dormitorio"
+    },
+    {
+      "id": "desc-espaciosa",
+      "es": "espaciosa",
+      "ru": "просторная",
+      "pos": "adj",
+      "cat": "descripcion"
+    },
+    {
+      "id": "desc-luminosa",
+      "es": "luminosa",
+      "ru": "светлая, солнечная",
+      "pos": "adj",
+      "cat": "descripcion"
+    },
+    {
+      "id": "desc-practico",
+      "es": "práctico",
+      "ru": "практичный",
+      "pos": "adj",
+      "cat": "descripcion"
+    },
+    {
+      "id": "desc-suave",
+      "es": "suave",
+      "ru": "мягкая, приятная на ощупь",
+      "pos": "adj",
+      "cat": "descripcion"
+    },
+    {
+      "id": "desc-diseno",
+      "es": "el diseño",
+      "ru": "дизайн",
+      "pos": "n",
+      "cat": "descripcion"
+    },
+    {
+      "id": "desc-estampados",
+      "es": "los estampados",
+      "ru": "узоры (на ткани)",
+      "pos": "n",
+      "cat": "descripcion"
+    },
+    {
+      "id": "desc-espacio",
+      "es": "tiene mucho espacio",
+      "ru": "есть много места",
+      "pos": "phrase",
+      "cat": "descripcion"
+    },
+    {
+      "id": "desc-antiguo",
+      "es": "antiguo",
+      "ru": "старый",
+      "pos": "adj",
+      "cat": "descripcion"
+    },
+    {
+      "id": "desc-grande",
+      "es": "grande",
+      "ru": "большой, большая",
+      "pos": "adj",
+      "cat": "descripcion"
+    },
+    {
+      "id": "desc-bonito",
+      "es": "bonito",
+      "ru": "красивый",
+      "pos": "adj",
+      "cat": "descripcion"
+    },
+    {
+      "id": "desc-tranquilo",
+      "es": "tranquilo",
+      "ru": "тихий, спокойный",
+      "pos": "adj",
+      "cat": "descripcion"
+    },
+    {
+      "id": "desc-exterior",
+      "es": "exterior",
+      "ru": "окнами на улицу",
+      "pos": "adj",
+      "cat": "descripcion"
+    },
+    {
+      "id": "desc-frio",
+      "es": "frío",
+      "ru": "холодный",
+      "pos": "adj",
+      "cat": "descripcion"
+    },
+    {
+      "id": "desc-moderna",
+      "es": "moderna",
+      "ru": "современная",
+      "pos": "adj",
+      "cat": "descripcion"
+    },
+    {
+      "id": "desc-pequena",
+      "es": "pequeña",
+      "ru": "маленькая",
+      "pos": "adj",
+      "cat": "descripcion"
+    },
+    {
+      "id": "desc-fea",
+      "es": "fea",
+      "ru": "некрасивая, уродливая",
+      "pos": "adj",
+      "cat": "descripcion"
+    },
+    {
+      "id": "desc-ruidosa",
+      "es": "ruidosa",
+      "ru": "шумная",
+      "pos": "adj",
+      "cat": "descripcion"
+    },
+    {
+      "id": "desc-interior",
+      "es": "interior",
+      "ru": "окнами во двор",
+      "pos": "adj",
+      "cat": "descripcion"
+    },
+    {
+      "id": "desc-calurosa",
+      "es": "calurosa",
+      "ru": "жаркая, душная",
+      "pos": "adj",
+      "cat": "descripcion"
+    },
+    {
+      "id": "desc-muy",
+      "es": "muy",
+      "ru": "очень",
+      "pos": "adv",
+      "cat": "descripcion"
+    },
+    {
+      "id": "desc-bastante",
+      "es": "bastante",
+      "ru": "довольно, достаточно",
+      "pos": "adv",
+      "cat": "descripcion"
+    },
+    {
+      "id": "verbos-ensenar",
+      "es": "enseñar",
+      "ru": "учить, преподавать; показывать",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "desc-al-lado",
+      "es": "al lado",
+      "ru": "рядом",
+      "pos": "phrase",
+      "cat": "descripcion"
+    },
+    {
+      "id": "desc-tantas",
+      "es": "tantas",
+      "ru": "так много, столько (ж. р. мн. ч.)",
+      "pos": "adj",
+      "cat": "descripcion"
+    },
+    {
+      "id": "rutina-despertarse",
+      "es": "despertarse",
+      "ru": "просыпаться",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-levantarse",
+      "es": "levantarse",
+      "ru": "вставать, подниматься",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-sales",
+      "es": "sales",
+      "ru": "ты выходишь, ты уходишь — salir",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-despues",
+      "es": "después",
+      "ru": "потом, после",
+      "pos": "adv",
+      "cat": "tiempo"
+    },
+    {
+      "id": "rutina-ducharse",
+      "es": "ducharse",
+      "ru": "принимать душ",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-desayunar",
+      "es": "desayunar",
+      "ru": "завтракать",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-comer",
+      "es": "comer",
+      "ru": "обедать; есть",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-cenar",
+      "es": "cenar",
+      "ru": "ужинать",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-acostarse",
+      "es": "acostarse",
+      "ru": "ложиться спать",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-paseo",
+      "es": "el paseo",
+      "ru": "прогулка",
+      "pos": "n",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-barrer",
+      "es": "barrer el piso",
+      "ru": "подметать пол",
+      "pos": "phrase",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-lavar-ropa",
+      "es": "lavar la ropa",
+      "ru": "стирать одежду",
+      "pos": "phrase",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-trapear",
+      "es": "trapear el piso",
+      "ru": "мыть пол (шваброй)",
+      "pos": "phrase",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-fregar",
+      "es": "fregar los platos",
+      "ru": "мыть посуду",
+      "pos": "phrase",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-compras",
+      "es": "hacer las compras",
+      "ru": "ходить за покупками",
+      "pos": "phrase",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-aspirar",
+      "es": "aspirar la alfombra",
+      "ru": "пылесосить ковёр",
+      "pos": "phrase",
+      "cat": "rutina"
+    },
+    {
+      "id": "tiempo-manana",
+      "es": "por la mañana",
+      "ru": "утром",
+      "pos": "phrase",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-mediodia",
+      "es": "al mediodía",
+      "ru": "в полдень",
+      "pos": "phrase",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-tarde-dia",
+      "es": "por la tarde",
+      "ru": "днём, вечером",
+      "pos": "phrase",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-noche",
+      "es": "por la noche",
+      "ru": "ночью",
+      "pos": "phrase",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-temprano",
+      "es": "temprano",
+      "ru": "рано",
+      "pos": "adv",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-tarde",
+      "es": "tarde",
+      "ru": "поздно",
+      "pos": "adv",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-antes",
+      "es": "antes",
+      "ru": "раньше, перед",
+      "pos": "adv",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-siempre",
+      "es": "siempre",
+      "ru": "всегда",
+      "pos": "adv",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-casi-siempre",
+      "es": "casi siempre",
+      "ru": "почти всегда",
+      "pos": "phrase",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-a-menudo",
+      "es": "a menudo",
+      "ru": "часто",
+      "pos": "phrase",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-frecuentemente",
+      "es": "frecuentemente",
+      "ru": "часто, регулярно",
+      "pos": "adv",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-normalmente",
+      "es": "normalmente",
+      "ru": "обычно",
+      "pos": "adv",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-de-vez",
+      "es": "de vez en cuando",
+      "ru": "время от времени",
+      "pos": "phrase",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-a-veces",
+      "es": "a veces",
+      "ru": "иногда",
+      "pos": "phrase",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-pocas-veces",
+      "es": "pocas veces",
+      "ru": "редко",
+      "pos": "phrase",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-nunca",
+      "es": "nunca",
+      "ru": "никогда",
+      "pos": "adv",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-casi-nunca",
+      "es": "casi nunca",
+      "ru": "почти никогда",
+      "pos": "phrase",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-jamas",
+      "es": "jamás",
+      "ru": "никогда, ни за что (сильнее nunca)",
+      "pos": "adv",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-luego",
+      "es": "luego",
+      "ru": "потом, затем",
+      "pos": "adv",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-alrededor",
+      "es": "alrededor",
+      "ru": "вокруг, около",
+      "pos": "adv",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-durante",
+      "es": "durante",
+      "ru": "в течение, во время",
+      "pos": "adv",
+      "cat": "tiempo"
+    },
+    {
+      "id": "cal-lunes",
+      "es": "el lunes",
+      "ru": "понедельник",
+      "pos": "n",
+      "cat": "calendario"
+    },
+    {
+      "id": "cal-martes",
+      "es": "el martes",
+      "ru": "вторник",
+      "pos": "n",
+      "cat": "calendario"
+    },
+    {
+      "id": "cal-miercoles",
+      "es": "el miércoles",
+      "ru": "среда",
+      "pos": "n",
+      "cat": "calendario"
+    },
+    {
+      "id": "cal-jueves",
+      "es": "el jueves",
+      "ru": "четверг",
+      "pos": "n",
+      "cat": "calendario"
+    },
+    {
+      "id": "cal-viernes",
+      "es": "el viernes",
+      "ru": "пятница",
+      "pos": "n",
+      "cat": "calendario"
+    },
+    {
+      "id": "cal-sabado",
+      "es": "el sábado",
+      "ru": "суббота",
+      "pos": "n",
+      "cat": "calendario"
+    },
+    {
+      "id": "cal-domingo",
+      "es": "el domingo",
+      "ru": "воскресенье",
+      "pos": "n",
+      "cat": "calendario"
+    },
+    {
+      "id": "cal-enero",
+      "es": "enero",
+      "ru": "январь",
+      "pos": "n",
+      "cat": "calendario"
+    },
+    {
+      "id": "cal-febrero",
+      "es": "febrero",
+      "ru": "февраль",
+      "pos": "n",
+      "cat": "calendario"
+    },
+    {
+      "id": "cal-marzo",
+      "es": "marzo",
+      "ru": "март",
+      "pos": "n",
+      "cat": "calendario"
+    },
+    {
+      "id": "cal-abril",
+      "es": "abril",
+      "ru": "апрель",
+      "pos": "n",
+      "cat": "calendario"
+    },
+    {
+      "id": "cal-mayo",
+      "es": "mayo",
+      "ru": "май",
+      "pos": "n",
+      "cat": "calendario"
+    },
+    {
+      "id": "cal-junio",
+      "es": "junio",
+      "ru": "июнь",
+      "pos": "n",
+      "cat": "calendario"
+    },
+    {
+      "id": "cal-julio",
+      "es": "julio",
+      "ru": "июль",
+      "pos": "n",
+      "cat": "calendario"
+    },
+    {
+      "id": "cal-agosto",
+      "es": "agosto",
+      "ru": "август",
+      "pos": "n",
+      "cat": "calendario"
+    },
+    {
+      "id": "cal-septiembre",
+      "es": "septiembre",
+      "ru": "сентябрь",
+      "pos": "n",
+      "cat": "calendario"
+    },
+    {
+      "id": "cal-octubre",
+      "es": "octubre",
+      "ru": "октябрь",
+      "pos": "n",
+      "cat": "calendario"
+    },
+    {
+      "id": "cal-noviembre",
+      "es": "noviembre",
+      "ru": "ноябрь",
+      "pos": "n",
+      "cat": "calendario"
+    },
+    {
+      "id": "cal-diciembre",
+      "es": "diciembre",
+      "ru": "декабрь",
+      "pos": "n",
+      "cat": "calendario"
+    },
+    {
+      "id": "colo-rojo",
+      "es": "rojo",
+      "ru": "красный",
+      "pos": "n",
+      "cat": "colores"
+    },
+    {
+      "id": "colo-azul",
+      "es": "azul",
+      "ru": "синий, голубой",
+      "pos": "n",
+      "cat": "colores"
+    },
+    {
+      "id": "colo-verde",
+      "es": "verde",
+      "ru": "зелёный",
+      "pos": "n",
+      "cat": "colores"
+    },
+    {
+      "id": "colo-amarillo",
+      "es": "amarillo",
+      "ru": "жёлтый",
+      "pos": "n",
+      "cat": "colores"
+    },
+    {
+      "id": "colo-negro",
+      "es": "negro",
+      "ru": "чёрный",
+      "pos": "n",
+      "cat": "colores"
+    },
+    {
+      "id": "colo-blanco",
+      "es": "blanco",
+      "ru": "белый",
+      "pos": "n",
+      "cat": "colores"
+    },
+    {
+      "id": "colo-gris",
+      "es": "gris",
+      "ru": "серый",
+      "pos": "n",
+      "cat": "colores"
+    },
+    {
+      "id": "colo-naranja",
+      "es": "naranja",
+      "ru": "оранжевый",
+      "pos": "n",
+      "cat": "colores"
+    },
+    {
+      "id": "colo-rosa",
+      "es": "rosa",
+      "ru": "розовый",
+      "pos": "n",
+      "cat": "colores"
+    },
+    {
+      "id": "colo-marron",
+      "es": "marrón",
+      "ru": "коричневый",
+      "pos": "n",
+      "cat": "colores"
+    },
+    {
+      "id": "colo-morado",
+      "es": "morado",
+      "ru": "фиолетовый",
+      "pos": "n",
+      "cat": "colores"
+    },
+    {
+      "id": "adje-guapo",
+      "es": "guapo",
+      "ru": "красивый, симпатичный — о человеке",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-inteligente",
+      "es": "inteligente",
+      "ru": "умный",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-comodo",
+      "es": "cómodo",
+      "ru": "удобный",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-facil",
+      "es": "fácil",
+      "ru": "лёгкий, простой",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-dificil",
+      "es": "difícil",
+      "ru": "трудный, сложный",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-nuevo",
+      "es": "nuevo",
+      "ru": "новый",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-viejo",
+      "es": "viejo",
+      "ru": "старый, пожилой",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-bueno",
+      "es": "bueno",
+      "ru": "хороший",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-malo",
+      "es": "malo",
+      "ru": "плохой",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-alegre",
+      "es": "alegre",
+      "ru": "весёлый, радостный",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-triste",
+      "es": "triste",
+      "ru": "грустный",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-cansado",
+      "es": "cansado",
+      "ru": "уставший",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-joven",
+      "es": "joven",
+      "ru": "молодой",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-alto",
+      "es": "alto",
+      "ru": "высокий",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-bajo",
+      "es": "bajo",
+      "ru": "низкий",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-caro",
+      "es": "caro",
+      "ru": "дорогой",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-barato",
+      "es": "barato",
+      "ru": "дешёвый",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-limpio",
+      "es": "limpio",
+      "ru": "чистый",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-sucio",
+      "es": "sucio",
+      "ru": "грязный",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-fuerte",
+      "es": "fuerte",
+      "ru": "сильный",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-rapido",
+      "es": "rápido",
+      "ru": "быстрый",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-lento",
+      "es": "lento",
+      "ru": "медленный",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-listo",
+      "es": "listo",
+      "ru": "готов, готова",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-divertido",
+      "es": "divertido",
+      "ru": "весёлый, интересный — о занятии",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "salu-hola",
+      "es": "hola",
+      "ru": "привет",
+      "pos": "phrase",
+      "cat": "saludos"
+    },
+    {
+      "id": "salu-adios",
+      "es": "adiós",
+      "ru": "пока, до свидания",
+      "pos": "phrase",
+      "cat": "saludos"
+    },
+    {
+      "id": "salu-buenos-dias",
+      "es": "buenos días",
+      "ru": "доброе утро, добрый день",
+      "pos": "phrase",
+      "cat": "saludos"
+    },
+    {
+      "id": "salu-buenas-tardes",
+      "es": "buenas tardes",
+      "ru": "добрый день — после полудня",
+      "pos": "phrase",
+      "cat": "saludos"
+    },
+    {
+      "id": "salu-buenas-noches",
+      "es": "buenas noches",
+      "ru": "добрый вечер, спокойной ночи",
+      "pos": "phrase",
+      "cat": "saludos"
+    },
+    {
+      "id": "salu-hasta-luego",
+      "es": "hasta luego",
+      "ru": "до скорого",
+      "pos": "phrase",
+      "cat": "saludos"
+    },
+    {
+      "id": "salu-hasta-manana",
+      "es": "hasta mañana",
+      "ru": "до завтра",
+      "pos": "phrase",
+      "cat": "saludos"
+    },
+    {
+      "id": "salu-por-favor",
+      "es": "por favor",
+      "ru": "пожалуйста — просьба",
+      "pos": "phrase",
+      "cat": "saludos"
+    },
+    {
+      "id": "salu-gracias",
+      "es": "gracias",
+      "ru": "спасибо",
+      "pos": "phrase",
+      "cat": "saludos"
+    },
+    {
+      "id": "salu-muchas-gracias",
+      "es": "muchas gracias",
+      "ru": "большое спасибо",
+      "pos": "phrase",
+      "cat": "saludos"
+    },
+    {
+      "id": "salu-de-nada",
+      "es": "de nada",
+      "ru": "не за что",
+      "pos": "phrase",
+      "cat": "saludos"
+    },
+    {
+      "id": "salu-perdon",
+      "es": "perdón",
+      "ru": "извините, простите",
+      "pos": "phrase",
+      "cat": "saludos"
+    },
+    {
+      "id": "salu-lo-siento",
+      "es": "lo siento",
+      "ru": "мне жаль",
+      "pos": "phrase",
+      "cat": "saludos"
+    },
+    {
+      "id": "salu-mucho-gusto",
+      "es": "mucho gusto",
+      "ru": "очень приятно",
+      "pos": "phrase",
+      "cat": "saludos"
+    },
+    {
+      "id": "salu-que-tal",
+      "es": "¿qué tal?",
+      "ru": "как дела?",
+      "pos": "phrase",
+      "cat": "saludos"
+    },
+    {
+      "id": "salu-si",
+      "es": "sí",
+      "ru": "да",
+      "pos": "phrase",
+      "cat": "saludos"
+    },
+    {
+      "id": "salu-no",
+      "es": "no",
+      "ru": "нет",
+      "pos": "phrase",
+      "cat": "saludos"
+    },
+    {
+      "id": "salu-vale",
+      "es": "vale",
+      "ru": "ладно, хорошо",
+      "pos": "phrase",
+      "cat": "saludos"
+    },
+    {
+      "id": "preg-que",
+      "es": "¿qué?",
+      "ru": "что?",
+      "pos": "phrase",
+      "cat": "preguntas"
+    },
+    {
+      "id": "preg-quien",
+      "es": "¿quién?",
+      "ru": "кто?",
+      "pos": "phrase",
+      "cat": "preguntas"
+    },
+    {
+      "id": "preg-donde",
+      "es": "¿dónde?",
+      "ru": "где?",
+      "pos": "phrase",
+      "cat": "preguntas"
+    },
+    {
+      "id": "preg-adonde",
+      "es": "¿adónde?",
+      "ru": "куда?",
+      "pos": "phrase",
+      "cat": "preguntas"
+    },
+    {
+      "id": "preg-cuando",
+      "es": "¿cuándo?",
+      "ru": "когда?",
+      "pos": "phrase",
+      "cat": "preguntas"
+    },
+    {
+      "id": "preg-como",
+      "es": "¿cómo?",
+      "ru": "как?",
+      "pos": "phrase",
+      "cat": "preguntas"
+    },
+    {
+      "id": "preg-por-que",
+      "es": "¿por qué?",
+      "ru": "почему?",
+      "pos": "phrase",
+      "cat": "preguntas"
+    },
+    {
+      "id": "preg-porque",
+      "es": "porque",
+      "ru": "потому что",
+      "pos": "phrase",
+      "cat": "preguntas"
+    },
+    {
+      "id": "preg-cuanto",
+      "es": "¿cuánto?",
+      "ru": "сколько?",
+      "pos": "phrase",
+      "cat": "preguntas"
+    },
+    {
+      "id": "preg-cual",
+      "es": "¿cuál?",
+      "ru": "какой, который?",
+      "pos": "phrase",
+      "cat": "preguntas"
+    },
+    {
+      "id": "verb-hablar",
+      "es": "hablar",
+      "ru": "говорить",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-beber",
+      "es": "beber",
+      "ru": "пить",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-vivir",
+      "es": "vivir",
+      "ru": "жить",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-trabajar",
+      "es": "trabajar",
+      "ru": "работать",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-estudiar",
+      "es": "estudiar",
+      "ru": "учиться, изучать",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-querer",
+      "es": "querer",
+      "ru": "хотеть, любить",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-poder",
+      "es": "poder",
+      "ru": "мочь",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-ir",
+      "es": "ir",
+      "ru": "идти, ехать",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-hacer",
+      "es": "hacer",
+      "ru": "делать",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-ver",
+      "es": "ver",
+      "ru": "видеть",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-saber",
+      "es": "saber",
+      "ru": "знать",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-necesitar",
+      "es": "necesitar",
+      "ru": "нуждаться",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-gustar",
+      "es": "gustar",
+      "ru": "нравиться",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-ayudar",
+      "es": "ayudar",
+      "ru": "помогать",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-empezar",
+      "es": "empezar",
+      "ru": "начинать",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-terminar",
+      "es": "terminar",
+      "ru": "заканчивать, заканчиваться",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-se-queda",
+      "es": "se queda",
+      "ru": "он/она остаётся — quedarse",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-decide",
+      "es": "decide",
+      "ru": "он/она решает — decidir",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-caminar",
+      "es": "caminar",
+      "ru": "идти пешком, гулять",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "transp-moto",
+      "es": "la moto",
+      "ru": "мотоцикл",
+      "pos": "n",
+      "cat": "transporte"
+    },
+    {
+      "id": "transp-metro",
+      "es": "el metro",
+      "ru": "метро",
+      "pos": "n",
+      "cat": "transporte"
+    },
+    {
+      "id": "transp-bicicleta",
+      "es": "la bicicleta",
+      "ru": "велосипед",
+      "pos": "n",
+      "cat": "transporte"
+    },
+    {
+      "id": "transp-coche",
+      "es": "el coche",
+      "ru": "машина, автомобиль",
+      "pos": "n",
+      "cat": "transporte"
+    },
+    {
+      "id": "transp-autobus",
+      "es": "el autobús",
+      "ru": "автобус",
+      "pos": "n",
+      "cat": "transporte"
+    },
+    {
+      "id": "transp-andando",
+      "es": "andando",
+      "ru": "пешком (тж. a pie)",
+      "pos": "adv",
+      "cat": "transporte"
+    },
+    {
+      "id": "transp-medios",
+      "es": "los medios de transporte",
+      "ru": "виды транспорта",
+      "pos": "n",
+      "cat": "transporte"
+    }
   ]
 }

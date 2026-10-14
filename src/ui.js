@@ -54,7 +54,14 @@ let view = 'learn';
 const session = {
   source: 'due', // 'due' — что созрело, 'random' — случайные, 'picked' — выбранные руками
   cats: new Set(), // коды тем; пусто — все темы
-  size: 0, // 0 — сколько наберётся
+  // Потолок занятия по словам. Не «сколько наберётся»: на свежей колоде созревают разом
+  // все карточки — на двухстах сорока словах это четыреста восемьдесят штук в одном
+  // занятии, и оно просто не кончается. По той же причине Anki по умолчанию даёт
+  // двадцать новых карточек в день: каждая вернётся на повторение, и долг копится.
+  // Двадцать слов — это сорок карточек, то есть две цели по двадцать ответов: цель
+  // успевает сработать в середине, а занятие всё равно кончается. «Все» остаётся
+  // в настройке занятия, если хочется марафон.
+  size: 20,
   modes: new Set(), // режимы; пусто — авто, по лестнице коробок
   picked: new Set(),
 };
@@ -341,6 +348,11 @@ function startSession() {
 
   goalCelebrated = state.stats.done >= state.settings.goal;
 
+  // Очередь собираем один раз и до всего остального. Раньше sessionWords() собирал её
+  // сам, а потом buildQueue() собирал заново — и пачки «Пар» оказывались составлены
+  // из другой очереди, чем то занятие, которое шло следом.
+  srs.buildQueue();
+
   const wantsMatch = session.modes.has('match');
   const onlyMatch = wantsMatch && session.modes.size === 1;
 
@@ -359,7 +371,6 @@ function startSession() {
     return;
   }
 
-  srs.buildQueue();
   // В обычном занятии разминка приходит сама, если карточек хватает.
   if (!matchPacks.length && session.source === 'due' && !session.modes.size) {
     const warmup = srs.pickMatchWords();
@@ -550,6 +561,10 @@ function renderArchiveOffer() {
 function renderEmpty() {
   const hasWords = activeWords().length > 0;
   const custom = session.source !== 'due' || session.modes.size > 0 || session.cats.size > 0;
+  // «Занятие закончено» и «на сегодня всё» — разные вещи. Занятие ограничено по словам,
+  // и после него обычно остаётся ещё созревшее: обещать «следующие придут завтра»,
+  // когда ждут ещё двести карточек, нельзя.
+  const left = srs.dueWordCount();
 
   if (!hasWords) {
     replace(
@@ -569,24 +584,48 @@ function renderEmpty() {
     el(
       'div',
       { class: 'empty' },
-      el('h2', { text: custom ? 'Занятие закончено' : 'На сегодня всё' }),
+      el('h2', { text: left ? 'Занятие закончено' : 'На сегодня всё' }),
       el('p', {
-        text: custom
-          ? 'Можно собрать ещё одно или вернуться к обычному повторению.'
-          : 'Все карточки повторены. Следующие придут завтра.',
+        text: left
+          ? 'Ждут повторения ещё ' +
+            left +
+            ' ' +
+            plural(left, 'слово', 'слова', 'слов') +
+            '. Можно взять следующее занятие или остановиться.'
+          : custom
+            ? 'Можно собрать ещё одно или вернуться к обычному повторению.'
+            : 'Все карточки повторены. Следующие придут завтра.',
       }),
       el(
         'div',
         { class: 'row row-inline' },
-        el('button', { class: 'btn', onclick: renderSetup }, 'Собрать занятие'),
+        left
+          ? el(
+              'button',
+              { class: 'btn', dataset: { key: 'enter' }, onclick: startSession },
+              'Следующее занятие',
+              el('kbd', { text: 'Enter' }),
+            )
+          : null,
         el(
+          'button',
+          { class: left ? 'btn ghost' : 'btn' , onclick: renderSetup },
+          'Собрать занятие',
+        ),
+        // Повторять нечего, если занятие кончилось, не начавшись, — кнопка бы собрала
+        // пустую очередь и вернула на этот же экран.
+        sessionRight.size === 0
+          ? null
+          : el(
           'button',
           {
             class: 'btn ghost',
             onclick: () => {
-              srs.setSession({});
-              srs.buildExtraQueue();
+              // Прогоняем ровно те слова, что были в занятии, а не всю колоду.
+              // sessionRight помнит каждое отвеченное слово — это и есть занятие.
+              const again = [...sessionRight.keys()];
               resetSessionResults();
+              srs.buildExtraQueue(again);
               nextCard();
             },
           },
@@ -607,9 +646,19 @@ function answer(mode, correct) {
   // и он записывается как промах.
   if (res && !res.arch) recordAnswer(wordIdOf(currentKey), correct);
 
-  // Дневная цель должна быть точкой, а не цифрой, которая молча уезжает в 21, 22, 23.
+  // Цель должна быть точкой, а не цифрой, которая молча уезжает в 21, 22, 23.
   // Останавливаемся один раз и спрашиваем, продолжать ли.
-  if (!goalCelebrated && res && res.counted && state.stats.done >= state.settings.goal) {
+  //
+  // Но только если занятие ещё не кончилось: когда цель берётся последней карточкой,
+  // экран цели — это тупик вместо экрана конца занятия, и предложение убрать выученное
+  // в архив до пользователя просто не доезжает.
+  if (
+    !goalCelebrated &&
+    res &&
+    res.counted &&
+    state.stats.done >= state.settings.goal &&
+    srs.queueLength() > 0
+  ) {
     goalCelebrated = true;
     renderGoal();
     renderRail();

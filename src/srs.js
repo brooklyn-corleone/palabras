@@ -1,7 +1,17 @@
 // Движок повторений: коробки Лейтнера, архив, веса режимов, сборка очереди.
 // Логика перенесена из reference/palabras.html, про DOM здесь ничего не знают.
 
-import { state, today, addDays, now, save, wordById, parseKey, isLiveKey } from './state.js';
+import {
+  state,
+  today,
+  addDays,
+  now,
+  save,
+  wordById,
+  parseKey,
+  isLiveKey,
+  deckRevision,
+} from './state.js';
 
 export const INTERVALS = [1, 2, 4, 8, 16]; // дни для коробок 1..5
 export const BOX_LABEL = ['1 день', '2 дня', '4 дня', '8 дней', '16 дней'];
@@ -11,8 +21,16 @@ export const BOX_LABEL = ['1 день', '2 дня', '4 дня', '8 дней', '1
 // «выучиваются» фальшиво.
 //
 // letters даёт буквы в подсказку, поэтому останавливается на четвёртой коробке.
-// Коробка 5 — только за чистый ввод по памяти.
-export const MAX_BOX = { type: 5, letters: 4, flip: 3, choice: 3, match: 0 };
+// Коробка 5 в направлении RU→ES — только за чистый ввод по памяти.
+//
+// У flip потолок тоже 5, и это не поблажка. flip обслуживает ровно одно направление —
+// ES→RU (MODE_DIR), где кроме него есть только choice с выбором из трёх. Пока потолок
+// flip был 3, es-карточка не могла подняться выше третьей коробки ничем вообще:
+// половина колоды возвращалась каждые четыре дня вечно, а коробка слова (минимум двух
+// направлений) никогда не показывала больше тройки. Оценка у flip своя, зато честная —
+// как во всех SRS, где пользователь сам говорит «помнил», — а RU→ES от этого не страдает:
+// туда flip не попадает ни при каких настройках.
+export const MAX_BOX = { type: 5, letters: 4, flip: 5, choice: 3, match: 0 };
 
 // ---------------------------------------------------------------------------
 // выбор режима
@@ -73,7 +91,13 @@ export function pickMode(key, modes) {
 
   if (card && card.arch) return dir === 'ru' ? 'type' : 'flip';
 
-  if (dir === 'es') return pickOne(['flip', 'choice']);
+  // Лестница симметрична в обе стороны: сначала вариант подсказан, дальше подсказок нет.
+  // Без второй ветки es-карточка в четвёртой коробке могла снова получить choice
+  // с его потолком 3 и застрять там же, откуда только что вышла.
+  if (dir === 'es') {
+    if (box <= 3) return pickOne(['flip', 'choice']);
+    return 'flip';
+  }
 
   if (box === 1) return pickOne(['choice', 'letters']);
   if (box <= 3) return pickOne(['letters', 'type']);
@@ -202,10 +226,17 @@ export function buildQueue(options) {
   let out = Object.keys(state.cards).filter(isLiveKey);
 
   if (source === 'picked') {
+    // Слово, отмеченное галочкой вручную, идёт в занятие любым — архивное в том числе.
+    // Просил именно его, прятать нечего.
     const picked = session.picked;
     out = out.filter((key) => picked && picked.has(parseKey(key).wordId));
-  } else if (source !== 'random') {
-    out = out.filter((key) => !state.cards[key].arch && state.cards[key].due <= t);
+  } else {
+    // Архив — отдельное состояние «выучено, проверяем изредка», и сам по себе в занятие
+    // он не идёт: подмешивается ниже и дозированно. Раньше у «случайных» этого фильтра
+    // не было, и архивные приходили как обычные — но в цель они не идут
+    // (counted: false), так что цель на таком занятии не набиралась.
+    out = out.filter((key) => !state.cards[key].arch);
+    if (source !== 'random') out = out.filter((key) => state.cards[key].due <= t);
   }
   if (dirs) out = out.filter((key) => dirs.has(parseKey(key).dir));
   // Темы выбираются независимо от источника: «случайные 20 из семьи и дома» — обычный запрос.
@@ -246,9 +277,10 @@ export function buildQueue(options) {
   return queue.length;
 }
 
-// Слова для занятия целиком — нужны режиму «Пары», который работает пачками, а не карточками.
+// Слова уже собранной очереди — нужны режиму «Пары», который работает пачками,
+// а не карточками. Очередь здесь не пересобираем: вызывающий делает это сам, и раньше
+// из-за второй пересборки пачки «Пар» оказывались из другой очереди, чем само занятие.
 export function sessionWords() {
-  buildQueue();
   const seen = new Set();
   const words = [];
   for (const key of queue) {
@@ -261,11 +293,31 @@ export function sessionWords() {
 }
 
 export function nextKey() {
-  // Пересобираем очередь только для обычного занятия: там кончившиеся карточки
-  // означают «на сегодня всё». Занятие из выбранных или случайных слов конечно
-  // по замыслу — иначе оно никогда не закончится.
-  if (!queue.length && (session.source || 'due') === 'due') buildQueue();
+  // Пересобираем очередь только для обычного занятия без лимита: там кончившиеся
+  // карточки действительно означают «на сегодня всё». Занятие из выбранных или
+  // случайных слов конечно по замыслу — иначе оно никогда не закончится.
+  //
+  // Лимит по словам сюда же: без этой проверки он не работал вовсе. Очередь набиралась
+  // на двадцать слов, вычерпывалась, тут же собиралась заново на следующие двадцать —
+  // и так пока не кончится вся колода. На свежих двухстах сорока словах это
+  // четыреста восемьдесят карточек в одном занятии, которое не кончается.
+  const endless = (session.source || 'due') === 'due' && !session.size;
+  if (!queue.length && endless) buildQueue();
   return queue.shift() || null;
+}
+
+// Сколько слов ещё ждут повторения сегодня — без оглядки на настройки занятия.
+// Нужно экрану в конце: «занятие закончено» и «на сегодня всё» — разные вещи,
+// и обещать второе, когда созрело ещё две сотни карточек, нельзя.
+export function dueWordCount() {
+  const t = today();
+  const ids = new Set();
+  for (const key of Object.keys(state.cards)) {
+    if (!isLiveKey(key)) continue;
+    const c = state.cards[key];
+    if (!c.arch && c.due <= t) ids.add(parseKey(key).wordId);
+  }
+  return ids.size;
 }
 
 export function requeue(key) {
@@ -276,9 +328,18 @@ export function queueLength() {
   return queue.length;
 }
 
-// «Повторить ещё раз» на экране итога: прогоняем всё живое, ничего не меняя в сроках.
-export function buildExtraQueue() {
-  queue = shuffle(Object.keys(state.cards).filter(isLiveKey));
+// «Повторить ещё раз» на экране итога: прогоняем заново ровно те слова, что были
+// в занятии, не трогая сроки.
+//
+// Ровно те: раньше сюда попадала вся колода целиком — несозревшие карточки и архив
+// в том числе, — и кнопка «повторить» запускала пятьсот карточек вместо двадцати.
+// По сроку не фильтруем намеренно: у пройденного срок уже сдвинут в будущее,
+// а смысл кнопки как раз в том, чтобы пройти пройденное ещё раз.
+export function buildExtraQueue(wordIds) {
+  const ids = wordIds instanceof Set ? wordIds : new Set(wordIds || []);
+  queue = shuffle(
+    Object.keys(state.cards).filter((key) => isLiveKey(key) && ids.has(parseKey(key).wordId)),
+  );
   return queue.length;
 }
 
@@ -323,9 +384,20 @@ export function lev(a, b) {
 
 // Нормализованные ответы всех живых слов колоды. Нужны, чтобы отличить опечатку
 // от соседней формы: «está» вместо «estás» — это не промах пальцем, а другое слово.
+//
+// Кэшируем по счётчику правок колоды: множество пересобиралось на каждый неверный
+// ответ, а это norm() на каждое слово колоды — на трёхстах словах заметно, и чем
+// больше колода, тем хуже. deckRevision() меняется при любой правке текста слова.
+let answersCache = null;
+let answersRev = -1;
+
 function allAnswers() {
+  const rev = deckRevision();
+  if (answersCache && answersRev === rev) return answersCache;
   const set = new Set();
   for (const w of state.words) if (!w.deleted) set.add(norm(w.es));
+  answersCache = set;
+  answersRev = rev;
   return set;
 }
 
@@ -423,6 +495,23 @@ export function grade(key, mode, correct) {
   // Разминка не идёт в цель вообще: она про то, чтобы войти в ритм, а не про повторение.
   const counted = mode !== 'match' && correct;
   if (counted) state.stats.done++;
+
+  // Слово, дошедшее до пятой коробки в обоих направлениях, уходит в архив само.
+  // Без этого архив наполнялся только руками, и весь механизм вокруг него — подмешивание
+  // выученного, MAX_ARCHIVE_MIX, «изредка проверяется» — просто не запускался: пятая
+  // коробка была конечной остановкой с интервалом шестнадцать дней навсегда.
+  //
+  // Планка высокая нарочно: пятёрка в RU→ES берётся только чистым вводом по памяти,
+  // так что случайно сюда не попасть. Забыл потом — архив сам вернёт слово в оборот
+  // (см. ветку c.arch в начале функции).
+  //
+  // Разминку сюда не пускаем: match коробки не двигает и решать судьбу слова не должен.
+  if (counted && wordBox(parseKey(key).wordId) === 5) {
+    setArchived(parseKey(key).wordId, true);
+    save();
+    return { box: 5, arch: true, counted, correct };
+  }
+
   save();
   return { box: c.box, arch: false, counted, correct };
 }
