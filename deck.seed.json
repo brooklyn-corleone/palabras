@@ -1,5 +1,5 @@
 {
-  "version": 20,
+  "version": 21,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
@@ -14,7 +14,8 @@
     "adjetivos": "Прилагательные",
     "saludos": "Приветствия и вежливость",
     "preguntas": "Вопросы",
-    "transporte": "Транспорт"
+    "transporte": "Транспорт",
+    "salud": "Здоровье"
   },
   "words": [
     {
@@ -698,6 +699,13 @@
       "es": "tantas",
       "ru": "так много, столько (ж. р. мн. ч.)",
       "pos": "adj",
+      "cat": "descripcion"
+    },
+    {
+      "id": "desc-ademas",
+      "es": "además",
+      "ru": "кроме того, к тому же",
+      "pos": "adv",
       "cat": "descripcion"
     },
     {
@@ -1722,6 +1730,42 @@
       "ru": "виды транспорта",
       "pos": "n",
       "cat": "transporte"
+    },
+    {
+      "id": "salud-enferma",
+      "es": "enferma",
+      "ru": "больная",
+      "pos": "adj",
+      "cat": "salud"
+    },
+    {
+      "id": "salud-resfriada",
+      "es": "resfriada",
+      "ru": "простуженная",
+      "pos": "adj",
+      "cat": "salud"
+    },
+    {
+      "id": "salud-fiebre",
+      "es": "la fiebre",
+      "ru": "жар, высокая температура",
+      "pos": "n",
+      "cat": "salud"
+    },
+    {
+      "id": "salud-tos",
+      "es": "la tos",
+      "ru": "кашель",
+      "pos": "n",
+      "cat": "salud"
+    },
+    {
+      "id": "salud-duele",
+      "es": "duele",
+      "ru": "болит — doler",
+      "pos": "v",
+      "cat": "salud",
+      "conj": true
     }
   ]
 }
