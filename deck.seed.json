@@ -1,5 +1,5 @@
 {
-  "version": 19,
+  "version": 20,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
@@ -1658,6 +1658,14 @@
       "ru": "он/она решает — decidir",
       "pos": "v",
       "cat": "verbos"
+    },
+    {
+      "id": "verb-encuentras",
+      "es": "encuentras",
+      "ru": "ты находишь, ты встречаешь — encontrar",
+      "pos": "v",
+      "cat": "verbos",
+      "conj": true
     },
     {
       "id": "verb-caminar",
