@@ -125,6 +125,43 @@ test('колода: подсказка не содержит ответа', () =
   assert.equal(bad.length, 0, 'ответ виден в вопросе:\n       ' + bad.join('\n       '));
 });
 
+// Глаголы в колоде — в инфинитиве. Личная форма учится не как слово: «encuentras»
+// без «encontrarse» бесполезно, а шесть форм на глагол раздуют колоду вшестеро.
+// Спряжение живёт в «Правилах», где ему и место.
+//
+// Исключение одно и намеренное — ser, estar и tener (`conj: true`). Это три самых
+// частых неправильных глагола, их формы по инфинитиву не угадываются (soy, eres, es),
+// и дрилить их по отдельности осмысленно. Флаг заодно держит их отдельно
+// от обычных слов в дистракторах Квиза (см. pickDistractors в srs.js).
+test('колода: глаголы стоят в инфинитиве', () => {
+  const bad = [];
+  for (const w of words) {
+    if (w.pos !== 'v' || w.conj) continue;
+    // Берём первое слово: «hacer las compras» — всё ещё инфинитив.
+    // Возвратную -se снимаем: levantarse → levantar.
+    const first = norm(w.es).split(' ')[0].replace(/se$/, '');
+    if (!/(ar|er|ir)$/.test(first)) {
+      bad.push(`${w.id}: ${w.es} — ${w.ru}`);
+    }
+  }
+  assert.equal(
+    bad.length,
+    0,
+    'личная форма вместо инфинитива (а если это ser/estar/tener — нужен conj: true):\n       ' +
+      bad.join('\n       '),
+  );
+});
+
+test('колода: conj стоит только у ser, estar и tener', () => {
+  const unexpected = words.filter((w) => w.conj && !/^(ser|estar|tener)-/.test(w.id));
+  assert.equal(
+    unexpected.length,
+    0,
+    'conj — это таблицы трёх глаголов, а не «любая личная форма»:\n       ' +
+      report(unexpected, (w) => `${w.id}: ${w.es}`),
+  );
+});
+
 test('колода: подсказка помещается на карточку', () => {
   const LIMIT = 60;
   const bad = words.filter((w) => w.ru.length > LIMIT);

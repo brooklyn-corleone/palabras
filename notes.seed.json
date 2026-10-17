@@ -1,5 +1,5 @@
 {
-  "version": 9,
+  "version": 10,
   "groups": {
     "presente": "Настоящее время",
     "irregulares": "Неправильные глаголы",
@@ -7,7 +7,10 @@
     "numeros": "Цифры",
     "hora": "Время",
     "alfabeto": "Алфавит",
-    "preposiciones": "Предлоги и конструкции"
+    "preposiciones": "Предлоги и конструкции",
+    "imperativo": "Повелительное наклонение",
+    "ortografia": "Правописание",
+    "frases": "Полезные фразы"
   },
   "notes": [
     {
@@ -1278,6 +1281,220 @@
         {
           "kind": "text",
           "body": "H не читается никогда: hola — «ола». Ñ — отдельная буква, а не N с чёрточкой."
+        }
+      ]
+    },
+    {
+      "id": "con-obligacion",
+      "group": "preposiciones",
+      "title": "Долженствование: tener que и deber",
+      "blocks": [
+        {
+          "kind": "text",
+          "body": "Оба означают «должен» и оба требуют после себя инфинитив, а не личную форму. Спрягается первый глагол, второй остаётся как есть."
+        },
+        {
+          "kind": "list",
+          "title": "Как это выглядит",
+          "items": [
+            "tengo que trabajar — мне надо работать",
+            "tienes que descansar — тебе надо отдохнуть",
+            "debes ir al médico — тебе следует сходить к врачу",
+            "debemos esperar — мы должны подождать"
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Разница в оттенке: tener que — надо, обстоятельства требуют. deber — следует, так правильно. «Si te encuentras muy mal, debes ir al médico» — это совет, а не приказ."
+        },
+        {
+          "kind": "text",
+          "body": "А вот в отрицании смыслы расходятся, и это ловушка. No debes fumar — тебе нельзя курить. No tienes que fumar — тебе не обязательно курить, никто не заставляет."
+        }
+      ]
+    },
+    {
+      "id": "doler-pronombres",
+      "group": "presente",
+      "title": "Me duele — что у меня болит",
+      "blocks": [
+        {
+          "kind": "text",
+          "body": "Болит не человек, а часть тела. Поэтому подлежащее здесь — то, что болит, а человек стоит в дательном: не «я болею головой», а «мне болит голова»."
+        },
+        {
+          "kind": "table",
+          "head": [
+            "кому",
+            "местоимение"
+          ],
+          "rows": [
+            [
+              "(a mí) — мне",
+              "me"
+            ],
+            [
+              "(a ti) — тебе",
+              "te"
+            ],
+            [
+              "(a él, a ella, a usted) — ему, ей, вам",
+              "le"
+            ],
+            [
+              "(a nosotros) — нам",
+              "nos"
+            ],
+            [
+              "(a vosotros) — вам",
+              "os"
+            ],
+            [
+              "(a ellos, a ellas, a ustedes) — им",
+              "les"
+            ]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Глагол согласуется с тем, что болит: одно — duele, несколько — duelen. Me duele la cabeza. Me duelen las piernas. Скобки в левом столбце нужны только для уточнения или контраста: a mí me duele la cabeza — «а вот у меня голова». Обычно хватает одного местоимения."
+        },
+        {
+          "kind": "text",
+          "body": "Так же устроен gustar: me gusta el café, me gustan los libros."
+        }
+      ]
+    },
+    {
+      "id": "imperativo",
+      "group": "imperativo",
+      "title": "Повелительное наклонение",
+      "blocks": [
+        {
+          "kind": "text",
+          "body": "Форма на «сделай» и «сделайте». Для tú берётся форма él из настоящего времени, для vosotros — инфинитив, у которого -r меняется на -d."
+        },
+        {
+          "kind": "table",
+          "head": [
+            "",
+            "-ar · pasear",
+            "-er · comer",
+            "-ir · vivir"
+          ],
+          "rows": [
+            [
+              "tú",
+              "pasea",
+              "come",
+              "vive"
+            ],
+            [
+              "vosotros",
+              "pasead",
+              "comed",
+              "vivid"
+            ]
+          ]
+        },
+        {
+          "kind": "list",
+          "title": "Примеры",
+          "items": [
+            "descansa un poco — отдохни немного",
+            "come más despacio — ешь помедленнее",
+            "escribid la carta — напишите письмо"
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Условие строится так же просто: si + настоящее время, дальше повелительное. Si estás cansado, descansa un poco. Si te duele la cabeza, toma una pastilla."
+        }
+      ]
+    },
+    {
+      "id": "orto-b-v",
+      "group": "ortografia",
+      "title": "b или v",
+      "blocks": [
+        {
+          "kind": "text",
+          "body": "На слух b и v в испанском не различаются совсем, поэтому написание приходится знать. Три правила закрывают большую часть случаев."
+        },
+        {
+          "kind": "list",
+          "items": [
+            "b перед l и r: blanco, brazo, hablar, pobre",
+            "b после m: hombre, cambio, también",
+            "v после n: invierno, enviar, conversación"
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Коротко: сочетания mb и nv бывают, а mv и nb — нет."
+        }
+      ]
+    },
+    {
+      "id": "orto-y-o",
+      "group": "ortografia",
+      "title": "Когда y становится e, а o становится u",
+      "blocks": [
+        {
+          "kind": "text",
+          "body": "Чтобы два одинаковых звука не сливались, союз меняют."
+        },
+        {
+          "kind": "list",
+          "items": [
+            "y → e перед i- и hi-: padre e hijo, España e Italia",
+            "o → u перед o- и ho-: siete u ocho, mujer u hombre"
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Исключение у y: перед ie- и ia- союз не меняется, потому что там звучит не «и», а «йе» и «йа». Поэтому agua y hierba и madera y hierro — через y."
+        }
+      ]
+    },
+    {
+      "id": "frases-salud",
+      "group": "frases",
+      "title": "Как спросить о самочувствии",
+      "blocks": [
+        {
+          "kind": "list",
+          "title": "Вопрос",
+          "items": [
+            "¿Qué te pasa? — что с тобой?",
+            "¿Qué te duele? — что у тебя болит?"
+          ]
+        },
+        {
+          "kind": "list",
+          "title": "Ответ",
+          "items": [
+            "No me encuentro bien — мне нехорошо",
+            "Me duele la cabeza — у меня болит голова",
+            "Tengo dolor de oídos — у меня болят уши",
+            "Tienes mala cara — ты плохо выглядишь",
+            "Estar nervioso — нервничать"
+          ]
+        },
+        {
+          "kind": "list",
+          "title": "Состояния — все через tener",
+          "items": [
+            "tengo frío — мне холодно",
+            "tengo sueño — я хочу спать",
+            "tengo fiebre — у меня температура",
+            "tengo hambre — я голоден",
+            "tengo sed — я хочу пить"
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Это и есть главное: по-русски «мне холодно» и «я голоден», а по-испански — «имею холод» и «имею голод». Через ser или estar такое не говорят."
         }
       ]
     }

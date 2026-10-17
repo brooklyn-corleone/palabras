@@ -1,5 +1,5 @@
 {
-  "version": 21,
+  "version": 22,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
@@ -724,8 +724,8 @@
     },
     {
       "id": "rutina-sales",
-      "es": "sales",
-      "ru": "ты выходишь, ты уходишь — salir",
+      "es": "salir",
+      "ru": "выходить, уходить",
       "pos": "v",
       "cat": "rutina"
     },
@@ -1655,25 +1655,24 @@
     },
     {
       "id": "verb-se-queda",
-      "es": "se queda",
-      "ru": "он/она остаётся — quedarse",
+      "es": "quedarse",
+      "ru": "оставаться",
       "pos": "v",
       "cat": "verbos"
     },
     {
       "id": "verb-decide",
-      "es": "decide",
-      "ru": "он/она решает — decidir",
+      "es": "decidir",
+      "ru": "решать",
       "pos": "v",
       "cat": "verbos"
     },
     {
       "id": "verb-encuentras",
-      "es": "encuentras",
-      "ru": "ты находишь, ты встречаешь — encontrar",
+      "es": "encontrarse",
+      "ru": "чувствовать себя (как-то)",
       "pos": "v",
-      "cat": "verbos",
-      "conj": true
+      "cat": "salud"
     },
     {
       "id": "verb-caminar",
@@ -1761,11 +1760,10 @@
     },
     {
       "id": "salud-duele",
-      "es": "duele",
-      "ru": "болит — doler",
+      "es": "doler",
+      "ru": "болеть (о части тела)",
       "pos": "v",
-      "cat": "salud",
-      "conj": true
+      "cat": "salud"
     }
   ]
 }
