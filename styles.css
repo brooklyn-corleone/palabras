@@ -187,6 +187,10 @@ body:not(.in-session) .goal{display:none}
   margin-bottom:20px;text-transform:uppercase;
 }
 .dir .mini{margin-left:auto;text-transform:none;letter-spacing:0}
+/* «в архив» и «проблема» переносятся вместе: по отдельности каждая вставала на свою
+   строку, и на iPhone они шли столбиком, съедая высоту над вопросом. */
+.dir-tools{display:flex;gap:8px;margin-left:auto}
+.dir-tools .mini{margin-left:0}
 
 /* переворот карточки в режиме flip: две половины, содержимое меняется в середине */
 .mode.flip-out{animation:flipOut .12s ease-in both}
@@ -302,17 +306,20 @@ kbd{
 /* Прогресс — второй ряд, мельче и сеткой два на два: серия, точность, завтра, неделя.
    Одной строкой четыре числа на iPhone SE не помещаются. */
 .home-progress{margin-top:24px;padding-top:20px;border-top:1px solid var(--line)}
-.home-stats.small{display:grid;grid-template-columns:repeat(4,auto);justify-content:start;gap:10px 28px;margin-top:0}
+/* Переносом целыми парами «число — подпись», а не сеткой в четыре колонки: сетка
+   на ширине 500–700 px сжимала колонки, и подпись ломалась на две строки, а «%» уезжал
+   под число. Пара, которой не хватает места, просто уходит на следующую строку. */
+.home-stats.small{flex-wrap:wrap;gap:10px 28px;margin-top:0}
 /* Число и подпись в одну строку: четыре вторичных числа — две строки, а не две
    колонки по два этажа, спорящие с главным счётчиком. */
 .home-stats.small .stat{flex-direction:row;align-items:baseline;gap:6px}
-.home-stats.small .stat b{font-size:1rem;font-weight:500}
+.home-stats.small .stat b{font-size:1rem;font-weight:500;white-space:nowrap}
 .home-progress .hint{margin:12px 0 0;max-width:52ch}
 /* На экране итога колонка центрирована, а прогресс — таблица чисел: выравниваем влево. */
 .empty .home-progress{margin-top:32px;text-align:left}
 .empty .home-progress p{margin:12px 0 0}
 @media (max-width:480px){
-  .home-stats.small{grid-template-columns:1fr 1fr}
+  .home-stats.small{display:grid;grid-template-columns:1fr 1fr}
 }
 
 /* 🔊 рядом с испанским словом. */
@@ -376,6 +383,7 @@ body.in-session .toast{bottom:auto;top:calc(12px + env(safe-area-inset-top))}
 /* Над списком: сколько слов и «Выбрать». Панель режима выбора прилипает к низу,
    над вкладками, — действия в зоне большого пальца, как панель инструментов iOS. */
 .list-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;margin-top:4px}
+.list-bar-lead{display:flex;align-items:center;flex-wrap:wrap;gap:0 16px;min-width:0}
 .link-btn{
   font:inherit;font-size:1rem;font-weight:500;
   min-height:44px;min-width:44px;padding:0 4px;margin-right:-4px;

@@ -99,14 +99,19 @@ try {
   <!-- Галочки не стоят на каждой строке: выбор — отдельный режим за «Выбрать», как в iOS.
        Раньше 287 чекбоксов висели всегда, хотя нужны только для занятия «Выбранные». -->
   <div class="list-bar">
-    <span class="cap" id="list-count"></span>
+    <span class="list-bar-lead">
+      <span class="cap" id="list-count"></span>
+      <!-- «Снять всё» наверху, как «Выбрать все» в Почте: нижняя панель — для действий
+           над выбранным, а три кнопки в ряд на iPhone SE не помещаются. -->
+      <button class="link-btn hidden" id="btn-clear-picked">Снять всё</button>
+    </span>
     <button class="link-btn" id="btn-select" aria-pressed="false">Выбрать</button>
   </div>
   <p class="hint list-hint" id="list-hint">Смахни строку влево или нажми на неё — появятся «в архив» и «удалить».</p>
   <div class="list" id="list"></div>
   <div class="picked-bar hidden" id="picked-bar">
     <button class="btn" id="btn-learn-picked">Учить выбранные</button>
-    <button class="btn ghost" id="btn-clear-picked">Снять всё</button>
+    <button class="btn ghost" id="btn-archive-picked">В архив</button>
   </div>
 </section>
 

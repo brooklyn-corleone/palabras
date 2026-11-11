@@ -682,7 +682,8 @@ function renderProgress() {
       'div',
       { class: 'home-stats small' },
       stat(st.days, plural(st.days, 'день подряд', 'дня подряд', 'дней подряд')),
-      stat(acc === null ? '—' : acc + ' %', 'точность за 7 дней'),
+      // Неразрывный пробел: с обычным «%» на узкой колонке уезжал под число.
+      stat(acc === null ? '—' : acc + '\u00a0%', 'верных за неделю'),
       stat(fc.tomorrow, 'придёт завтра'),
       stat(fc.week, 'за 7 дней'),
     ),
@@ -1324,8 +1325,10 @@ function renderList() {
 
 // Режим выбора, как «Выбрать» в системных списках iOS (HIG, Lists and tables: «people
 // must enter edit mode to select table items»). Вне его строка — слово, перевод и стадия,
-// без галочки: выбор нужен только для занятия «Выбранные», а чекбокс висел на всех
-// 287 строках. В режиме выбора строка целиком — подпись галочки, свайп и действия выключены.
+// без галочки: чекбокс на всех 287 строках нужен был бы только изредка. В режиме выбора
+// строка целиком — подпись галочки, свайп и действия выключены. Над выбранным два
+// действия: учить их отдельным занятием или убрать в архив пачкой — то, что уже знаешь,
+// по одному свайпу отправлять долго.
 let selecting = false;
 let shownCount = 0;
 
@@ -1555,6 +1558,28 @@ function listDelete(w) {
   });
 }
 
+// Пачкой из режима выбора. Ушедшие в архив снимаются с выбора — иначе «Учить N слов»
+// продолжал бы считать слова, которых в списке уже нет. Режим выбора остаётся: знакомые
+// слова отмечают за несколько проходов по темам. «Отменить» возвращает и карточки, и галочки.
+function archivePicked() {
+  const { active, archived } = pickedSplit();
+  const on = active.length > 0;
+  const ids = on ? active : archived;
+  if (!ids.length) return;
+  const snaps = ids.map((id) => [id, srs.snapshotWord(id)]);
+  srs.archiveWords(ids, on);
+  for (const id of ids) session.picked.delete(id);
+  afterListChange();
+  renderPickedBar();
+  const n = ids.length + ' ' + plural(ids.length, 'слово', 'слова', 'слов');
+  toast(on ? n + ' в архиве' : n + ' снова учатся', () => {
+    for (const [id, snap] of snaps) srs.restoreWord(id, snap);
+    for (const id of ids) session.picked.add(id);
+    afterListChange();
+    renderPickedBar();
+  });
+}
+
 function listUnflag(w) {
   flagWord(w.id, false);
   renderList();
@@ -1566,6 +1591,20 @@ function afterListChange() {
   renderRail();
 }
 
+// Выбранное делится на активное и архивное: «В архив» действует на активные, а если
+// выбраны одни архивные (вкладка «Архив»), та же кнопка возвращает их в учёбу.
+// Удалённые из выбора выпадают: их уже нет в списке.
+function pickedSplit() {
+  const live = new Set(activeWords().map((w) => w.id));
+  const active = [];
+  const archived = [];
+  for (const id of session.picked) {
+    if (!live.has(id)) continue;
+    (srs.isArchived(id) ? archived : active).push(id);
+  }
+  return { active, archived };
+}
+
 // Панель действий режима выбора — внизу, у большого пальца, как панель инструментов iOS.
 function renderPickedBar() {
   const n = session.picked.size;
@@ -1573,7 +1612,12 @@ function renderPickedBar() {
   const learn = $('btn-learn-picked');
   learn.textContent = n ? 'Учить ' + n + ' ' + plural(n, 'слово', 'слова', 'слов') : 'Учить выбранные';
   learn.disabled = n === 0;
-  $('btn-clear-picked').disabled = n === 0;
+  const { active, archived } = pickedSplit();
+  const arch = $('btn-archive-picked');
+  arch.textContent = !active.length && archived.length ? 'Вернуть' : 'В архив';
+  arch.disabled = !active.length && !archived.length;
+  const clear = $('btn-clear-picked');
+  clear.classList.toggle('hidden', !selecting || n === 0);
   const toggle = $('btn-select');
   toggle.textContent = selecting ? 'Готово' : 'Выбрать';
   toggle.setAttribute('aria-pressed', String(selecting));
@@ -1598,6 +1642,8 @@ function bindWordsView() {
     showView('learn');
     startSession();
   });
+
+  $('btn-archive-picked').addEventListener('click', archivePicked);
 
   $('btn-clear-picked').addEventListener('click', () => {
     session.picked.clear();
