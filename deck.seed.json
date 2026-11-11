@@ -1,5 +1,5 @@
 {
-  "version": 22,
+  "version": 23,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
@@ -117,7 +117,7 @@
     {
       "id": "tener-yo",
       "es": "tengo",
-      "ru": "я имею",
+      "ru": "у меня есть — tener",
       "pos": "v",
       "cat": "verbos",
       "conj": true
@@ -125,7 +125,7 @@
     {
       "id": "tener-tu",
       "es": "tienes",
-      "ru": "ты имеешь",
+      "ru": "у тебя есть — tener",
       "pos": "v",
       "cat": "verbos",
       "conj": true
@@ -133,7 +133,7 @@
     {
       "id": "tener-el",
       "es": "tiene",
-      "ru": "он/она имеет",
+      "ru": "у него, у неё есть — tener",
       "pos": "v",
       "cat": "verbos",
       "conj": true
@@ -141,7 +141,7 @@
     {
       "id": "tener-nosotros",
       "es": "tenemos",
-      "ru": "мы имеем",
+      "ru": "у нас есть — tener",
       "pos": "v",
       "cat": "verbos",
       "conj": true
@@ -149,7 +149,7 @@
     {
       "id": "tener-vosotros",
       "es": "tenéis",
-      "ru": "вы имеете (Испания)",
+      "ru": "у вас есть — tener (Испания)",
       "pos": "v",
       "cat": "verbos",
       "conj": true
@@ -157,7 +157,7 @@
     {
       "id": "tener-ellos",
       "es": "tienen",
-      "ru": "они имеют",
+      "ru": "у них есть — tener",
       "pos": "v",
       "cat": "verbos",
       "conj": true
@@ -276,8 +276,8 @@
     },
     {
       "id": "cuerpo-ojos",
-      "es": "los ojos",
-      "ru": "глаза",
+      "es": "el ojo",
+      "ru": "глаз",
       "pos": "n",
       "cat": "cuerpo"
     },
@@ -290,8 +290,8 @@
     },
     {
       "id": "cuerpo-labios",
-      "es": "los labios",
-      "ru": "губы",
+      "es": "el labio",
+      "ru": "губа",
       "pos": "n",
       "cat": "cuerpo"
     },
@@ -305,7 +305,7 @@
     {
       "id": "cuerpo-brazo",
       "es": "el brazo",
-      "ru": "рука",
+      "ru": "рука (от плеча до кисти)",
       "pos": "n",
       "cat": "cuerpo"
     },
@@ -318,15 +318,15 @@
     },
     {
       "id": "cuerpo-piernas",
-      "es": "las piernas",
-      "ru": "ноги",
+      "es": "la pierna",
+      "ru": "нога",
       "pos": "n",
       "cat": "cuerpo"
     },
     {
       "id": "cuerpo-manos",
-      "es": "las manos",
-      "ru": "кисти рук",
+      "es": "la mano",
+      "ru": "кисть руки",
       "pos": "n",
       "cat": "cuerpo"
     },
@@ -354,7 +354,7 @@
     {
       "id": "casa-habitacion",
       "es": "la habitación",
-      "ru": "комната",
+      "ru": "комната; номер в отеле",
       "pos": "n",
       "cat": "casa"
     },
@@ -466,7 +466,7 @@
     {
       "id": "dorm-manta",
       "es": "la manta",
-      "ru": "одеяло",
+      "ru": "одеяло, плед",
       "pos": "n",
       "cat": "dormitorio"
     },
@@ -508,7 +508,7 @@
     {
       "id": "dorm-cortina",
       "es": "la cortina",
-      "ru": "шторы",
+      "ru": "штора, занавеска",
       "pos": "n",
       "cat": "dormitorio"
     },
@@ -535,15 +535,15 @@
     },
     {
       "id": "desc-espaciosa",
-      "es": "espaciosa",
-      "ru": "просторная",
+      "es": "espacioso",
+      "ru": "просторный, просторная",
       "pos": "adj",
       "cat": "descripcion"
     },
     {
       "id": "desc-luminosa",
-      "es": "luminosa",
-      "ru": "светлая, солнечная",
+      "es": "luminoso",
+      "ru": "светлый, солнечный",
       "pos": "adj",
       "cat": "descripcion"
     },
@@ -557,7 +557,7 @@
     {
       "id": "desc-suave",
       "es": "suave",
-      "ru": "мягкая, приятная на ощупь",
+      "ru": "мягкий, приятный на ощупь",
       "pos": "adj",
       "cat": "descripcion"
     },
@@ -570,14 +570,14 @@
     },
     {
       "id": "desc-estampados",
-      "es": "los estampados",
-      "ru": "узоры (на ткани)",
+      "es": "el estampado",
+      "ru": "узор (на ткани)",
       "pos": "n",
       "cat": "descripcion"
     },
     {
       "id": "desc-espacio",
-      "es": "tiene mucho espacio",
+      "es": "hay mucho espacio",
       "ru": "есть много места",
       "pos": "phrase",
       "cat": "descripcion"
@@ -585,21 +585,21 @@
     {
       "id": "desc-antiguo",
       "es": "antiguo",
-      "ru": "старый",
+      "ru": "старинный, древний",
       "pos": "adj",
       "cat": "descripcion"
     },
     {
       "id": "desc-grande",
       "es": "grande",
-      "ru": "большой, большая",
+      "ru": "большой",
       "pos": "adj",
       "cat": "descripcion"
     },
     {
       "id": "desc-bonito",
       "es": "bonito",
-      "ru": "красивый",
+      "ru": "милый, красивый — о вещах",
       "pos": "adj",
       "cat": "descripcion"
     },
@@ -626,29 +626,29 @@
     },
     {
       "id": "desc-moderna",
-      "es": "moderna",
-      "ru": "современная",
+      "es": "moderno",
+      "ru": "современный",
       "pos": "adj",
       "cat": "descripcion"
     },
     {
       "id": "desc-pequena",
-      "es": "pequeña",
-      "ru": "маленькая",
+      "es": "pequeño",
+      "ru": "маленький",
       "pos": "adj",
       "cat": "descripcion"
     },
     {
       "id": "desc-fea",
-      "es": "fea",
-      "ru": "некрасивая, уродливая",
+      "es": "feo",
+      "ru": "некрасивый, уродливый",
       "pos": "adj",
       "cat": "descripcion"
     },
     {
       "id": "desc-ruidosa",
-      "es": "ruidosa",
-      "ru": "шумная",
+      "es": "ruidoso",
+      "ru": "шумный",
       "pos": "adj",
       "cat": "descripcion"
     },
@@ -661,8 +661,8 @@
     },
     {
       "id": "desc-calurosa",
-      "es": "calurosa",
-      "ru": "жаркая, душная",
+      "es": "caluroso",
+      "ru": "жаркий, душный",
       "pos": "adj",
       "cat": "descripcion"
     },
@@ -683,7 +683,7 @@
     {
       "id": "verbos-ensenar",
       "es": "enseñar",
-      "ru": "учить, преподавать; показывать",
+      "ru": "преподавать, учить (кого-то); показывать",
       "pos": "v",
       "cat": "verbos"
     },
@@ -696,8 +696,8 @@
     },
     {
       "id": "desc-tantas",
-      "es": "tantas",
-      "ru": "так много, столько (ж. р. мн. ч.)",
+      "es": "tanto",
+      "ru": "столько, так много",
       "pos": "adj",
       "cat": "descripcion"
     },
@@ -732,7 +732,7 @@
     {
       "id": "rutina-despues",
       "es": "después",
-      "ru": "потом, после",
+      "ru": "потом, после этого",
       "pos": "adv",
       "cat": "tiempo"
     },
@@ -780,7 +780,7 @@
     },
     {
       "id": "rutina-barrer",
-      "es": "barrer el piso",
+      "es": "barrer el suelo",
       "ru": "подметать пол",
       "pos": "phrase",
       "cat": "rutina"
@@ -794,8 +794,8 @@
     },
     {
       "id": "rutina-trapear",
-      "es": "trapear el piso",
-      "ru": "мыть пол (шваброй)",
+      "es": "fregar el suelo",
+      "ru": "мыть пол",
       "pos": "phrase",
       "cat": "rutina"
     },
@@ -815,8 +815,8 @@
     },
     {
       "id": "rutina-aspirar",
-      "es": "aspirar la alfombra",
-      "ru": "пылесосить ковёр",
+      "es": "pasar la aspiradora",
+      "ru": "пылесосить",
       "pos": "phrase",
       "cat": "rutina"
     },
@@ -893,7 +893,7 @@
     {
       "id": "tiempo-frecuentemente",
       "es": "frecuentemente",
-      "ru": "часто, регулярно",
+      "ru": "регулярно, часто",
       "pos": "adv",
       "cat": "tiempo"
     },
@@ -942,14 +942,14 @@
     {
       "id": "tiempo-jamas",
       "es": "jamás",
-      "ru": "никогда, ни за что (сильнее nunca)",
+      "ru": "ни за что, никогда — усиленное отрицание",
       "pos": "adv",
       "cat": "tiempo"
     },
     {
       "id": "tiempo-luego",
       "es": "luego",
-      "ru": "потом, затем",
+      "ru": "затем, позже",
       "pos": "adv",
       "cat": "tiempo"
     },
@@ -1104,77 +1104,77 @@
       "id": "colo-rojo",
       "es": "rojo",
       "ru": "красный",
-      "pos": "n",
+      "pos": "adj",
       "cat": "colores"
     },
     {
       "id": "colo-azul",
       "es": "azul",
       "ru": "синий, голубой",
-      "pos": "n",
+      "pos": "adj",
       "cat": "colores"
     },
     {
       "id": "colo-verde",
       "es": "verde",
       "ru": "зелёный",
-      "pos": "n",
+      "pos": "adj",
       "cat": "colores"
     },
     {
       "id": "colo-amarillo",
       "es": "amarillo",
       "ru": "жёлтый",
-      "pos": "n",
+      "pos": "adj",
       "cat": "colores"
     },
     {
       "id": "colo-negro",
       "es": "negro",
       "ru": "чёрный",
-      "pos": "n",
+      "pos": "adj",
       "cat": "colores"
     },
     {
       "id": "colo-blanco",
       "es": "blanco",
       "ru": "белый",
-      "pos": "n",
+      "pos": "adj",
       "cat": "colores"
     },
     {
       "id": "colo-gris",
       "es": "gris",
       "ru": "серый",
-      "pos": "n",
+      "pos": "adj",
       "cat": "colores"
     },
     {
       "id": "colo-naranja",
       "es": "naranja",
       "ru": "оранжевый",
-      "pos": "n",
+      "pos": "adj",
       "cat": "colores"
     },
     {
       "id": "colo-rosa",
       "es": "rosa",
       "ru": "розовый",
-      "pos": "n",
+      "pos": "adj",
       "cat": "colores"
     },
     {
       "id": "colo-marron",
       "es": "marrón",
       "ru": "коричневый",
-      "pos": "n",
+      "pos": "adj",
       "cat": "colores"
     },
     {
       "id": "colo-morado",
       "es": "morado",
       "ru": "фиолетовый",
-      "pos": "n",
+      "pos": "adj",
       "cat": "colores"
     },
     {
@@ -1243,7 +1243,7 @@
     {
       "id": "adje-alegre",
       "es": "alegre",
-      "ru": "весёлый, радостный",
+      "ru": "радостный, жизнерадостный",
       "pos": "adj",
       "cat": "adjetivos"
     },
@@ -1355,14 +1355,14 @@
     {
       "id": "salu-adios",
       "es": "adiós",
-      "ru": "пока, до свидания",
+      "ru": "до свидания, прощай",
       "pos": "phrase",
       "cat": "saludos"
     },
     {
       "id": "salu-buenos-dias",
       "es": "buenos días",
-      "ru": "доброе утро, добрый день",
+      "ru": "доброе утро — до полудня",
       "pos": "phrase",
       "cat": "saludos"
     },
@@ -1460,7 +1460,7 @@
     {
       "id": "salu-no",
       "es": "no",
-      "ru": "нет",
+      "ru": "нет; не — отрицание перед глаголом",
       "pos": "phrase",
       "cat": "saludos"
     },
@@ -1614,14 +1614,14 @@
     {
       "id": "verb-saber",
       "es": "saber",
-      "ru": "знать",
+      "ru": "знать (факты); уметь",
       "pos": "v",
       "cat": "verbos"
     },
     {
       "id": "verb-necesitar",
       "es": "necesitar",
-      "ru": "нуждаться",
+      "ru": "нуждаться в чём-то; быть нужным",
       "pos": "v",
       "cat": "verbos"
     },
@@ -1642,7 +1642,7 @@
     {
       "id": "verb-empezar",
       "es": "empezar",
-      "ru": "начинать",
+      "ru": "начинать, начинаться",
       "pos": "v",
       "cat": "verbos"
     },
@@ -1663,7 +1663,7 @@
     {
       "id": "verb-decide",
       "es": "decidir",
-      "ru": "решать",
+      "ru": "решать, принимать решение",
       "pos": "v",
       "cat": "verbos"
     },
@@ -1677,7 +1677,7 @@
     {
       "id": "verb-caminar",
       "es": "caminar",
-      "ru": "идти пешком, гулять",
+      "ru": "идти пешком, ходить",
       "pos": "v",
       "cat": "verbos"
     },
@@ -1718,29 +1718,29 @@
     },
     {
       "id": "transp-andando",
-      "es": "andando",
-      "ru": "пешком (тж. a pie)",
+      "es": "a pie",
+      "ru": "пешком",
       "pos": "adv",
       "cat": "transporte"
     },
     {
       "id": "transp-medios",
-      "es": "los medios de transporte",
-      "ru": "виды транспорта",
+      "es": "el medio de transporte",
+      "ru": "вид транспорта",
       "pos": "n",
       "cat": "transporte"
     },
     {
       "id": "salud-enferma",
-      "es": "enferma",
-      "ru": "больная",
+      "es": "enfermo",
+      "ru": "больной, больная",
       "pos": "adj",
       "cat": "salud"
     },
     {
       "id": "salud-resfriada",
-      "es": "resfriada",
-      "ru": "простуженная",
+      "es": "resfriado",
+      "ru": "простуженный, простуженная",
       "pos": "adj",
       "cat": "salud"
     },
@@ -1761,7 +1761,7 @@
     {
       "id": "salud-duele",
       "es": "doler",
-      "ru": "болеть (о части тела)",
+      "ru": "болеть (о части тела): у меня болит голова",
       "pos": "v",
       "cat": "salud"
     }
