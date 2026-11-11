@@ -12,7 +12,7 @@
 // Страница после смены воркера сама перезагружается, см. ui.js: модули в памяти
 // должны совпасть с тем, что воркер теперь отдаёт.
 
-const CACHE = 'palabras-v33';
+const CACHE = 'palabras-v34';
 
 const SHELL = [
   './',
@@ -25,6 +25,7 @@ const SHELL = [
   'src/srs.js',
   'src/speech.js',
   'src/state.js',
+  'src/sync.js',
   'src/ui.js',
   'src/modes/choice.js',
   'src/modes/flip.js',

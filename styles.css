@@ -718,6 +718,19 @@ input.filter:focus{outline:none;border-bottom-color:var(--accent)}
 .settings-title:first-child{margin-top:0}
 .settings .hint{margin-top:10px}
 .settings-actions{display:flex;gap:8px;flex-wrap:wrap}
+/* Поля токена и гиста — как поле ввода ответа, но обычного размера текста. */
+.settings .field-label{display:block;margin:4px 0 0;font-size:.765rem;color:var(--muted)}
+.settings .field{
+  width:100%;font:inherit;font-size:1rem;
+  padding:10px 0 12px;margin-bottom:16px;
+  border:0;border-bottom:1px solid var(--line-strong);border-radius:0;
+  background:none;color:var(--text);
+}
+.settings .field::placeholder{color:var(--muted);opacity:.7}
+.settings .field:focus{outline:none;border-bottom-color:var(--accent)}
+.sync-status{margin:0 0 14px;font-size:.882rem}
+.sync-status.is-error{color:var(--err)}
+.settings .hint a{color:var(--accent);overflow-wrap:anywhere}
 .settings .note{margin-top:10px}
 .settings .note:empty{display:none}
 .keys{margin-top:40px}

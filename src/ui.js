@@ -5,6 +5,7 @@ import * as db from './db.js';
 import * as srs from './srs.js';
 import * as notes from './notes.js';
 import * as speech from './speech.js';
+import * as sync from './sync.js';
 import { el, replace, announce } from './dom.js';
 import { render as renderType } from './modes/type.js';
 import { render as renderFlip } from './modes/flip.js';
@@ -1644,6 +1645,99 @@ function bindWordsView() {
   $('btn-reset').addEventListener('click', resetProgress);
 }
 
+// ---------------------------------------------------------------------------
+// синхронизация в «Настройках»
+// ---------------------------------------------------------------------------
+
+const SYNC_ERRORS = {
+  empty: 'Вставьте токен.',
+  badid: 'Не похоже на ID гиста: это строка из букв и цифр в конце его адреса.',
+  offline: 'Нет связи с GitHub.',
+  auth: 'Токен не подходит или истёк. Создайте новый и подключите заново.',
+  forbidden: 'У токена нет доступа к гистам: нужно разрешение Gists — Read and write.',
+  limit: 'GitHub временно ограничил запросы. Повторю позже.',
+  missing: 'Гист не найден. Проверьте ID или оставьте поле пустым.',
+  format: 'В этом гисте не данные Palabras. Ничего не трогаю.',
+  http: 'GitHub ответил ошибкой. Повторю позже.',
+};
+
+function agoText(iso) {
+  const min = Math.round((Date.now() - Date.parse(iso)) / 60000);
+  if (min < 1) return 'только что';
+  if (min < 60) return min + ' мин назад';
+  const d = new Date(iso);
+  const time = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  if (d.toDateString() === new Date().toDateString()) return 'сегодня в ' + time;
+  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' }) + ' в ' + time;
+}
+
+function renderSync() {
+  const st = sync.status();
+  $('sync-setup').classList.toggle('hidden', st.on);
+  $('sync-on').classList.toggle('hidden', !st.on);
+  const line = $('sync-status');
+  let text = 'Только на этом устройстве';
+  let bad = false;
+  if (st.on) {
+    if (st.running) text = 'Синхронизирую…';
+    else if (st.lastError) {
+      text = SYNC_ERRORS[st.lastError] || SYNC_ERRORS.http;
+      if (st.lastSyncAt) text += ' Последняя синхронизация: ' + agoText(st.lastSyncAt) + '.';
+      bad = st.lastError !== 'offline';
+    } else if (st.lastSyncAt) text = 'Синхронизировано ' + agoText(st.lastSyncAt);
+    else text = 'Подключено';
+    $('sync-gist-note').textContent =
+      'Гист ' + st.gistId + '. Отключение ничего не стирает: прогресс остаётся и здесь, и в гисте.';
+  }
+  line.textContent = text;
+  line.classList.toggle('is-error', bad);
+  $('btn-sync-now').disabled = !!st.running;
+}
+
+// Пришли изменения с другого устройства. Посреди занятия и на паузе очередь не трогаем,
+// как и при пополнении колоды: пересборка подменила бы оставшиеся слова другими.
+function refreshAfterData() {
+  renderRail();
+  if (screen === 'home' && !resume) {
+    prepareSession();
+    if (view === 'learn') renderHome();
+  }
+  if (view === 'words') {
+    renderScope();
+    renderList();
+  }
+}
+
+function bindSync() {
+  $('btn-sync-connect').addEventListener('click', async () => {
+    const btn = $('btn-sync-connect');
+    btn.disabled = true;
+    $('sync-status').textContent = 'Подключаю…';
+    $('sync-status').classList.remove('is-error');
+    try {
+      const res = await sync.connect($('sync-token').value, $('sync-gist').value);
+      $('sync-token').value = '';
+      $('sync-gist').value = '';
+      renderSync();
+      if (res.created) setNote('Создан приватный гист. На других устройствах вставьте тот же токен.', 'settings-note');
+      else setNote('Подключено к вашему гисту, прогресс объединён.', 'settings-note');
+    } catch (e) {
+      $('sync-status').textContent = SYNC_ERRORS[e.code] || SYNC_ERRORS.http;
+      $('sync-status').classList.add('is-error');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+  $('sync-gist').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') $('btn-sync-connect').click();
+  });
+  $('btn-sync-now').addEventListener('click', () => sync.syncNow());
+  $('btn-sync-off').addEventListener('click', () => {
+    sync.disconnect();
+    setNote('Синхронизация выключена. Прогресс на этом устройстве остался.', 'settings-note');
+  });
+}
+
 function setAddOpen(on) {
   $('add-form').classList.toggle('hidden', !on);
   $('btn-add-open').setAttribute('aria-expanded', String(on));
@@ -1719,11 +1813,15 @@ function importDeck(e) {
   e.target.value = '';
 }
 
+// `reset` нужен синхронизации: без него сброшенная карточка выглядит нетронутой и
+// проигрывает прогрессу с другого устройства — сброс тихо откатился бы обратно.
 function resetProgress() {
-  if (!confirm('Сбросить все коробки и начать заново? Слова останутся, прогресс — нет.')) return;
+  const where = sync.status().on ? ' на всех устройствах с синхронизацией' : '';
+  if (!confirm('Сбросить все коробки' + where + ' и начать заново? Слова останутся, прогресс — нет.')) return;
+  const stamp = now();
   for (const w of activeWords()) {
     for (const dir of DIRS) {
-      state.cards[w.id + '|' + dir] = { box: 1, due: today(), arch: false, updated: now() };
+      state.cards[w.id + '|' + dir] = { box: 1, due: today(), arch: false, reset: stamp, updated: stamp };
     }
   }
   state.stats.done = 0;
@@ -1761,6 +1859,7 @@ function showView(which) {
     renderHome();
   }
   if (which === 'rules') renderRules();
+  if (which === 'settings') renderSync();
 }
 
 // ---------------------------------------------------------------------------
@@ -1968,6 +2067,7 @@ async function init() {
   bindWordsView();
   bindSpeech();
   bindToast();
+  bindSync();
   notes.bindSheet();
   bindKeyboard();
   for (const name of VIEWS) {
@@ -1982,6 +2082,10 @@ async function init() {
   notes.loadNotes().then(() => {
     if (view === 'rules') renderRules();
   });
+
+  // Синхронизация — после первой отрисовки: без сети или без токена приложение
+  // не должно ждать ни секунды.
+  sync.start({ onChange: refreshAfterData, onStatus: renderSync });
 
   if (!firstRun) {
     mergeSeed().then((added) => {

@@ -69,7 +69,8 @@ export function bumpDeck() {
   deckRev++;
 }
 
-function reindex() {
+// Экспортируется для синхронизации: она подменяет слова целыми объектами из гиста.
+export function reindex() {
   index = new Map(state.words.map((w) => [w.id, w]));
   bumpDeck();
 }
@@ -112,6 +113,7 @@ function freshState() {
     settings: { theme: 'auto', goal: 20, newPerDay: 20, autoSpeak: false },
     stats: { day: today(), done: 0 },
     log: {},
+    peerLogs: {},
   };
 }
 
@@ -153,6 +155,9 @@ function migrate(raw) {
   // Журнал по дням для точности и серии (см. srs.js). У старых состояний его нет —
   // серия начинается с нуля: восстановить прошлые дни не из чего.
   if (!s.log || typeof s.log !== 'object') s.log = {};
+  // Журналы других устройств того же человека, приезжают синхронизацией (sync.js).
+  // Свой журнал пишется только сюда, в log: иначе два устройства спорили бы за одну запись.
+  if (!s.peerLogs || typeof s.peerLogs !== 'object') s.peerLogs = {};
   return s;
 }
 
@@ -189,7 +194,16 @@ export async function load() {
 // Пишем по очереди: два быстрых ответа подряд не должны спорить за одну запись.
 let writeChain = Promise.resolve();
 
+// Подписка на сохранения — по ней синхронизация узнаёт, что пора отправлять.
+// Отдельный слушатель, а не импорт sync.js отсюда: состояние не должно зависеть от сети.
+const saveListeners = [];
+
+export function onSave(fn) {
+  saveListeners.push(fn);
+}
+
 export function save() {
+  for (const fn of saveListeners) fn();
   writeChain = writeChain
     .then(() => db.set(STATE_KEY, state))
     .catch((e) => console.warn('не удалось сохранить состояние:', e));

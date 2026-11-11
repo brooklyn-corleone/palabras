@@ -149,6 +149,27 @@ try {
     <button class="pill" data-theme-choice="dark">Тёмная</button>
   </div>
 
+  <h2 class="settings-title">Синхронизация</h2>
+  <p class="sync-status" id="sync-status" role="status">Только на этом устройстве</p>
+  <div id="sync-setup">
+    <label class="field-label" for="sync-token">Токен GitHub</label>
+    <input type="password" id="sync-token" class="field" placeholder="github_pat_…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="next">
+    <label class="field-label" for="sync-gist">ID гиста, если уже есть</label>
+    <input type="text" id="sync-gist" class="field" placeholder="необязательно" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done">
+    <div class="settings-actions">
+      <button class="btn" id="btn-sync-connect">Подключить</button>
+    </div>
+    <p class="hint">Без синхронизации прогресс живёт только в этом браузере: на другом устройстве он свой, а очистка данных сайта стирает его.</p>
+    <p class="hint">Токен: <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com → Fine-grained token</a>, в Account permissions → Gists выбрать Read and write. На своих телефоне, планшете и ноутбуке вставьте один и тот же токен — приложение само найдёт ваш гист. У второго человека — свой аккаунт GitHub и свой токен, тогда прогресс у вас раздельный.</p>
+  </div>
+  <div id="sync-on" class="hidden">
+    <div class="settings-actions">
+      <button class="btn ghost" id="btn-sync-now">Синхронизировать</button>
+      <button class="btn ghost" id="btn-sync-off">Отключить</button>
+    </div>
+    <p class="hint" id="sync-gist-note"></p>
+  </div>
+
   <h2 class="settings-title">Колода</h2>
   <div class="settings-actions">
     <button class="btn ghost" id="btn-export">Скачать колоду</button>

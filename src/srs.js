@@ -944,9 +944,28 @@ export function noteDayClear() {
   save();
 }
 
+// Журнал всех устройств человека: свой плюс приехавшие синхронизацией (peerLogs).
+// Ответы с разных устройств — разные ответы, поэтому складываем. Иначе серия рвалась бы
+// в день, когда занимался на планшете, а смотришь на телефоне.
+function fullLog() {
+  const peers = Object.values(state.peerLogs || {});
+  if (!peers.length) return state.log || {};
+  const out = {};
+  for (const log of [state.log || {}, ...peers]) {
+    for (const [d, e] of Object.entries(log)) {
+      if (!e) continue;
+      const o = out[d] || (out[d] = { r: 0, w: 0 });
+      o.r += e.r || 0;
+      o.w += e.w || 0;
+      if (e.clear) o.clear = true;
+    }
+  }
+  return out;
+}
+
 // Точность за последние `days` дней, включая сегодня. null — ответов не было.
 export function accuracy(days = 7) {
-  const log = state.log || {};
+  const log = fullLog();
   const from = addDays(-(days - 1));
   let r = 0;
   let w = 0;
@@ -1015,11 +1034,11 @@ function daysBetween(a, b) {
 }
 
 export function streak() {
-  return streakFrom(state.log || {}, today());
+  return streakFrom(fullLog(), today());
 }
 
 export function todayLog() {
-  const e = (state.log || {})[today()];
+  const e = fullLog()[today()];
   return { r: (e && e.r) || 0, w: (e && e.w) || 0 };
 }
 
