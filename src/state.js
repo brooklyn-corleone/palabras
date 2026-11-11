@@ -208,9 +208,19 @@ function makeCards(wordId) {
   }
 }
 
+// Счётчик в id нового слова. Без него id — это миллисекунды плюс случайное число
+// до десяти тысяч, и два слова, заведённых в одну миллисекунду (пачкой, в тестах),
+// изредка получали одинаковый id: второе слово молча теряло свои карточки.
+// Уже выданные id не меняются — меняется только способ выдавать новые.
+let idSeq = 0;
+
 export function addWord({ es, ru, ex = '', mn = '', pos = '' }) {
   const word = {
-    id: 'u' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36),
+    id:
+      'u' +
+      Date.now().toString(36) +
+      (idSeq++).toString(36) +
+      Math.floor(Math.random() * 1e4).toString(36),
     es,
     ru,
     ex,

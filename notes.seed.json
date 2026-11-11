@@ -1,5 +1,5 @@
 {
-  "version": 11,
+  "version": 13,
   "groups": {
     "presente": "Настоящее время",
     "irregulares": "Неправильные глаголы",
@@ -153,6 +153,59 @@
       ]
     },
     {
+      "id": "tu-usted",
+      "group": "presente",
+      "title": "tú и usted — два «вы»",
+      "blocks": [
+        {
+          "kind": "text",
+          "body": "В русском одно «вы» и для вежливости, и для нескольких людей. В испанском это разные слова, и путать их нельзя: tú — близкому, usted — незнакомому, начальнику, врачу."
+        },
+        {
+          "kind": "table",
+          "head": [
+            "",
+            "к одному",
+            "к нескольким"
+          ],
+          "rows": [
+            [
+              "неформально",
+              "tú",
+              "vosotros / vosotras"
+            ],
+            [
+              "вежливо",
+              "usted",
+              "ustedes"
+            ]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Главная ловушка: usted берёт форму третьего лица, то есть спрягается как «он, она». Usted es, usted tiene, usted está — не «usted eres». Отсюда и ¿Cómo está usted?, хотя по-русски это «как вы»."
+        },
+        {
+          "kind": "list",
+          "title": "Одно и то же разным людям",
+          "items": [
+            "¿Cómo estás? — другу; ¿Cómo está usted? — незнакомому",
+            "¿Y tú? — а ты; ¿Y usted? — а вы",
+            "¿Tienes hora? — у тебя; ¿Tiene hora? — у вас"
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "В Латинской Америке vosotros почти не используют: и вежливо, и неформально к нескольким — ustedes. В Испании нужны обе формы."
+        }
+      ],
+      "words": [
+        "salu-usted",
+        "salu-como-estas",
+        "salu-como-esta-usted"
+      ]
+    },
+    {
       "id": "tener-presente",
       "group": "presente",
       "title": "tener — иметь",
@@ -196,6 +249,16 @@
           "items": [
             "Yo tengo un gato.",
             "Ellos tienen una casa grande."
+          ]
+        },
+        {
+          "kind": "list",
+          "title": "Состояние — через tener",
+          "items": [
+            "tengo frío — мне холодно, tengo calor — мне жарко",
+            "tengo hambre — я голоден, tengo sed — я хочу пить",
+            "tengo sueño — я хочу спать, tengo prisa — я спешу",
+            "tengo miedo — мне страшно, tengo razón — я прав"
           ]
         },
         {
@@ -825,6 +888,9 @@
           "kind": "text",
           "body": "conocer — быть знакомым, знать (место, человека), conducir — водить (машину). В yo добавляется z перед c: -zco."
         }
+      ],
+      "words": [
+        "transp-conducir"
       ]
     },
     {
@@ -961,8 +1027,7 @@
         }
       ],
       "cats": [
-        "adjetivos",
-        "descripcion"
+        "adjetivos"
       ]
     },
     {
@@ -1006,6 +1071,12 @@
               "amarillo",
               "amarilla",
               "amarillos / amarillas"
+            ],
+            [
+              "фиолетовый",
+              "morado",
+              "morada",
+              "morados / moradas"
             ]
           ]
         },
@@ -1390,7 +1461,7 @@
     {
       "id": "doler-pronombres",
       "group": "presente",
-      "title": "Me duele — что у меня болит",
+      "title": "Me duele, me gusta — дательный падеж",
       "blocks": [
         {
           "kind": "text",
