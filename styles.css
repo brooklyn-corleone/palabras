@@ -1,5 +1,7 @@
-/* Спокойный минимализм: воздух, одна акцентная краска, никаких теней и рамок там,
-   где хватает волосяной линии. Единственный яркий момент — верный или неверный ответ.
+/* Спокойный минимализм: воздух, одна акцентная краска, никаких теней.
+   Волосяная линия — только разделитель. Кнопки отличаются от фона заливкой, как ячейки
+   в iOS: граница --line давала 1,19:1 и на солнце пропадала вовсе.
+   Единственный яркий момент — верный или неверный ответ.
 
    Шрифт один, системный: на iPhone это SF, на Android — Roboto, на Windows — Segoe.
    Свой файл шрифта пришлось бы тащить в репозиторий ради офлайна, а системный уже
@@ -13,6 +15,11 @@
   --text:    #1A1A19;
   --muted:   #6E6E6B;
   --line:    #E4E4E1;
+  /* Подчёркивание полей ввода: 3:1 к фону (WCAG 1.4.11), в отличие от --line. */
+  --line-strong: #8E8E8A;
+  /* Заливка элементов управления, как tertiarySystemFill в iOS. */
+  --fill:       rgba(118,118,110,.12);
+  --fill-hover: rgba(118,118,110,.20);
   --accent:  #3A5A40;
   --ok:      #4E7A55;
   --err:     #A85B52;
@@ -22,6 +29,8 @@
 
   --radius: 10px;
   --col: 560px;
+  /* Высота нижней панели вкладок. На широком экране и во время занятия её нет. */
+  --tabbar-h: 0px;
 }
 
 :root[data-theme="dark"]{
@@ -30,6 +39,9 @@
   --text:    #EDEDEA;
   --muted:   #92938F;
   --line:    #2A2B29;
+  --line-strong: #646562;
+  --fill:       rgba(235,235,228,.09);
+  --fill-hover: rgba(235,235,228,.15);
   --accent:  #7FA88A;
   --ok:      #7FA88A;
   --err:     #D08B80;
@@ -45,6 +57,9 @@
     --text:    #EDEDEA;
     --muted:   #92938F;
     --line:    #2A2B29;
+    --line-strong: #646562;
+    --fill:       rgba(235,235,228,.09);
+    --fill-hover: rgba(235,235,228,.15);
     --accent:  #7FA88A;
     --ok:      #7FA88A;
     --err:     #D08B80;
@@ -106,9 +121,26 @@ nav button{
 }
 nav button[aria-current="true"]{color:var(--text)}
 nav button:hover{color:var(--text)}
+nav svg{display:none}
+
+/* Во время занятия шапка, вкладки и шкала коробок убраны: остаются прогресс, ✕ и карточка. */
+body.in-session header,
+body.in-session .rail-block,
+body.in-session #storage-warn{display:none!important}
 
 /* ---------- дневная цель ---------- */
 .goal{display:flex;align-items:center;gap:12px;margin-bottom:34px}
+.exit{
+  display:none;flex-shrink:0;
+  width:44px;height:44px;margin:-10px 0 -10px -12px;padding:0;
+  align-items:center;justify-content:center;
+  background:none;border:0;border-radius:var(--radius);color:var(--muted);
+  cursor:pointer;touch-action:manipulation;
+}
+.exit svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.exit:hover{color:var(--text)}
+.exit:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+body.in-session .exit{display:inline-flex}
 .ticks{display:flex;gap:2px;flex:1}
 .tick{height:2px;flex:1;background:var(--line);border-radius:1px;transition:background .3s}
 .tick.on{background:var(--accent)}
@@ -150,7 +182,7 @@ nav button:hover{color:var(--text)}
 input[type=text]{
   width:100%;font:inherit;font-size:20px;
   padding:14px 0;
-  border:0;border-bottom:1px solid var(--line);border-radius:0;
+  border:0;border-bottom:1px solid var(--line-strong);border-radius:0;
   background:none;color:var(--text);
 }
 input[type=text]::placeholder{color:var(--muted);opacity:.7}
@@ -203,21 +235,23 @@ input[type=text]:focus{outline:none;border-bottom-color:var(--accent)}
   display:inline-flex;align-items:center;gap:8px;
 }
 .btn:hover{opacity:.88}
-.btn.ghost{background:none;color:var(--text);border-color:var(--line)}
-.btn.ghost:hover{border-color:var(--muted);opacity:1}
+.btn.ghost{background:var(--fill);color:var(--text);border-color:transparent}
 .btn.good{background:var(--ok);border-color:var(--ok);color:var(--bg)}
 .btn.bad{background:none;color:var(--err);border-color:var(--err)}
 .btn:focus-visible,nav button:focus-visible,.seg:focus-visible,.mini:focus-visible,
-.theme button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.option:focus-visible,.chip:focus-visible,.pair:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 kbd{
   font:inherit;font-size:11px;font-weight:500;letter-spacing:.04em;
   opacity:.65;
 }
 
+/* ---------- стартовый экран ---------- */
+.home{display:flex;flex-direction:column;flex:1}
+.home-summary{margin-bottom:10px}
+.home h2{font-size:26px;font-weight:400;letter-spacing:-.02em;line-height:1.2;margin:0 0 8px}
+.home p{color:var(--muted);margin:0}
+
 /* ---------- настройка занятия ---------- */
-.session-bar{display:flex;align-items:center;gap:12px;margin-bottom:26px}
-.session-bar .cap{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.session-bar .mini{margin-left:auto;flex-shrink:0}
 
 .setup .chooser{margin-bottom:22px}
 .setup .chooser .cap{display:block;margin-bottom:8px;text-transform:uppercase}
@@ -225,12 +259,11 @@ kbd{
 .pill{
   font:inherit;font-size:14px;font-weight:500;
   min-height:44px;padding:0 16px;
-  border:1px solid var(--line);border-radius:var(--radius);
-  background:none;color:var(--muted);
+  border:1px solid transparent;border-radius:var(--radius);
+  background:var(--fill);color:var(--muted);
   cursor:pointer;touch-action:manipulation;
   transition:border-color .15s, color .15s, background .15s;
 }
-.pill:hover:not(:disabled){color:var(--text);border-color:var(--muted)}
 .pill[aria-pressed="true"]{color:var(--text);border-color:var(--accent);background:var(--ok-soft)}
 .pill:disabled{opacity:.4;cursor:default}
 .pill:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -245,6 +278,11 @@ input.pick{
   width:20px;height:20px;margin:0;accent-color:var(--accent);
   cursor:pointer;flex-shrink:0;
 }
+/* Зона нажатия галочки 44×44 при видимых 20×20: поля съедаются отрицательным отступом. */
+.pick-hit{
+  display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;
+  width:44px;height:44px;margin:-12px;cursor:pointer;
+}
 
 /* ---------- choice: варианты ответа ---------- */
 .options{display:flex;flex-direction:column;gap:8px}
@@ -252,12 +290,11 @@ input.pick{
   font:inherit;font-size:17px;text-align:left;
   display:flex;align-items:center;gap:14px;
   min-height:56px;padding:12px 18px;
-  border:1px solid var(--line);border-radius:var(--radius);
-  background:none;color:var(--text);
+  border:1px solid transparent;border-radius:var(--radius);
+  background:var(--fill);color:var(--text);
   cursor:pointer;touch-action:manipulation;
   transition:border-color .15s, background .15s;
 }
-.option:hover:not(:disabled){border-color:var(--muted)}
 .option:disabled{cursor:default}
 .option-num{font-size:12px;font-weight:500;color:var(--muted);min-width:12px}
 .option.is-right{border-color:var(--ok);background:var(--ok-soft)}
@@ -282,11 +319,10 @@ input.pick{
 .chip{
   font:inherit;font-size:18px;
   min-width:48px;min-height:48px;padding:0 12px;
-  border:1px solid var(--line);border-radius:var(--radius);
-  background:none;color:var(--text);
+  border:1px solid transparent;border-radius:var(--radius);
+  background:var(--fill);color:var(--text);
   cursor:pointer;touch-action:manipulation;
 }
-.chip:hover:not(:disabled){border-color:var(--muted)}
 .chip.is-used{opacity:.22;cursor:default}
 
 /* ---------- match: две колонки ---------- */
@@ -295,12 +331,11 @@ input.pick{
 .pair{
   font:inherit;font-size:15px;text-align:left;
   min-height:52px;padding:10px 14px;
-  border:1px solid var(--line);border-radius:var(--radius);
-  background:none;color:var(--text);
+  border:1px solid transparent;border-radius:var(--radius);
+  background:var(--fill);color:var(--text);
   cursor:pointer;touch-action:manipulation;
   transition:opacity .2s, border-color .15s, background .15s;
 }
-.pair:hover:not(:disabled){border-color:var(--muted)}
 .pair.is-picked{border-color:var(--accent);background:var(--ok-soft)}
 .pair.is-wrong{border-color:var(--err);background:var(--err-soft)}
 .pair.is-wrong::after{content:' ✕';color:var(--err);font-weight:600}
@@ -317,7 +352,7 @@ input.pick{
      Отступы нужны, чтобы у шкалы толщиной 6px была человеческая зона нажатия. */
   box-sizing:content-box;
   flex-grow:0;flex-basis:0;min-width:8px;
-  height:6px;padding:12px 0;
+  height:6px;padding:19px 0; /* 6 + 2×19 = 44: минимум HIG */
   border:0;
   background-color:var(--muted);
   background-clip:content-box;
@@ -393,23 +428,22 @@ input.pick{
 /* ---------- список слов ---------- */
 .add{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin-bottom:20px}
 .add input[type=text]{font-size:16px;padding:12px 0}
-.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-.tools .btn{min-height:40px;font-size:14px;padding:0 14px}
 .note{min-height:18px;margin-bottom:12px}
 .note:empty{margin-bottom:0}
 
 .list-filters{display:flex;gap:12px;align-items:center;margin-bottom:8px}
 input.filter{
   flex:1;min-width:0;font:inherit;font-size:16px;padding:12px 0;
-  border:0;border-bottom:1px solid var(--line);background:none;color:var(--text);
+  border:0;border-bottom:1px solid var(--line-strong);background:none;color:var(--text);
 }
 input.filter:focus{outline:none;border-bottom-color:var(--accent)}
 .filter-cat{
   /* 16px, а не меньше: на поле мельче iOS Safari увеличивает страницу при фокусе. */
   font:inherit;font-size:16px;
+  max-width:45%; /* иначе длинное название темы съедает поле поиска */
   min-height:44px;padding:0 10px;
-  border:1px solid var(--line);border-radius:var(--radius);
-  background:var(--bg);color:var(--text);
+  border:1px solid transparent;border-radius:var(--radius);
+  background:var(--fill);color:var(--text);
   cursor:pointer;touch-action:manipulation;
 }
 .filter-cat:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -427,13 +461,12 @@ input.filter:focus{outline:none;border-bottom-color:var(--accent)}
 .item.arch .es{color:var(--muted)}
 .item .box-tag{white-space:nowrap;text-transform:uppercase}
 .mini{
-  font:inherit;font-size:12px;font-weight:500;
-  min-height:36px;padding:0 10px;
-  border:1px solid var(--line);border-radius:var(--radius);
-  background:none;color:var(--muted);cursor:pointer;touch-action:manipulation;white-space:nowrap;
+  font:inherit;font-size:13px;font-weight:500;
+  min-height:44px;padding:0 12px;
+  border:1px solid transparent;border-radius:var(--radius);
+  background:var(--fill);color:var(--muted);cursor:pointer;touch-action:manipulation;white-space:nowrap;
 }
-.mini:hover{color:var(--text);border-color:var(--muted)}
-.mini.danger:hover{color:var(--err);border-color:var(--err)}
+.mini.danger{color:var(--err)}
 .mini.flagged{color:var(--err);border-color:var(--err)}
 .item.flagged .es{color:var(--err)}
 
@@ -445,37 +478,61 @@ input.filter:focus{outline:none;border-bottom-color:var(--accent)}
 }
 .hidden{display:none!important}
 
-footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line)}
-.theme{display:flex;align-items:center;gap:2px;flex-wrap:wrap}
-.theme .cap{margin-right:8px}
-.theme button{
-  font:inherit;font-size:12px;font-weight:500;letter-spacing:.04em;
-  background:none;border:0;color:var(--muted);
-  padding:8px 10px;min-height:36px;border-radius:var(--radius);
-  cursor:pointer;touch-action:manipulation;
+/* ---------- настройки ---------- */
+.settings-title{
+  font-size:12px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--muted);margin:32px 0 10px;
 }
-.theme button[aria-pressed="true"]{color:var(--text)}
-.theme button:hover{color:var(--text)}
-/* Подпись к выбору длины урока: единицы измерения, а не кнопка. */
-.goal-hint{margin-left:6px}
-#goal-choice{margin-bottom:4px}
-.keys{margin-top:12px}
+.settings-title:first-child{margin-top:0}
+.settings .hint{margin-top:10px}
+.settings-actions{display:flex;gap:8px;flex-wrap:wrap}
+.settings .note{margin-top:10px}
+.settings .note:empty{display:none}
+.keys{margin-top:40px}
 
 /* ---------- адаптив ---------- */
+/* Нижняя панель вкладок: на телефоне и планшете навигация — в зоне большого пальца.
+   49 pt — высота системной панели вкладок iOS, плюс полоска home indicator. */
+@media (max-width:768px){
+  :root{--tabbar-h:calc(49px + env(safe-area-inset-bottom))}
+  body.in-session{--tabbar-h:0px}
+  header{margin-bottom:20px}
+  nav.tabs{
+    position:fixed;left:0;right:0;bottom:0;z-index:10;
+    display:flex;gap:0;
+    padding:0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    background:var(--bg);border-top:1px solid var(--line);
+  }
+  nav.tabs button{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    height:49px;min-height:0;padding:0;border-radius:0;
+    font-size:10px;font-weight:500;letter-spacing:.01em;
+  }
+  nav.tabs svg{
+    display:block;width:24px;height:24px;
+    fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;
+  }
+  /* Активная вкладка — акцентом, как в системных приложениях. */
+  nav.tabs button[aria-current="true"]{color:var(--accent)}
+  .wrap{padding-bottom:calc(28px + var(--tabbar-h))}
+  body.in-session .wrap{padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+}
+
 @media (max-width:480px){
-  .wrap{padding:20px max(18px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left))}
+  .wrap{padding:20px max(18px, env(safe-area-inset-right)) calc(20px + var(--tabbar-h)) max(18px, env(safe-area-inset-left))}
+  body.in-session .wrap{padding-bottom:calc(20px + env(safe-area-inset-bottom))}
   .note-list{columns:1}
-  nav button{padding:10px 8px;font-size:13px}
   #view-learn{display:flex;flex-direction:column;flex:1}
   .goal{order:0;margin-bottom:20px}
-  .session-bar{order:1;margin-bottom:20px}
   .rail-block{order:2;margin:0 0 24px}
   .stage{order:3}
   .item .ru{padding-left:0}
   /* Кнопки — в зоне большого пальца, у нижнего края экрана. */
   /* Отступ снизу — под полоску home indicator: в PWA при viewport-fit=cover она лежит
      поверх контента, и свайп по кнопке «Дальше» сворачивал приложение. */
-  .row{position:sticky;bottom:0;background:var(--bg);padding-bottom:calc(8px + env(safe-area-inset-bottom))}
+  /* Над панелью вкладок, если она видна; во время занятия — над home indicator. */
+  .row{position:sticky;bottom:var(--tabbar-h);background:var(--bg);padding-bottom:8px}
+  body.in-session .row{padding-bottom:calc(8px + env(safe-area-inset-bottom))}
   /* Кроме кнопки под списком архива: она часть списка, а не панель действий карточки.
      Липкой ей быть нельзя — уезжает к верхнему краю видимой области и наезжает
      на слова, которые как раз предлагает отметить. */
@@ -484,6 +541,19 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line)}
   .add{grid-template-columns:1fr;gap:0}
   .add .btn{margin-top:16px;width:100%;justify-content:center}
   .note-table th,.note-table td{padding-right:18px}
+}
+
+
+/* Подсветка при наведении — только там, где есть мышь. На тач-экране :hover залипает
+   после касания, и только что нажатая кнопка выглядит выбранной. */
+@media (hover:hover){
+  .btn.ghost:hover{background:var(--fill-hover);opacity:1}
+  .pill:hover:not(:disabled){color:var(--text);background:var(--fill-hover)}
+  .option:hover:not(:disabled){background:var(--fill-hover)}
+  .chip:hover:not(:disabled){background:var(--fill-hover)}
+  .pair:hover:not(:disabled){background:var(--fill-hover)}
+  .mini:hover{color:var(--text);background:var(--fill-hover)}
+  .mini.danger:hover{color:var(--err);border-color:var(--err)}
 }
 
 /* Подсказки клавиш нужны только там, где есть клавиатура. На сенсорном экране «Enter»

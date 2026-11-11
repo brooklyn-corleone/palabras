@@ -45,6 +45,13 @@ const filterEl = $('filter');
 let currentKey = null;
 let view = 'learn';
 
+// Что сейчас на экране «Учить»: 'home' — старт, 'card' | 'match' | 'note' | 'goal' —
+// идёт занятие, 'setup' — настройка, 'end' — итог. От этого зависит фокус-режим
+// (см. setFocus) и что вернёт «Продолжить» после выхода по ✕.
+let screen = 'home';
+let currentPack = null; // пачка «Пар», которая сейчас на экране
+let resume = null; // как вернуться в прерванное занятие; null — занятие не начато
+
 // ---------------------------------------------------------------------------
 // занятие
 // ---------------------------------------------------------------------------
@@ -152,9 +159,6 @@ function sessionSummary() {
   ].join(' · ');
 }
 
-function renderSessionBar() {
-  $('session-summary').textContent = sessionSummary();
-}
 
 // ---------------------------------------------------------------------------
 // тема
@@ -208,7 +212,7 @@ function setGoal(n) {
   applyLessonSize();
   applyGoalChoice();
   renderGoal();
-  renderSessionBar();
+  if (screen === 'home') renderHome();
 }
 
 function bindGoalChoice() {
@@ -314,6 +318,8 @@ function multiChooser(label, allText, options, selected) {
 }
 
 function renderSetup() {
+  screen = 'setup';
+  setFocus(false);
   const picked = session.picked.size;
   const cats = categories();
   replace(
@@ -369,13 +375,22 @@ function renderSetup() {
           'Начать',
           el('kbd', { text: 'Enter' }),
         ),
-        el('button', { class: 'btn ghost', onclick: () => nextCard() }, 'Отмена'),
+        el('button', { class: 'btn ghost', onclick: renderHome }, 'Отмена'),
       ),
     ),
   );
 }
 
+// Собрать занятие и сразу начать.
 function startSession() {
+  prepareSession();
+  nextCard();
+}
+
+// Собрать занятие, не начиная: очередь, пачки «Пар», обнулённый счёт цели.
+// При запуске приложения занятие готовится, а показывается стартовый экран.
+function prepareSession() {
+  resume = null;
   srs.setSession({
     source: session.source,
     cats: session.cats,
@@ -383,7 +398,6 @@ function startSession() {
     modes: session.modes,
     picked: session.picked,
   });
-  renderSessionBar();
   matchPacks = [];
   resetSessionResults();
 
@@ -415,17 +429,106 @@ function startSession() {
       matchPacks.push(words.slice(i, i + srs.MATCH_PAIRS));
     }
   }
-  if (onlyMatch) {
-    nextCard();
-    return;
-  }
+  if (onlyMatch) return;
 
   // В обычном занятии разминка приходит сама, если карточек хватает.
   if (!matchPacks.length && session.source === 'due' && !session.modes.size) {
     const warmup = srs.pickMatchWords();
     if (warmup) matchPacks.push(warmup);
   }
-  nextCard();
+}
+
+// ---------------------------------------------------------------------------
+// стартовый экран и фокус-режим
+// ---------------------------------------------------------------------------
+
+// Во время занятия на экране только карточка, прогресс и ✕: шапка, вкладки и шкала
+// коробок съедали 41–49 % высоты, и на iPhone SE восемь из двенадцати кнопок «Пар»
+// уезжали под панель кнопок. Так же устроены Duolingo, Anki и Quizlet.
+function setFocus(on) {
+  document.body.classList.toggle('in-session', on);
+}
+
+// Старт вкладки «Учить»: что будет в занятии, шкала коробок и одна главная кнопка.
+// Сводка занятия раньше жила строкой над карточкой и обрезалась многоточием.
+function renderHome() {
+  screen = 'home';
+  setFocus(false);
+  renderRail();
+  renderGoal();
+
+  if (!activeWords().length) {
+    replace(
+      stage,
+      el(
+        'div',
+        { class: 'empty' },
+        el('h2', { text: 'Колода пуста' }),
+        el('p', { text: 'Добавь слова на вкладке «Слова».' }),
+      ),
+    );
+    return;
+  }
+
+  const words = srs.sessionWords().length;
+  const left = srs.dueWordCount();
+  const hasWork = !!resume || srs.queueLength() > 0 || matchPacks.length > 0;
+
+  let title = 'На сегодня всё';
+  let text = 'Все карточки повторены. Можно собрать занятие из случайных или выбранных слов.';
+  if (resume) {
+    title = 'Занятие на паузе';
+    text = 'Верных ответов: ' + Math.min(state.stats.done, state.settings.goal) + ' из ' + state.settings.goal + '.';
+  } else if (hasWork) {
+    title = words + ' ' + plural(words, 'слово', 'слова', 'слов') + ' в занятии';
+    text = left
+      ? 'Всего ждут повторения: ' + left + ' ' + plural(left, 'слово', 'слова', 'слов') + '.'
+      : 'Повторять по сроку нечего — занятие собрано по настройке.';
+  }
+
+  const start = () => {
+    const go = resume || nextCard;
+    resume = null;
+    go();
+  };
+
+  replace(
+    stage,
+    el(
+      'div',
+      { class: 'home' },
+      el('div', { class: 'cap home-summary', text: sessionSummary() }),
+      el('h2', { text: title }),
+      el('p', { text }),
+      el(
+        'div',
+        { class: 'row' },
+        hasWork
+          ? el(
+              'button',
+              { class: 'btn', dataset: { key: 'enter' }, onclick: start },
+              resume ? 'Продолжить' : 'Начать',
+              el('kbd', { text: 'Enter' }),
+            )
+          : null,
+        el('button', { class: hasWork ? 'btn ghost' : 'btn', onclick: renderSetup }, 'Настроить занятие'),
+      ),
+    ),
+  );
+}
+
+// ✕ во время занятия: ставим на паузу и возвращаемся на старт. Неотвеченная карточка
+// и недособранная пачка «Пар» не теряются — «Продолжить» покажет их снова.
+function exitSession() {
+  if (screen === 'card' && currentKey) {
+    resume = () => renderStage();
+  } else if (screen === 'match' && currentPack) {
+    matchPacks.unshift(currentPack);
+    resume = () => nextCard();
+  } else {
+    resume = () => nextCard();
+  }
+  renderHome();
 }
 
 function renderStage() {
@@ -442,6 +545,8 @@ function renderStage() {
     return;
   }
   const mode = srs.pickMode(currentKey, session.modes);
+  screen = 'card';
+  setFocus(true);
   replace(
     stage,
     MODES[mode]({
@@ -467,6 +572,9 @@ function renderStage() {
 // Пачка из шести пар — и разминка в начале обычного занятия, и единица работы
 // в режиме «Пары», выбранном руками.
 function renderMatchPack(words) {
+  screen = 'match';
+  currentPack = words;
+  setFocus(true);
   replace(
     stage,
     renderMatch({
@@ -496,6 +604,8 @@ function renderNote() {
     return;
   }
   notes.markSeen(note.id);
+  screen = 'note';
+  setFocus(true);
   replace(
     stage,
     notes.render({
@@ -510,6 +620,12 @@ function renderNote() {
 // принимать в момент ответа и по одному слову; здесь весь список сразу и на свежую голову.
 //
 // Показываем только отвеченное верно и ни разу не промаханное — см. recordAnswer.
+// Галочка 20×20 при HIG-минимуме 44×44: на двухстах сорока строках по ней промахивались.
+// Сама галочка не растёт — растёт label вокруг, а отрицательные поля держат вёрстку на месте.
+function pickHit(check) {
+  return el('label', { class: 'pick-hit' }, check);
+}
+
 function renderArchiveOffer() {
   const byId = new Map(activeWords().map((w) => [w.id, w]));
   const words = [...sessionRight.keys()]
@@ -560,7 +676,7 @@ function renderArchiveOffer() {
     return el(
       'div',
       { class: 'item' },
-      check,
+      pickHit(check),
       el('div', { class: 'es', lang: 'es', text: w.es }),
       el('div', { class: 'ru', text: w.ru }),
     );
@@ -608,6 +724,8 @@ function renderArchiveOffer() {
 }
 
 function renderEmpty() {
+  screen = 'end';
+  setFocus(false);
   const hasWords = activeWords().length > 0;
   const custom = session.source !== 'due' || session.modes.size > 0 || session.cats.size > 0;
   // «Занятие закончено» и «на сегодня всё» — разные вещи. Занятие ограничено по словам,
@@ -720,13 +838,16 @@ function answer(mode, correct, opts) {
 }
 
 function renderGoalReached() {
+  screen = 'goal';
+  setFocus(true);
   const left = srs.queueLength();
   replace(
     stage,
     el(
       'div',
       { class: 'empty' },
-      el('div', { class: 'cap', text: 'Цель дня' }),
+      // Цель считается за занятие, а не за день.
+      el('div', { class: 'cap', text: 'Урок пройден' }),
       el('h2', { text: state.stats.done + ' из ' + state.settings.goal }),
       el('p', {
         text: left
@@ -875,7 +996,7 @@ function renderList() {
       return el(
         'div',
         { class: 'item' + (arch ? ' arch' : '') + (w.flagged ? ' flagged' : '') },
-        check,
+        pickHit(check),
         el('div', { class: 'es', lang: 'es', text: (w.flagged ? '⚑ ' : '') + w.es }),
         el('div', { class: 'box-tag', text: arch ? 'архив' : 'коробка ' + srs.wordBox(w.id) }),
         el(
@@ -980,8 +1101,10 @@ function bindWordsView() {
   $('btn-reset').addEventListener('click', resetProgress);
 }
 
-function setNote(text) {
-  $('words-note').textContent = text;
+// Сообщения о колоде пишутся там, откуда нажали: добавление — в «Словах»,
+// скачать / загрузить / сбросить — в «Настройках».
+function setNote(text, where = 'words-note') {
+  $(where).textContent = text;
 }
 
 // Выгружаем только слова и прогресс. Настройки устройства в файл не кладём —
@@ -1017,7 +1140,7 @@ function importDeck(e) {
       data = JSON.parse(reader.result);
       if (!Array.isArray(data.words) || !data.cards) throw new Error('не колода');
     } catch (err) {
-      setNote('Файл не похож на колоду Palabras.');
+      setNote('Файл не похож на колоду Palabras.', 'settings-note');
       return;
     }
 
@@ -1032,7 +1155,7 @@ function importDeck(e) {
       (current ? '\n\nКопия текущей колоды скачана: ' + backup + '.' : '') +
       '\n\nЗаменить?';
     if (!confirm(question)) {
-      setNote('Загрузка отменена, колода не тронута.');
+      setNote('Загрузка отменена, колода не тронута.', 'settings-note');
       return;
     }
 
@@ -1058,15 +1181,16 @@ function resetProgress() {
   srs.buildQueue();
   renderScope();
   renderList();
-  nextCard();
-  setNote('Прогресс сброшен.');
+  prepareSession();
+  renderHome();
+  setNote('Прогресс сброшен.', 'settings-note');
 }
 
 // ---------------------------------------------------------------------------
 // вкладки и клавиатура
 // ---------------------------------------------------------------------------
 
-const VIEWS = ['learn', 'words', 'rules'];
+const VIEWS = ['learn', 'words', 'rules', 'settings'];
 
 function showView(which) {
   view = which;
@@ -1139,6 +1263,7 @@ function renderRuleRow(note) {
 // Клавиши не разбираются в режимах: каждый режим просто помечает свою кнопку
 // через data-key, а оболочка находит её и нажимает. Новый режим ничего тут не меняет.
 function keyName(e) {
+  if (e.key === 'Escape') return 'escape';
   if (e.key === 'Enter') return 'enter';
   if (e.code === 'Space') return 'space';
   if (e.key === '1' || e.key === '2' || e.key === '3') return e.key;
@@ -1150,6 +1275,10 @@ function bindKeyboard() {
     if (view !== 'learn' || e.metaKey || e.ctrlKey || e.altKey) return;
     const name = keyName(e);
     if (!name) return;
+    if (name === 'escape') {
+      if (document.body.classList.contains('in-session')) exitSession();
+      return;
+    }
 
     const tag = (e.target.tagName || '').toLowerCase();
     if (tag === 'textarea') return;
@@ -1193,10 +1322,10 @@ async function init() {
   for (const name of VIEWS) {
     $('tab-' + name).addEventListener('click', () => showView(name));
   }
-  $('btn-session').addEventListener('click', renderSetup);
+  $('btn-exit').addEventListener('click', exitSession);
 
-  renderSessionBar();
-  startSession();
+  prepareSession();
+  renderHome();
 
   // Правила подтягиваются в фоне и не задерживают первую карточку.
   notes.loadNotes().then(() => {
@@ -1208,7 +1337,8 @@ async function init() {
       if (!added) return;
       srs.buildQueue();
       renderRail();
-      if (!currentKey) nextCard();
+      // На старте и в итоге — пересчитать, что теперь ждёт. Посреди занятия экран не трогаем.
+      if (screen === 'home' || screen === 'end') renderHome();
       if (view === 'words') renderList();
     });
   }

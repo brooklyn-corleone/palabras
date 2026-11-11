@@ -28,10 +28,25 @@ try {
 
 <header>
   <h1 class="mark">Palabras</h1>
-  <nav>
-    <button id="tab-learn" aria-current="true">Учить</button>
-    <button id="tab-words" aria-current="false">Слова</button>
-    <button id="tab-rules" aria-current="false">Правила</button>
+  <!-- На телефоне это нижняя панель вкладок (HIG: навигация в зоне большого пальца),
+       на широком экране — строка в шапке. Значки нарисованы здесь же: без зависимостей. -->
+  <nav class="tabs" aria-label="Разделы">
+    <button id="tab-learn" aria-current="true">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="7" width="13" height="13" rx="2.5"/><path d="M7.5 4h10A2.5 2.5 0 0 1 20 6.5v10"/></svg>
+      <span>Учить</span>
+    </button>
+    <button id="tab-words" aria-current="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6.5h11M9 12h11M9 17.5h11"/><circle cx="4.75" cy="6.5" r="1"/><circle cx="4.75" cy="12" r="1"/><circle cx="4.75" cy="17.5" r="1"/></svg>
+      <span>Слова</span>
+    </button>
+    <button id="tab-rules" aria-current="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5C10 5 7 4.5 3.5 5v13.5c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5zM12 6.5V20"/></svg>
+      <span>Правила</span>
+    </button>
+    <button id="tab-settings" aria-current="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>
+      <span>Настройки</span>
+    </button>
   </nav>
 </header>
 
@@ -40,13 +55,12 @@ try {
 <!-- ============ УЧИТЬ ============ -->
 <section id="view-learn">
   <div class="goal">
+    <!-- Выход из занятия. Виден только во время занятия: там нет ни шапки, ни вкладок. -->
+    <button class="exit" id="btn-exit" aria-label="Выйти из занятия">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
     <div class="ticks" id="ticks"></div>
     <div class="goal-num" id="goal-num">0 / 20</div>
-  </div>
-
-  <div class="session-bar">
-    <span class="cap" id="session-summary"></span>
-    <button class="mini" id="btn-session">Настроить занятие</button>
   </div>
 
   <div class="stage" id="stage"></div>
@@ -67,12 +81,6 @@ try {
     <input id="new-ru" type="text" placeholder="перевод на русский">
     <button class="btn" id="btn-add">Добавить</button>
   </div>
-  <div class="tools">
-    <button class="btn ghost" id="btn-export">Скачать колоду</button>
-    <button class="btn ghost" id="btn-import">Загрузить колоду</button>
-    <button class="btn ghost" id="btn-reset">Сбросить прогресс</button>
-    <input type="file" id="file-input" accept="application/json" class="hidden">
-  </div>
   <div class="note" id="words-note" role="status"></div>
   <div class="chooser-row list-scope" id="list-scope"></div>
   <div class="list-filters">
@@ -92,23 +100,42 @@ try {
   <div id="rules"></div>
 </section>
 
-<footer>
-  <div class="theme" role="group" aria-label="Длина урока" id="goal-choice">
-    <span class="cap">Урок</span>
-    <button data-goal-choice="10">10</button>
-    <button data-goal-choice="20">20</button>
-    <button data-goal-choice="30">30</button>
-    <button data-goal-choice="40">40</button>
-    <span class="cap goal-hint">верных ответов</span>
+<!-- ============ НАСТРОЙКИ ============ -->
+<!-- Раньше это был подвал под каждой вкладкой: длина урока и тема висели под карточкой,
+     а «Сбросить прогресс» стоял в одном ряду со «Скачать колоду» над списком слов. -->
+<section id="view-settings" class="hidden settings">
+  <h2 class="settings-title">Урок</h2>
+  <div class="chooser-row" role="group" aria-label="Длина урока" id="goal-choice">
+    <button class="pill" data-goal-choice="10">10</button>
+    <button class="pill" data-goal-choice="20">20</button>
+    <button class="pill" data-goal-choice="30">30</button>
+    <button class="pill" data-goal-choice="40">40</button>
   </div>
-  <div class="theme" role="group" aria-label="Тема оформления">
-    <span class="cap">Тема</span>
-    <button data-theme-choice="auto">Авто</button>
-    <button data-theme-choice="light">Светлая</button>
-    <button data-theme-choice="dark">Тёмная</button>
+  <p class="hint">Столько верных ответов в одном занятии. Слов вдвое меньше: у каждого два направления.</p>
+
+  <h2 class="settings-title">Оформление</h2>
+  <div class="chooser-row" role="group" aria-label="Тема оформления">
+    <button class="pill" data-theme-choice="auto">Как в системе</button>
+    <button class="pill" data-theme-choice="light">Светлая</button>
+    <button class="pill" data-theme-choice="dark">Тёмная</button>
   </div>
-  <div class="keys">Enter — проверить · Пробел — показать · 1 — не помню · 2 — помню</div>
-</footer>
+
+  <h2 class="settings-title">Колода</h2>
+  <div class="settings-actions">
+    <button class="btn ghost" id="btn-export">Скачать колоду</button>
+    <button class="btn ghost" id="btn-import">Загрузить колоду</button>
+    <input type="file" id="file-input" accept="application/json" class="hidden">
+  </div>
+  <p class="hint">Файл со словами и прогрессом. Перед загрузкой текущая колода скачается копией.</p>
+  <div class="note" id="settings-note" role="status"></div>
+
+  <h2 class="settings-title">Опасная зона</h2>
+  <div class="settings-actions">
+    <button class="btn bad" id="btn-reset">Сбросить прогресс</button>
+  </div>
+
+  <div class="keys">Клавиши: Enter — проверить · Пробел — показать · 1 — не помню · 2 — помню · Esc — выйти из занятия</div>
+</section>
 
 </div>
 
