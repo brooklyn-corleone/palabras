@@ -165,6 +165,18 @@ try {
      и над кнопками карточки, а не уезжает вместе со страницей. -->
 <div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
 
+<!-- Правило поверх карточки — по ссылке «Правило» в разборе ответа. Окном, а не экраном:
+     после закрытия на месте тот же ответ и та же кнопка «Дальше». -->
+<dialog class="sheet" id="sheet" aria-labelledby="sheet-title">
+  <div class="sheet-inner">
+    <div class="sheet-head">
+      <h2 class="note-title" id="sheet-title"></h2>
+      <button class="mini" id="sheet-close" type="button">Закрыть</button>
+    </div>
+    <div class="rule-body" id="sheet-body"></div>
+  </div>
+</dialog>
+
 <script type="module" src="src/ui.js"></script>
 </body>
 </html>

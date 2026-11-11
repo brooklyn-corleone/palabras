@@ -4,11 +4,13 @@
 
 import { el, replace, announce } from '../dom.js';
 import { sayable, autoSpeak } from '../speech.js';
+import { stageLabel } from '../srs.js';
+import { ruleLink } from '../notes.js';
 
 const DIR_LABEL = 'Испанский → Русский';
 const HALF_FLIP = 120; // половина переворота, вторая половина доигрывается в CSS
 
-export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initFlagged }) {
+export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initFlagged, rule }) {
   const root = el('div', { class: 'mode' });
   let flagged = !!initFlagged;
 
@@ -28,7 +30,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
     return el(
       'div',
       { class: 'dir' },
-      el('span', { text: DIR_LABEL + ' · ' + (card.arch ? 'архив' : 'коробка ' + card.box) }),
+      el('span', { text: DIR_LABEL + ' · ' + stageLabel(card) }),
       onArchive ? el('button', { class: 'mini', onclick: onArchive }, 'в архив') : null,
       flagBtn,
     );
@@ -81,6 +83,9 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
         { class: 'verdict neutral' },
         el('span', { class: 'lbl', text: 'Перевод' }),
         el('b', { text: word.ru }),
+        // Оборот нейтральный, «помнил или нет» решается кнопкой ниже — правило к слову
+        // показываем при любом исходе.
+        ruleLink(rule),
       ),
       el(
         'div',

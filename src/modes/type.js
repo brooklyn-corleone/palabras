@@ -3,11 +3,12 @@
 
 import { el, replace, announce } from '../dom.js';
 import { sayable, autoSpeak } from '../speech.js';
-import { judge, accentMarks, diffMarks, ALMOST_CAP } from '../srs.js';
+import { judge, accentMarks, diffMarks, ALMOST_CAP, stageLabel } from '../srs.js';
+import { ruleLink } from '../notes.js';
 
 const DIR_LABEL = 'Русский → Испанский';
 
-export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initFlagged }) {
+export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initFlagged, rule }) {
   const root = el('div', { class: 'mode' });
   let flagged = !!initFlagged;
 
@@ -27,7 +28,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
     return el(
       'div',
       { class: 'dir' },
-      el('span', { text: DIR_LABEL + ' · ' + (card.arch ? 'архив' : 'коробка ' + card.box) }),
+      el('span', { text: DIR_LABEL + ' · ' + stageLabel(card) }),
       onArchive ? el('button', { class: 'mini', onclick: onArchive }, 'в архив') : null,
       flagBtn,
     );
@@ -115,6 +116,8 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
         ),
       );
     }
+    // Ошибка → правило: спряжение ser/estar/tener и прочее, что не угадывается по слову.
+    if (!correct && rule) box.append(ruleLink(rule));
 
     replace(
       root,

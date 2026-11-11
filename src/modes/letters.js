@@ -3,7 +3,8 @@
 // Поэтому потолок — коробка 4, пятая остаётся за режимом type.
 
 import { el, replace, announce } from '../dom.js';
-import { norm } from '../srs.js';
+import { norm, stageLabel } from '../srs.js';
+import { ruleLink } from '../notes.js';
 import { sayable, autoSpeak } from '../speech.js';
 
 const DIR_LABEL = 'Русский → Испанский';
@@ -56,7 +57,7 @@ function buildBank(target) {
   return shuffle(chars.concat(decoys));
 }
 
-export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initFlagged }) {
+export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initFlagged, rule }) {
   const root = el('div', { class: 'mode' });
   const target = puzzleTarget(word.es);
   const bank = buildBank(target);
@@ -87,7 +88,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
     return el(
       'div',
       { class: 'dir' },
-      el('span', { text: DIR_LABEL + ' · ' + (card.arch ? 'архив' : 'коробка ' + card.box) }),
+      el('span', { text: DIR_LABEL + ' · ' + stageLabel(card) }),
       onArchive ? el('button', { class: 'mini', onclick: onArchive }, 'в архив') : null,
       flagBtn,
     );
@@ -177,6 +178,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
         { class: 'verdict ' + (correct ? 'ok' : 'no') },
         el('span', { class: 'lbl', text: correct ? 'Верно' : 'Правильный ответ' }),
         sayable(el('b', { lang: 'es', text: word.es }), word.es),
+        !correct ? ruleLink(rule) : null,
       ),
       el(
         'div',

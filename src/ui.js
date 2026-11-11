@@ -5,7 +5,7 @@ import * as db from './db.js';
 import * as srs from './srs.js';
 import * as notes from './notes.js';
 import * as speech from './speech.js';
-import { el, replace } from './dom.js';
+import { el, replace, announce } from './dom.js';
 import { render as renderType } from './modes/type.js';
 import { render as renderFlip } from './modes/flip.js';
 import { render as renderChoice } from './modes/choice.js';
@@ -53,6 +53,13 @@ let view = 'learn';
 let screen = 'home';
 let currentPack = null; // пачка «Пар», которая сейчас на экране
 let resume = null; // как вернуться в прерванное занятие; null — занятие не начато
+
+// Новые слова, с которыми уже познакомились в этом занятии (см. renderIntro).
+const introduced = new Set();
+// Слова, на которых ошиблись в этом занятии, последнее — в конце. По ним всплывающее
+// правило выбирается к ошибке, а не наугад (notes.pick).
+let recentMisses = [];
+const MISSES_KEPT = 10;
 
 // ---------------------------------------------------------------------------
 // занятие
@@ -340,7 +347,7 @@ function nextCard() {
     return;
   }
   // Правило показываем вместо карточки, а не поверх неё: одна вещь на экране за раз.
-  if (notes.shouldShow()) {
+  if (notes.shouldShow(recentMisses)) {
     renderNote();
     return;
   }
@@ -505,6 +512,8 @@ function prepareSession() {
   });
   matchPacks = [];
   resetSessionResults();
+  introduced.clear();
+  recentMisses = [];
 
   // Счёт цели начинается заново с каждым занятием — и при сборке нового, и при запуске
   // приложения (init тоже идёт сюда). Раньше он был дневным и после двадцати продолжал
@@ -619,6 +628,7 @@ function renderHome() {
       el('h2', { text: title }),
       text ? el('p', { text }) : null,
       stats,
+      renderProgress(),
       el(
         'div',
         { class: 'row' },
@@ -634,6 +644,44 @@ function renderHome() {
       ),
     ),
   );
+}
+
+// Прогресс под счётчиком дня: серия, точность, прогноз. Цифры — то, что Anki и WaniKani
+// показывают на главном экране: видно, что занятия к чему-то ведут, и сколько ждёт завтра.
+function renderProgress() {
+  const st = srs.streak();
+  const acc = srs.accuracy(7);
+  const fc = srs.forecast();
+  const done = srs.todayLog().r;
+  const notesText = [];
+  if (!st.todayDone) {
+    notesText.push(
+      'Сегодня засчитается после ' + srs.STREAK_MIN + ' верных ответов' +
+        (done ? ' (уже ' + done + ')' : '') + ' или когда повторишь всё.',
+    );
+  }
+  if (st.frozen) notesText.push('Пропуск ' + dayName(st.frozen) + ' не сбросил серию: один в неделю прощается.');
+  return el(
+    'div',
+    { class: 'home-progress' },
+    el(
+      'div',
+      { class: 'home-stats small' },
+      stat(st.days, plural(st.days, 'день подряд', 'дня подряд', 'дней подряд')),
+      stat(acc === null ? '—' : acc + ' %', 'точность за 7 дней'),
+      stat(fc.tomorrow, 'придёт завтра'),
+      stat(fc.week, 'за 7 дней'),
+    ),
+    notesText.length ? el('p', { class: 'hint', text: notesText.join(' ') }) : null,
+  );
+}
+
+const MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+
+function dayName(iso) {
+  if (iso === srs.shiftIso(today(), -1)) return 'вчера';
+  const [, m, d] = iso.split('-').map(Number);
+  return d + ' ' + MONTHS[m - 1];
 }
 
 function stat(n, label) {
@@ -671,6 +719,10 @@ function renderStage() {
     renderEmpty();
     return;
   }
+  if (!card.arch && !introduced.has(word.id) && srs.isNewWord(word.id)) {
+    renderIntro(word);
+    return;
+  }
   const mode = srs.pickMode(currentKey, session.modes);
   screen = 'card';
   setFocus(true);
@@ -687,8 +739,85 @@ function renderStage() {
       // поэтому здесь только пишем состояние — экран из-за жалобы не перерисовываем.
       onFlag: (on) => flagWord(word.id, on),
       flagged: !!word.flagged,
+      rule: notes.ruleFor(word),
     }),
   );
+}
+
+// Знакомство с новым словом — до первой проверки. Спрашивать то, чего ни разу не видел, —
+// гадание: на свежей колоде первый ответ почти всегда промах, и слово с порога копит
+// «трудность», которой у него нет. Так устроены уроки WaniKani и Memrise.
+// screen остаётся 'card': ✕ и «Продолжить» вернут сюда же через renderStage.
+function renderIntro(word) {
+  screen = 'card';
+  setFocus(true);
+  const cat = word.cat ? catLabel(word.cat).toLowerCase() : '';
+  const knownStage = srs.STAGES[srs.KNOWN_BOX - 1];
+  const knownWhen = srs.BOX_LABEL[srs.KNOWN_BOX - 1];
+  replace(
+    stage,
+    el(
+      'div',
+      { class: 'mode intro' },
+      el('div', { class: 'dir' }, el('span', { text: 'Новое слово' + (cat ? ' · ' + cat : '') })),
+      speech.sayable(el('div', { class: 'prompt', lang: 'es', text: word.es }), word.es),
+      el('div', { class: 'intro-ru', text: word.ru }),
+      notes.ruleLink(notes.ruleFor(word)),
+      el('p', {
+        class: 'hint intro-hint',
+        text: '«Уже знаю» — сразу в «' + knownStage + '»: слово вернётся через ' + knownWhen + ' обычной карточкой.',
+      }),
+      el(
+        'div',
+        { class: 'row' },
+        el(
+          'button',
+          {
+            class: 'btn',
+            dataset: { key: 'enter' },
+            onclick: () => {
+              introduced.add(word.id);
+              renderStage();
+            },
+          },
+          'Учить',
+          el('kbd', { text: 'Enter' }),
+        ),
+        el('button', { class: 'btn ghost', onclick: () => knownFromIntro(word) }, 'Уже знаю'),
+      ),
+    ),
+  );
+  announce('Новое слово: ' + word.es + ' — ' + word.ru);
+  speech.autoSpeak(word.es);
+  stage.querySelector('[data-key="enter"]').focus();
+}
+
+// «Уже знаю» — без вопроса, но с «Отменить», как и архив с карточки.
+function knownFromIntro(word) {
+  const key = currentKey;
+  const snap = srs.snapshotWord(word.id);
+  const dropped = srs.markKnown(word.id).filter((k) => k !== key);
+  introduced.add(word.id);
+  nextCard();
+  pulseSeg(String(srs.KNOWN_BOX));
+  toast('«' + word.es + '» — уже знаю', () => {
+    introduced.delete(word.id);
+    undoWord(word.id, snap, key, dropped);
+  });
+}
+
+// Общая отмена для действий с карточки: вернуть записи карточек, ту же карточку —
+// на экран, а успевшую показаться следом — сразу за ней.
+function undoWord(id, snap, key, dropped) {
+  srs.restoreWord(id, snap);
+  const back = [key];
+  if (screen === 'card' && currentKey && currentKey !== key) back.push(currentKey);
+  srs.unshiftKeys(back);
+  for (const k of dropped) srs.requeue(k);
+  renderRail();
+  if (screen === 'card' || screen === 'end') nextCard();
+  renderScope();
+  if (view === 'words') renderList();
 }
 
 // «В архив» посреди занятия — одно касание рядом с «проблема», и промахнуться легко.
@@ -700,18 +829,7 @@ function archiveFromCard(word) {
   const dropped = srs.archiveWord(word.id, true).filter((k) => k !== key);
   nextCard();
   pulseSeg('arch');
-  toast('«' + word.es + '» в архиве', () => {
-    srs.restoreWord(word.id, snap);
-    // Вернуть ту же карточку на экран, а успевшую показаться — следом за ней.
-    const back = [key];
-    if (screen === 'card' && currentKey && currentKey !== key) back.push(currentKey);
-    srs.unshiftKeys(back);
-    for (const k of dropped) srs.requeue(k);
-    renderRail();
-    if (screen === 'card' || screen === 'end') nextCard();
-    renderScope();
-    if (view === 'words') renderList();
-  });
+  toast('«' + word.es + '» в архиве', () => undoWord(word.id, snap, key, dropped));
 }
 
 // Пачка из шести пар — и разминка в начале обычного занятия, и единица работы
@@ -742,19 +860,20 @@ function renderMatchPack(words) {
 }
 
 function renderNote() {
-  const note = notes.pick();
-  if (!note) {
+  const picked = notes.pick(recentMisses);
+  if (!picked) {
     currentKey = srs.nextKey();
     renderStage();
     return;
   }
-  notes.markSeen(note.id);
+  notes.markSeen(picked.note.id);
   screen = 'note';
   setFocus(true);
   replace(
     stage,
     notes.render({
-      note,
+      note: picked.note,
+      word: picked.word,
       onDone: () => nextCard(),
     }),
   );
@@ -877,6 +996,8 @@ function renderEmpty() {
   // и после него обычно остаётся ещё созревшее: обещать «следующие придут завтра»,
   // когда ждут ещё двести карточек, нельзя.
   const left = srs.dueWordCount();
+  // Разобрал всё, что созрело, — день в серии засчитан, даже если верных меньше десяти.
+  if (!left && sessionRight.size) srs.noteDayClear();
 
   if (!hasWords) {
     replace(
@@ -944,6 +1065,8 @@ function renderEmpty() {
           'Повторить ещё раз',
         ),
       ),
+      // Итог занятия — тот момент, когда серия и точность только что изменились.
+      renderProgress(),
       renderArchiveOffer(),
     ),
   );
@@ -957,6 +1080,10 @@ function answer(mode, correct, opts) {
   // архив тому, что в нём лежит, нечего. А вот выпавшее из архива — это промах,
   // и он записывается как промах.
   if (res && !res.arch) recordAnswer(wordIdOf(currentKey), correct);
+  if (!correct) {
+    const id = wordIdOf(currentKey);
+    recentMisses = recentMisses.filter((x) => x !== id).concat(id).slice(-MISSES_KEPT);
+  }
 
   // Цель должна быть точкой, а не цифрой, которая молча уезжает в 21, 22, 23.
   // Останавливаемся один раз и спрашиваем, продолжать ли.
@@ -1039,11 +1166,12 @@ function renderGoal() {
 // появляется по тапу, иначе шкала превращается в таблицу и перестаёт быть тихой.
 function renderRail() {
   const { boxes, arch } = srs.boxCounts();
+  // Имя стадии вместо «коробки N», номер и срок — в подписи по тапу.
   const segments = boxes.map((count, i) => ({
     key: String(i + 1),
     count,
-    label: 'Коробка ' + (i + 1),
-    sub: srs.BOX_LABEL[i],
+    label: srs.STAGES[i][0].toUpperCase() + srs.STAGES[i].slice(1),
+    sub: 'коробка ' + (i + 1) + ', через ' + srs.BOX_LABEL[i],
   }));
   segments.push({ key: 'arch', count: arch, label: 'Архив', sub: 'изредка' });
 
@@ -1177,7 +1305,13 @@ function listRow(w, hard) {
     el('button', { class: 'act act-del', onclick: () => listDelete(w) }, 'Удалить'),
   );
 
-  const tag = arch ? 'архив' : hard ? 'трудное' : 'коробка ' + srs.wordBox(w.id);
+  const tag = arch
+    ? 'архив'
+    : hard
+      ? 'трудное'
+      : srs.isNewWord(w.id)
+        ? 'новое'
+        : srs.STAGES[srs.wordBox(w.id) - 1];
   return el(
     'div',
     {
@@ -1598,6 +1732,9 @@ function keyName(e) {
 function bindKeyboard() {
   document.addEventListener('keydown', (e) => {
     if (view !== 'learn' || e.metaKey || e.ctrlKey || e.altKey) return;
+    // Открыто правило поверх карточки — Esc закрывает его сам (dialog), а Enter
+    // не должен нажимать «Дальше» под ним.
+    if (document.querySelector('dialog[open]')) return;
     const name = keyName(e);
     if (!name) return;
     if (name === 'escape') {
@@ -1645,6 +1782,7 @@ async function init() {
   bindWordsView();
   bindSpeech();
   bindToast();
+  notes.bindSheet();
   bindKeyboard();
   for (const name of VIEWS) {
     $('tab-' + name).addEventListener('click', () => showView(name));

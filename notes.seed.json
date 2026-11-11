@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 11,
   "groups": {
     "presente": "Настоящее время",
     "irregulares": "Неправильные глаголы",
@@ -69,6 +69,22 @@
           "kind": "text",
           "body": "hablar — говорить, comer — есть, vivir — жить. Отбрасываешь -ar, -er или -ir и добавляешь окончание. У -er и -ir всё совпадает, кроме nosotros и vosotros."
         }
+      ],
+      "words": [
+        "verb-hablar",
+        "verb-beber",
+        "verb-vivir",
+        "verb-trabajar",
+        "verb-estudiar",
+        "verb-necesitar",
+        "verb-ayudar",
+        "verb-caminar",
+        "verb-terminar",
+        "verb-decide",
+        "verbos-ensenar",
+        "rutina-desayunar",
+        "rutina-comer",
+        "rutina-cenar"
       ]
     },
     {
@@ -120,6 +136,20 @@
           "kind": "text",
           "body": "Оба переводятся как «быть». ser — кто или что это по сути: профессия, происхождение, характер. estar — где находится и в каком состоянии сейчас."
         }
+      ],
+      "words": [
+        "ser-yo",
+        "ser-tu",
+        "ser-el",
+        "ser-nosotros",
+        "ser-vosotros",
+        "ser-ellos",
+        "estar-yo",
+        "estar-tu",
+        "estar-el",
+        "estar-nosotros",
+        "estar-vosotros",
+        "estar-ellos"
       ]
     },
     {
@@ -172,6 +202,14 @@
           "kind": "text",
           "body": "Возраст в испанском — через tener: «Tengo 30 años», а не «Soy 30»."
         }
+      ],
+      "words": [
+        "tener-yo",
+        "tener-tu",
+        "tener-el",
+        "tener-nosotros",
+        "tener-vosotros",
+        "tener-ellos"
       ]
     },
     {
@@ -283,6 +321,14 @@
             "llamarse — зваться"
           ]
         }
+      ],
+      "words": [
+        "rutina-despertarse",
+        "rutina-levantarse",
+        "rutina-ducharse",
+        "rutina-acostarse",
+        "verb-se-queda",
+        "verb-encuentras"
       ]
     },
     {
@@ -413,6 +459,10 @@
           "kind": "text",
           "body": "estar — находиться, hacer — делать, ir — идти, oír — слышать."
         }
+      ],
+      "words": [
+        "verb-hacer",
+        "verb-ir"
       ]
     },
     {
@@ -478,6 +528,11 @@
           "kind": "text",
           "body": "poder — мочь, poner — класть, querer — хотеть, saber — знать. У poder и querer в корне o→ue и e→ie, но не в nosotros и vosotros."
         }
+      ],
+      "words": [
+        "verb-poder",
+        "verb-querer",
+        "verb-saber"
       ]
     },
     {
@@ -543,6 +598,9 @@
           "kind": "text",
           "body": "salir — выходить, ser — быть, tener — иметь, traer — приносить."
         }
+      ],
+      "words": [
+        "rutina-sales"
       ]
     },
     {
@@ -594,6 +652,9 @@
           "kind": "text",
           "body": "venir — приходить, ver — видеть."
         }
+      ],
+      "words": [
+        "verb-ver"
       ]
     },
     {
@@ -659,6 +720,9 @@
           "kind": "text",
           "body": "pedir — просить (e→i), dormir — спать (o→ue), mover — двигать (o→ue), jugar — играть (u→ue). Как querer (e→ie), корень меняется везде, кроме nosotros и vosotros."
         }
+      ],
+      "words": [
+        "verb-empezar"
       ]
     },
     {
@@ -895,6 +959,10 @@
           "kind": "text",
           "body": "На письме z переходит в c: lápiz — lápices."
         }
+      ],
+      "cats": [
+        "adjetivos",
+        "descripcion"
       ]
     },
     {
@@ -954,6 +1022,9 @@
           "kind": "text",
           "body": "Спросить про цвет — ¿De qué color es? Ответ — Es rojo. «Тёмный» и «светлый» добавляются словами: azul oscuro, azul claro."
         }
+      ],
+      "cats": [
+        "colores"
       ]
     },
     {
@@ -1239,6 +1310,9 @@
             "el año — год"
           ]
         }
+      ],
+      "cats": [
+        "calendario"
       ]
     },
     {
@@ -1363,6 +1437,10 @@
           "kind": "text",
           "body": "Так же устроен gustar: me gusta el café, me gustan los libros."
         }
+      ],
+      "words": [
+        "salud-duele",
+        "verb-gustar"
       ]
     },
     {
@@ -1496,6 +1574,12 @@
           "kind": "text",
           "body": "Это и есть главное: по-русски «мне холодно» и «я голоден», а по-испански — «имею холод» и «имею голод». Через ser или estar такое не говорят."
         }
+      ],
+      "words": [
+        "salud-enferma",
+        "salud-resfriada",
+        "salud-fiebre",
+        "salud-tos"
       ]
     }
   ]

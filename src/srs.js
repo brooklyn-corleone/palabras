@@ -16,6 +16,17 @@ import {
 export const INTERVALS = [1, 2, 4, 8, 16]; // дни для коробок 1..5
 export const BOX_LABEL = ['1 день', '2 дня', '4 дня', '8 дней', '16 дней'];
 
+// Имена стадий вместо номеров коробок, как у WaniKani: «коробка 3» ничего не говорит
+// тому, кто не читал про Лейтнера, а «помню» — говорит. Номер остаётся в подписи шкалы.
+export const STAGES = ['учу', 'знакомо', 'помню', 'уверенно', 'твёрдо'];
+
+export function stageLabel(card) {
+  if (!card) return '';
+  if (card.arch) return 'архив';
+  if (isNewCard(card)) return 'новое';
+  return STAGES[card.box - 1] || '';
+}
+
 // Потолок коробки для каждого режима. Узнать слово среди двух-трёх вариантов много легче,
 // чем вспомнить его с нуля, поэтому одинаково засчитывать режимы нельзя — иначе слова
 // «выучиваются» фальшиво.
@@ -157,12 +168,15 @@ export const MAX_ARCHIVE_MIX = 3;
 
 // Пачка из шести пар в начале сессии — только если карточек к повторению вообще хватает.
 // Разминка не должна становиться единственным содержанием дня.
+//
+// Только из уже знакомых слов: соединять пары из слов, которых ни разу не видел, —
+// гадание, а не разминка. Новое слово сначала показывается экраном знакомства.
 export function pickMatchWords() {
   const ids = [];
   const seen = new Set();
   for (const key of queue) {
     const w = wordOf(key);
-    if (!w || seen.has(w.id) || !w.es || !w.ru) continue;
+    if (!w || seen.has(w.id) || !w.es || !w.ru || isNewWord(w.id)) continue;
     seen.add(w.id);
     ids.push(w);
     if (ids.length >= MATCH_PAIRS) break;
@@ -247,6 +261,9 @@ function introducedToday() {
     const id = parseKey(key).wordId;
     if (ids.has(id)) continue;
     const cards = wordCards(id);
+    // «Уже знаю» — не новое слово, взятое в работу, а знакомое, и дневной лимит
+    // оно не тратит: иначе десять знакомых слов съели бы половину дня.
+    if (cards.some((c) => c.known === t)) continue;
     if (cards.some((c) => c.seen === t) && cards.every((c) => c.seen === t || isNewCard(c))) {
       ids.add(id);
     }
@@ -300,6 +317,31 @@ function shuffle(a) {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
+}
+
+// Слова одной темы — не подряд. При знакомстве смысловые группы мешают: «рука, нога,
+// голова» подряд путаются друг с другом сильнее, чем вперемешку с другими темами
+// (Tinkham 1993, Waring 1997). Перемешивание и так почти всегда разводит темы,
+// но на колоде, где треть слов — глаголы, соседи из одной темы выпадают часто.
+// Жадно: если карточка той же темы, что предыдущая, меняем её с ближайшей другой.
+// Когда другой темы нет (занятие по одной теме), оставляем как есть.
+export function spreadCats(keys) {
+  const catOf = (key) => {
+    const w = wordById(parseKey(key).wordId);
+    return (w && w.cat) || '';
+  };
+  const out = keys.slice();
+  for (let i = 1; i < out.length; i++) {
+    const prev = catOf(out[i - 1]);
+    if (!prev || catOf(out[i]) !== prev) continue;
+    for (let j = i + 1; j < out.length; j++) {
+      if (catOf(out[j]) !== prev) {
+        [out[i], out[j]] = [out[j], out[i]];
+        break;
+      }
+    }
+  }
+  return out;
 }
 
 function archivedKeys() {
@@ -373,7 +415,7 @@ export function buildQueue(options) {
   // Дневной лимит новых — только для обычного повторения. Случайные, выбранные
   // и трудные заказаны руками, и урезать заказ было бы самоуправством.
   if (source === 'due') out = limitNew(out, newLeftToday());
-  queue = limitByWords(out, session.size);
+  queue = spreadCats(limitByWords(out, session.size));
 
   // Выученные подмешиваем только в обычное занятие: если слова выбраны руками
   // или заказано «двадцать случайных», подмешивать к ним чужое было бы самоуправством.
@@ -742,6 +784,24 @@ export function unshiftKeys(keys) {
   queue.unshift(...fresh);
 }
 
+// «Уже знаю» на экране знакомства с новым словом: обе карточки сразу в третью коробку,
+// как в Memrise и Drops. Не в архив — знакомое на вид слово ещё надо проверить
+// вспоминанием, и через четыре дня оно придёт обычной карточкой.
+export const KNOWN_BOX = 3;
+
+export function markKnown(id) {
+  const t = today();
+  for (const c of wordCards(id)) {
+    c.box = KNOWN_BOX;
+    c.due = addDays(INTERVALS[KNOWN_BOX - 1]);
+    c.seen = c.seen || t;
+    c.known = t;
+    c.updated = now();
+  }
+  save();
+  return dropWord(id);
+}
+
 // Потолок для ответа с опечаткой: см. opts.cap в grade.
 export const ALMOST_CAP = 4;
 
@@ -754,8 +814,12 @@ export function grade(key, mode, correct, opts = {}) {
 
   // Первая встреча с карточкой — для дневного лимита новых слов (см. newLeftToday).
   if (!c.seen) c.seen = today();
-  // Промах пальцем в «Парах» трудным слово не делает.
-  if (!correct && mode !== 'match') noteLapse(c);
+  // Промах пальцем в «Парах» трудным слово не делает. И в точность не идёт: в «Парах»
+  // пишутся только промахи, верные пары не оцениваются вовсе.
+  if (mode !== 'match') {
+    if (!correct) noteLapse(c);
+    logAnswer(correct);
+  }
 
   if (c.arch) {
     if (correct) {
@@ -846,4 +910,141 @@ export function isArchived(id) {
 
 export function wordOf(key) {
   return wordById(parseKey(key).wordId);
+}
+
+// ---------------------------------------------------------------------------
+// журнал по дням: точность, серия дней, прогноз
+// ---------------------------------------------------------------------------
+
+// state.log — { 'YYYY-MM-DD': { r, w, clear } }: верных, неверных и «разобрал всё».
+// Хранится ровно столько, сколько нужно серии и точности. Девяносто дней — с запасом:
+// серия дальше пары месяцев считается по тем же записям и рвётся только на пропуске.
+const LOG_DAYS = 90;
+
+function dayLog(t) {
+  if (!state.log || typeof state.log !== 'object') state.log = {};
+  if (!state.log[t]) {
+    state.log[t] = { r: 0, w: 0 };
+    const old = addDays(-LOG_DAYS);
+    for (const d of Object.keys(state.log)) if (d < old) delete state.log[d];
+  }
+  return state.log[t];
+}
+
+function logAnswer(correct) {
+  const e = dayLog(today());
+  if (correct) e.r++;
+  else e.w++;
+}
+
+// День засчитан и тогда, когда повторять больше нечего: при трёх созревших словах
+// десяти верных ответов не набрать, и серия рвалась бы у того, кто сделал всё.
+export function noteDayClear() {
+  dayLog(today()).clear = true;
+  save();
+}
+
+// Точность за последние `days` дней, включая сегодня. null — ответов не было.
+export function accuracy(days = 7) {
+  const log = state.log || {};
+  const from = addDays(-(days - 1));
+  let r = 0;
+  let w = 0;
+  for (const [d, e] of Object.entries(log)) {
+    if (d < from) continue;
+    r += e.r || 0;
+    w += e.w || 0;
+  }
+  return r + w ? Math.round((100 * r) / (r + w)) : null;
+}
+
+// Серия дней. День засчитан после STREAK_MIN верных ответов — это самый короткий урок
+// из настроек — или когда разобрано всё, что созрело.
+export const STREAK_MIN = 10;
+
+// Сдвиг даты 'YYYY-MM-DD' на n дней по местному времени, как и today().
+export function shiftIso(iso, n) {
+  const [y, m, d] = iso.split('-').map(Number);
+  const date = new Date(y, m - 1, d + n);
+  return (
+    date.getFullYear() +
+    '-' +
+    String(date.getMonth() + 1).padStart(2, '0') +
+    '-' +
+    String(date.getDate()).padStart(2, '0')
+  );
+}
+
+function dayActive(log, d) {
+  const e = log[d];
+  return !!e && ((e.r || 0) >= STREAK_MIN || !!e.clear);
+}
+
+// Один пропуск в семь дней серию не рвёт — заморозка, как у Duolingo, но без покупки
+// и без кнопки: она срабатывает сама. Пропущенный день в счёт не идёт, только держит серию.
+// Сегодняшний день, пока не засчитан, тоже не рвёт: день ещё не кончился.
+//
+// Чистая функция от журнала — ничего не хранит, поэтому её нельзя «сломать»
+// перестановкой часов или импортом колоды: серия всегда пересчитывается из записей.
+export function streakFrom(log, t) {
+  const todayDone = dayActive(log, t);
+  let d = todayDone ? t : shiftIso(t, -1);
+  let days = 0;
+  let frozen = null; // последний по времени день, прикрытый заморозкой
+  let lastFreeze = null; // для правила «одна на семь дней» при обходе назад
+  for (let i = 0; i < LOG_DAYS + 7; i++) {
+    if (dayActive(log, d)) {
+      days++;
+    } else {
+      const gap = lastFreeze ? daysBetween(d, lastFreeze) : Infinity;
+      if (gap < 7) break;
+      // Пропуск после начала истории — не заморозка, а её край.
+      if (!Object.keys(log).some((k) => k < d && dayActive(log, k))) break;
+      lastFreeze = d;
+      if (!frozen) frozen = d;
+    }
+    d = shiftIso(d, -1);
+  }
+  return { days, todayDone, frozen: days ? frozen : null };
+}
+
+function daysBetween(a, b) {
+  const [y1, m1, d1] = a.split('-').map(Number);
+  const [y2, m2, d2] = b.split('-').map(Number);
+  return Math.round((new Date(y2, m2 - 1, d2) - new Date(y1, m1 - 1, d1)) / 86400000);
+}
+
+export function streak() {
+  return streakFrom(state.log || {}, today());
+}
+
+export function todayLog() {
+  const e = (state.log || {})[today()];
+  return { r: (e && e.r) || 0, w: (e && e.w) || 0 };
+}
+
+// Сколько слов придёт завтра и за ближайшие семь дней — как прогноз в Anki и WaniKani.
+// Слово считается в тот день, когда созреет первая его карточка. Сегодняшнее сюда
+// не входит: оно уже в «к повторению». Выученное тоже: его подмешивается не больше трёх.
+export function forecast() {
+  const t = today();
+  const tomorrow = addDays(1);
+  const week = addDays(7);
+  const first = new Map();
+  for (const key of Object.keys(state.cards)) {
+    if (!isLiveKey(key)) continue;
+    const c = state.cards[key];
+    if (c.arch || c.due <= t || c.due > week) continue;
+    const id = parseKey(key).wordId;
+    if (!first.has(id) || c.due < first.get(id)) first.set(id, c.due);
+  }
+  // Слово, у которого другая карточка созрела уже сегодня, придёт сегодня — не считаем.
+  let tom = 0;
+  let wk = 0;
+  for (const [id, due] of first) {
+    if (wordCards(id).some((c) => !c.arch && c.due <= t)) continue;
+    wk++;
+    if (due <= tomorrow) tom++;
+  }
+  return { tomorrow: tom, week: wk };
 }
