@@ -38,19 +38,88 @@ function makeWord(es = 'la llave', ru = 'ключ') {
 
 // ---------------------------------------------------------------------------
 
-test('norm снимает артикль, диакритику и пунктуацию', () => {
+test('norm снимает артикль, ударения и пунктуацию, но ñ оставляет буквой', () => {
   assert.equal(srs.norm('El Teléfono!'), 'telefono');
   assert.equal(srs.norm('  la  Llave  '), 'llave');
-  assert.equal(srs.norm('el niño'), 'nino');
+  assert.equal(srs.norm('el niño'), 'niño');
+  // ñ в разложенном виде (n + U+0303) — так её иногда отдаёт клавиатура или вставка.
+  assert.equal(srs.norm('el nin\u0303o'), 'niño');
+  assert.equal(srs.norm('¿Cuántos años?'), 'cuantos años');
 });
 
 test('judge: точное совпадение, опечатка, промах', () => {
   assert.equal(srs.judge('la llave', 'la llave'), 'ok');
   assert.equal(srs.judge('llave', 'la llave'), 'ok'); // артикль не обязателен
-  assert.equal(srs.judge('telefono', 'el teléfono'), 'ok'); // ударение не обязательно
+  assert.equal(srs.judge('teléfono', 'el teléfono'), 'ok');
+  assert.equal(srs.judge('telefono', 'el teléfono'), 'accent'); // засчитано, но с пометкой
   assert.equal(srs.judge('llavve', 'la llave'), 'almost'); // одна лишняя буква
   assert.equal(srs.judge('puerta', 'la llave'), 'no');
   assert.equal(srs.judge('', 'la llave'), 'no');
+});
+
+test('judge: пропущенная диакритика — отдельный вердикт, кроме пар, где она меняет слово', () => {
+  resetDeck();
+  assert.equal(srs.judge('manana', 'mañana'), 'accent', 'ñ без тильды — та же небрежность, что ударение');
+  assert.equal(srs.judge('hablais', 'habláis'), 'accent');
+  assert.equal(srs.judge('que', '¿qué?'), 'accent', 'знаки ¿? не требуются');
+  assert.equal(srs.judge('pinguino', 'el pingüino'), 'accent');
+
+  // Здесь знак — это другое слово, а не небрежность.
+  assert.equal(srs.judge('ano', 'el año'), 'no');
+  assert.equal(srs.judge('si', 'sí'), 'no');
+  assert.equal(srs.judge('el', 'él'), 'no');
+  assert.equal(srs.judge('tu', 'tú'), 'no');
+
+  // Лишнее ударение там, где его нет, — тоже расхождение диакритикой.
+  assert.equal(srs.judge('cása', 'la casa'), 'accent');
+});
+
+test('judge: ответ без ударения, совпавший с другим словом колоды, — промах', () => {
+  resetDeck();
+  makeWord('esta', 'эта');
+  makeWord('está', 'он/она находится — estar');
+  assert.equal(srs.judge('esta', 'está'), 'no');
+  assert.equal(srs.judge('está', 'está'), 'ok');
+});
+
+test('accentMarks показывает буквы, где разошлась диакритика', () => {
+  // Индексы — в строке ответа как есть, с артиклем и знаками.
+  assert.deepEqual([...srs.accentMarks('telefono', 'el teléfono')], [6]);
+  assert.deepEqual([...srs.accentMarks('el telefono', 'el teléfono')], [6]);
+  assert.deepEqual([...srs.accentMarks('manana', 'mañana')], [2]);
+  assert.deepEqual([...srs.accentMarks('que', '¿qué?')], [3]);
+  assert.deepEqual([...srs.accentMarks('hablais', 'habláis')], [4]);
+  // Одно ударение из двух поставлено — подсвечивается только пропущенное.
+  assert.deepEqual([...srs.accentMarks('cuantos años', '¿Cuántos años?')], [3]);
+  assert.deepEqual([...srs.accentMarks('teléfono', 'el teléfono')], []);
+});
+
+test('diffMarks: лишние буквы в ответе и пропущенные в правильном', () => {
+  // «casa» → «cassa»: лишняя s, остальное совпало, хвост не окрашен.
+  const extra = srs.diffMarks('cassa', 'la casa');
+  assert.equal(extra.typed.size, 1);
+  assert.deepEqual([...extra.missing], []);
+  // «ventna» → «la ventana»: пропущена a, индекс в правильном ответе с артиклем.
+  const miss = srs.diffMarks('ventna', 'la ventana');
+  assert.deepEqual([...miss.typed], []);
+  assert.deepEqual([...miss.missing], [7]);
+  // Артикль, который пользователь дописал или опустил, ошибкой не считается.
+  assert.deepEqual([...srs.diffMarks('el perro', 'perro').typed], []);
+  // Совсем другое слово — подсвечивать нечего.
+  assert.equal(srs.diffMarks('gato', 'perro'), null);
+  assert.equal(srs.diffMarks('', 'perro'), null);
+});
+
+test('опечатка засчитывается, но выше четвёртой коробки не поднимает', () => {
+  resetDeck();
+  const w = makeWord();
+  const key = w.id + '|ru';
+  for (const expected of [2, 3, 4, 4]) {
+    assert.equal(srs.grade(key, 'type', true, { cap: srs.ALMOST_CAP }).box, expected);
+  }
+  // Из пятой коробки опечатка не роняет: за верный ответ наказывать не за что.
+  assert.equal(srs.grade(key, 'type', true).box, 5);
+  assert.equal(srs.grade(key, 'type', true, { cap: srs.ALMOST_CAP }).box, 5);
 });
 
 test('type поднимает карточку до коробки 5 и там останавливается', () => {
@@ -445,7 +514,7 @@ test('соседняя форма глагола не проходит как о
   // «esta» — это отдельное слово колоды, а не промах пальцем по «estás».
   assert.equal(srs.judge('esta', 'estás'), 'no');
   assert.equal(srs.judge('estás', 'estás'), 'ok');
-  assert.equal(srs.judge('estas', 'estás'), 'ok', 'ударение ставить не обязательно');
+  assert.equal(srs.judge('estas', 'estás'), 'accent', 'ударение засчитывается, но с пометкой');
 
   // Короткие формы требуют точности: soy/son/es различаются одной буквой.
   resetDeck();
@@ -666,4 +735,228 @@ test('лимит занятия не съедает подмешанные вы�
   assert.ok(archived.length >= 1, 'выученное должно попасть и в короткое занятие');
   assert.ok(archived.length <= srs.MAX_ARCHIVE_MIX);
   srs.setSession({});
+});
+
+// ---------------------------------------------------------------------------
+// трудные слова, лимит новых, отмена
+// ---------------------------------------------------------------------------
+
+test('трудное слово: четыре промаха в разные дни, не больше одного в день', () => {
+  resetDeck();
+  const w = makeWord('la trampa', 'ловушка');
+  const key = w.id + '|ru';
+  srs.grade(key, 'type', false);
+  srs.grade(key, 'type', false);
+  srs.grade(key, 'type', false);
+  assert.equal(state.cards[key].lapses, 1, 'три промаха за день — один промах');
+  assert.equal(srs.isHard(w.id), false);
+
+  // Промахи в другие дни подделываем сдвигом даты последнего промаха.
+  for (let i = 0; i < 3; i++) {
+    state.cards[key].lapseDay = '2000-01-0' + (i + 1);
+    srs.grade(key, 'type', false);
+  }
+  assert.equal(state.cards[key].lapses, 4);
+  assert.equal(srs.isHard(w.id), true);
+  assert.ok(srs.hardWordIds().has(w.id));
+
+  // «Пары» трудным не делают: там промахи пальцем.
+  const m = makeWord('el dedo', 'палец');
+  for (let i = 0; i < 6; i++) {
+    state.cards[m.id + '|es'].lapseDay = '';
+    srs.grade(m.id + '|es', 'match', false);
+  }
+  assert.equal(srs.isHard(m.id), false);
+
+  // Дошло до архива — уже не трудное.
+  srs.archiveWord(w.id, true);
+  assert.equal(srs.isHard(w.id), false);
+});
+
+test('занятие «трудные» берёт только трудные слова и без оглядки на срок', () => {
+  resetDeck();
+  const hard = makeWord('difícil', 'трудный');
+  makeWord('fácil', 'лёгкий');
+  state.cards[hard.id + '|es'].lapses = srs.LEECH;
+  state.cards[hard.id + '|es'].due = addDays(10);
+  state.cards[hard.id + '|ru'].due = addDays(10);
+  const n = srs.buildQueue({ source: 'hard', size: 0, modes: new Set() });
+  assert.equal(n, 2);
+  for (let i = 0; i < n; i++) assert.ok(srs.nextKey().startsWith(hard.id + '|'));
+  srs.setSession({});
+});
+
+test('лимит новых слов в день: в обычное занятие не больше остатка лимита', () => {
+  resetDeck();
+  const saved = state.settings.newPerDay;
+  state.settings.newPerDay = 5;
+  for (let i = 0; i < 12; i++) makeWord('nuevo' + i, 'новое' + i);
+  const old = makeWord('viejo', 'старое');
+  // Старое слово уже спрашивали вчера — это повторение, а не новое.
+  for (const d of ['|es', '|ru']) Object.assign(state.cards[old.id + d], { seen: addDays(-1), box: 2, due: today() });
+
+  assert.deepEqual(srs.todayCounts(), { review: 1, fresh: 5 });
+  assert.equal(srs.dueWordCount(), 6, 'новые сверх лимита сегодня не ждут');
+
+  srs.buildQueue({ source: 'due', size: 0, modes: new Set() });
+  assert.equal(srs.sessionWords().length, 6, 'пять новых и одно повторение');
+
+  // Ответил на два новых слова — лимит на сегодня уменьшился на два.
+  const ids = srs.sessionWords().filter((w) => w.id !== old.id).slice(0, 2).map((w) => w.id);
+  for (const id of ids) srs.grade(id + '|es', 'flip', true);
+  assert.equal(srs.newLeftToday(), 3);
+
+  // Случайные лимитом не режутся: их заказали руками.
+  assert.equal(srs.buildQueue({ source: 'random', size: 0, modes: new Set() }), 26);
+
+  state.settings.newPerDay = 0;
+  assert.equal(srs.newLeftToday(), Infinity, '0 — без лимита');
+  state.settings.newPerDay = saved;
+  srs.setSession({});
+});
+
+test('«в архив» посреди занятия не перетасовывает очередь, а «Отменить» всё возвращает', () => {
+  resetDeck();
+  const words = [];
+  for (let i = 0; i < 6; i++) words.push(makeWord('palabra' + i, 'слово' + i));
+  srs.buildQueue({ source: 'due', size: 0, modes: new Set() });
+  const first = srs.nextKey();
+  const id = first.split('|')[0];
+  const before = srs.sessionWords().map((w) => w.id).filter((x) => x !== id);
+
+  const snap = srs.snapshotWord(id);
+  const dropped = srs.archiveWord(id, true);
+  assert.equal(dropped.length, 1, 'вторая карточка слова ушла из очереди');
+  assert.deepEqual(srs.sessionWords().map((w) => w.id), before, 'остальные слова и порядок на месте');
+
+  srs.restoreWord(id, snap);
+  srs.unshiftKeys([first]);
+  for (const k of dropped) srs.requeue(k);
+  assert.equal(srs.isArchived(id), false);
+  assert.equal(state.cards[first].box, 1);
+  assert.equal(srs.nextKey(), first, 'отменённая карточка возвращается первой');
+  srs.setSession({});
+});
+
+test('стадии вместо коробок: новое, имя стадии, архив', () => {
+  resetDeck();
+  const w = makeWord('el gato', 'кот');
+  const c = state.cards[w.id + '|es'];
+  assert.equal(srs.stageLabel(c), 'новое');
+  srs.grade(w.id + '|es', 'flip', true);
+  assert.equal(srs.stageLabel(c), srs.STAGES[1], 'вторая коробка');
+  c.arch = true;
+  assert.equal(srs.stageLabel(c), 'архив');
+});
+
+test('«уже знаю»: обе карточки в третью коробку, слово не новое и лимит дня не тратит', () => {
+  resetDeck();
+  const saved = state.settings.newPerDay;
+  state.settings.newPerDay = 3;
+  const words = [];
+  for (let i = 0; i < 4; i++) words.push(makeWord('saber' + i, 'знать' + i));
+  srs.buildQueue({ source: 'due', size: 0, modes: new Set() });
+  const id = srs.sessionWords()[0].id;
+
+  const dropped = srs.markKnown(id);
+  assert.equal(dropped.length, 2, 'обе карточки слова ушли из занятия');
+  for (const d of ['|es', '|ru']) {
+    assert.equal(state.cards[id + d].box, srs.KNOWN_BOX);
+    assert.equal(state.cards[id + d].due, addDays(srs.INTERVALS[srs.KNOWN_BOX - 1]));
+  }
+  assert.equal(srs.isNewWord(id), false);
+  assert.equal(srs.newLeftToday(), 3, 'знакомое слово не съедает лимит новых');
+  state.settings.newPerDay = saved;
+  srs.setSession({});
+});
+
+test('слова одной темы не стоят подряд, если есть чем разбавить', () => {
+  // spreadCats смотрит тему через wordById, поэтому слова заводим через addWord,
+  // а тему ставим законным путём — updateWord.
+  resetDeck();
+  const keys = [];
+  for (let i = 0; i < 6; i++) keys.push(updateWord(makeWord('casa' + i, 'дом' + i).id, { cat: 'casa' }).id + '|es');
+  for (let i = 0; i < 6; i++) keys.push(updateWord(makeWord('cuerpo' + i, 'тело' + i).id, { cat: 'cuerpo' }).id + '|es');
+  const cat = (k) => state.words.find((w) => w.id === k.split('|')[0]).cat;
+  const out = srs.spreadCats(keys); // худший случай: все «дом» подряд, потом все «тело»
+  assert.equal(out.length, keys.length);
+  assert.deepEqual([...out].sort(), [...keys].sort(), 'ничего не потеряно и не задвоено');
+  for (let i = 1; i < out.length; i++) assert.notEqual(cat(out[i]), cat(out[i - 1]), 'соседи на ' + i);
+  // Одна тема — разбавлять нечем, порядок остаётся.
+  assert.deepEqual(srs.spreadCats(keys.slice(0, 6)), keys.slice(0, 6));
+});
+
+test('разминка «Пары» — только из знакомых слов', () => {
+  resetDeck();
+  const fresh = [];
+  for (let i = 0; i < 8; i++) fresh.push(makeWord('nueva' + i, 'новая' + i));
+  srs.buildQueue({ source: 'due', size: 0, modes: new Set() });
+  assert.equal(srs.pickMatchWords(), null, 'из одних новых пар не собираем');
+  for (const w of fresh) {
+    for (const d of ['|es', '|ru']) Object.assign(state.cards[w.id + d], { seen: addDays(-2), box: 2, due: today() });
+  }
+  srs.buildQueue({ source: 'due', size: 0, modes: new Set() });
+  assert.equal(srs.pickMatchWords().length, srs.MATCH_PAIRS);
+  srs.setSession({});
+});
+
+test('журнал: точность за семь дней, «Пары» в неё не идут', () => {
+  resetDeck();
+  state.log = {};
+  const w = makeWord('la mesa', 'стол');
+  srs.grade(w.id + '|es', 'flip', true);
+  srs.grade(w.id + '|ru', 'type', false);
+  srs.grade(w.id + '|es', 'match', false);
+  assert.deepEqual(srs.todayLog(), { r: 1, w: 1 });
+  assert.equal(srs.accuracy(7), 50);
+  state.log[addDays(-3)] = { r: 8, w: 0 };
+  state.log[addDays(-10)] = { r: 0, w: 50 }; // за пределами недели
+  assert.equal(srs.accuracy(7), 90);
+  state.log = {};
+  assert.equal(srs.accuracy(7), null, 'нет ответов — нет и точности');
+});
+
+test('серия дней: засчитанные дни, одна заморозка в неделю, сегодня ещё не вечер', () => {
+  const t = '2026-11-11';
+  const d = (n) => srs.shiftIso(t, -n);
+  const on = { r: srs.STREAK_MIN, w: 0 };
+  const log = (days) => Object.fromEntries(days.map((n) => [d(n), on]));
+
+  assert.deepEqual(srs.streakFrom({}, t), { days: 0, todayDone: false, frozen: null });
+  assert.equal(srs.streakFrom(log([0, 1, 2]), t).days, 3);
+  assert.equal(srs.streakFrom(log([1, 2]), t).days, 2, 'сегодня не засчитан — серия ещё жива');
+  assert.equal(srs.streakFrom({ [t]: { r: srs.STREAK_MIN - 1, w: 0 } }, t).days, 0, 'девяти верных мало');
+  assert.equal(srs.streakFrom({ [t]: { r: 2, w: 0, clear: true } }, t).days, 1, 'разобрал всё — день засчитан');
+
+  // Пропуск вчера прикрыт заморозкой, но в счёт не идёт.
+  const frozen = srs.streakFrom(log([0, 2, 3]), t);
+  assert.equal(frozen.days, 3);
+  assert.equal(frozen.frozen, d(1));
+  // Два пропуска подряд — серия рвётся.
+  assert.equal(srs.streakFrom(log([0, 3, 4]), t).days, 1);
+  // Два пропуска в одну неделю — тоже.
+  assert.equal(srs.streakFrom(log([0, 2, 4, 5]), t).days, 2);
+  // Пропуски через неделю — каждый прощается.
+  assert.equal(srs.streakFrom(log([0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 16]), t).days, 15);
+  // Пропуск перед самым первым днём истории — не заморозка.
+  assert.equal(srs.streakFrom(log([0]), t).frozen, null);
+});
+
+test('прогноз: завтра и неделя, сегодняшнее и выученное не считаются', () => {
+  resetDeck();
+  const at = (n, extra = {}) => {
+    const w = makeWord('prog' + n + Math.random(), 'прогноз' + n + Math.random());
+    for (const dir of ['|es', '|ru']) Object.assign(state.cards[w.id + dir], { seen: addDays(-5), box: 2, due: addDays(n) }, extra);
+    return w;
+  };
+  at(1);
+  at(1);
+  at(3);
+  at(7);
+  at(8); // за пределами недели
+  at(0); // сегодня — уже в «к повторению»
+  at(2, { arch: true });
+  const half = at(1);
+  state.cards[half.id + '|es'].due = today(); // одна карточка созрела сегодня — слово придёт сегодня
+  assert.deepEqual(srs.forecast(), { tomorrow: 2, week: 4 });
 });

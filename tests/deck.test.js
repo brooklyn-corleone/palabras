@@ -331,3 +331,34 @@ test('правила: строки таблицы совпадают по шир
   }
   assert.deepEqual(bad, [], 'таблица разъедется при отрисовке');
 });
+
+// ---------------------------------------------------------------------------
+// связь правил со словами
+// ---------------------------------------------------------------------------
+
+test('правила: ссылки на слова и темы ведут на существующие', () => {
+  const ids = new Set(deck.words.map((w) => w.id));
+  const cats = new Set(Object.keys(deck.categories || {}));
+  const bad = [];
+  for (const n of notes.notes) {
+    for (const id of n.words || []) if (!ids.has(id)) bad.push(`${n.id} → слово ${id}`);
+    for (const c of n.cats || []) if (!cats.has(c)) bad.push(`${n.id} → тема ${c}`);
+  }
+  assert.deepEqual(bad, [], 'ссылка в никуда: правило не покажется после ошибки');
+});
+
+test('правила: у слова и у темы — не больше одного правила', () => {
+  const owner = new Map();
+  const dupes = [];
+  for (const n of notes.notes) {
+    for (const id of n.words || []) {
+      if (owner.has('w:' + id)) dupes.push(`${id}: ${owner.get('w:' + id)} и ${n.id}`);
+      owner.set('w:' + id, n.id);
+    }
+    for (const c of n.cats || []) {
+      if (owner.has('c:' + c)) dupes.push(`тема ${c}: ${owner.get('c:' + c)} и ${n.id}`);
+      owner.set('c:' + c, n.id);
+    }
+  }
+  assert.deepEqual(dupes, [], 'второе правило никогда не покажется: берётся первое');
+});

@@ -1,12 +1,14 @@
 // Режим choice — выбор из трёх вариантов. Самый лёгкий способ вспомнить слово,
 // поэтому потолок — коробка 3: узнавание среди вариантов ещё не значит знание.
 
-import { el, replace } from '../dom.js';
-import { pickDistractors } from '../srs.js';
+import { el, replace, announce } from '../dom.js';
+import { sayable, autoSpeak } from '../speech.js';
+import { pickDistractors, stageLabel } from '../srs.js';
+import { ruleLink } from '../notes.js';
 
 const OPTIONS = 3;
 
-export function render({ word, card, dir, onAnswer, onArchive, onFlag, flagged: initFlagged }) {
+export function render({ word, card, dir, onAnswer, onArchive, onFlag, flagged: initFlagged, rule }) {
   const root = el('div', { class: 'mode' });
 
   const asking = dir === 'es' ? word.es : word.ru;
@@ -38,7 +40,7 @@ export function render({ word, card, dir, onAnswer, onArchive, onFlag, flagged: 
     return el(
       'div',
       { class: 'dir' },
-      el('span', { text: label + ' · ' + (card.arch ? 'архив' : 'коробка ' + card.box) }),
+      el('span', { text: label + ' · ' + stageLabel(card) }),
       onArchive ? el('button', { class: 'mini', onclick: onArchive }, 'в архив') : null,
       flagBtn,
     );
@@ -51,11 +53,18 @@ export function render({ word, card, dir, onAnswer, onArchive, onFlag, flagged: 
     answered = true;
     const correct = value === answer;
 
+    // Номер варианта меняем на ✓ / ✕: одним цветом рамки верное от неверного
+    // не отличить при дейтеранопии, а номер после ответа уже не нужен.
     for (const btn of root.querySelectorAll('.option')) {
       btn.disabled = true;
-      if (btn.dataset.value === answer) btn.classList.add('is-right');
+      if (btn.dataset.value === answer) mark(btn, 'is-right', '✓', 'верно');
     }
-    if (!correct) button.classList.add('is-wrong');
+    if (!correct) mark(button, 'is-wrong', '✕', 'ваш ответ');
+    const link = !correct ? ruleLink(rule) : null;
+    if (link) root.querySelector('.options').after(el('div', { class: 'rule-row' }, link));
+    // В RU→ES испанское слово — это ответ, и прозвучать оно может только после выбора.
+    if (dir === 'ru') autoSpeak(answer);
+    announce(correct ? 'Верно: ' + answer : 'Неверно. Правильный ответ: ' + answer);
 
     replace(
       root.querySelector('.row'),
@@ -73,17 +82,26 @@ export function render({ word, card, dir, onAnswer, onArchive, onFlag, flagged: 
     root.querySelector('[data-key="enter"]').focus();
   }
 
+  function mark(btn, cls, sign, spoken) {
+    btn.classList.add(cls);
+    const num = btn.querySelector('.option-num');
+    num.textContent = sign;
+    num.setAttribute('aria-label', spoken);
+  }
+
   replace(
     root,
     head(),
-    el('div', { class: 'prompt', text: asking }),
+    dir === 'es'
+      ? sayable(el('div', { class: 'prompt', lang: 'es', text: asking }), asking)
+      : el('div', { class: 'prompt', text: asking }),
     el(
       'div',
       { class: 'options' },
       options.map((value, i) => {
         const btn = el(
           'button',
-          { class: 'option', dataset: { value, key: String(i + 1) } },
+          { class: 'option', lang: dir === 'es' ? null : 'es', dataset: { value, key: String(i + 1) } },
           el('span', { class: 'option-num', text: String(i + 1) }),
           el('span', { text: value }),
         );
@@ -93,6 +111,7 @@ export function render({ word, card, dir, onAnswer, onArchive, onFlag, flagged: 
     ),
     el('div', { class: 'row' }),
   );
+  if (dir === 'es') autoSpeak(asking);
 
   return root;
 }

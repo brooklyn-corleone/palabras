@@ -8,14 +8,35 @@
 // Так одно правило может смешивать таблицу спряжения, перечень исключений и пояснение,
 // а рисуется всё одним кодом.
 
-import { el } from './dom.js';
-import { state, save, now } from './state.js';
+import { el, replace } from './dom.js';
+import { state, save, now, wordById } from './state.js';
 
 // Примерно одна подсказка на столько карточек. Реже — забудется, чаще — начнёт мешать.
 const EVERY = 8;
 
 let notes = [];
 let groups = {};
+
+// Связь правил со словами: у правила в notes.seed.json есть `words` (id слов) и `cats`
+// (темы колоды). Ссылка живёт в правилах, а не в словах: так её не нужно тащить через
+// пополнение колоды, и она работает и для слов, которые пользователь поправил руками
+// (такие пополнение больше не трогает). Одно слово — одно правило, это проверяет тест.
+let byWord = new Map();
+let byCat = new Map();
+
+function indexLinks() {
+  byWord = new Map();
+  byCat = new Map();
+  for (const note of notes) {
+    for (const id of note.words || []) if (!byWord.has(id)) byWord.set(id, note);
+    for (const cat of note.cats || []) if (!byCat.has(cat)) byCat.set(cat, note);
+  }
+}
+
+export function ruleFor(word) {
+  if (!word) return null;
+  return byWord.get(word.id) || (word.cat && byCat.get(word.cat)) || null;
+}
 
 export async function loadNotes() {
   try {
@@ -29,6 +50,7 @@ export async function loadNotes() {
     notes = [];
     groups = {};
   }
+  indexLinks();
   return notes.length;
 }
 
@@ -74,16 +96,34 @@ export function countCard() {
   sinceLast++;
 }
 
-export function shouldShow() {
-  if (!notes.length || sinceLast < EVERY) return false;
+// Порог для правила по ошибке: сразу после промаха на экране и так ответ и ссылка
+// «Правило», а через две карточки правило уже напоминание, а не продолжение ошибки.
+const EVERY_MISS = 2;
+
+export function shouldShow(missed) {
+  if (!notes.length) return false;
+  if (sinceLast >= EVERY_MISS && hasMissRule(missed)) return true;
+  if (sinceLast < EVERY) return false;
   // Случайность, чтобы подсказка не приходила строго на каждой восьмой и не превращалась
   // в предсказуемый ритм: после порога шанс примерно один к трём на карточку.
   return Math.random() < 0.34;
 }
 
-// Берём ту, что не показывалась дольше всех: так пользователь увидит все правила,
-// а не одно и то же по кругу.
-export function pick() {
+// Правила, уже показанные в этом запуске. Нужны только выбору по ошибкам: одно и то же
+// правило после каждого промаха в спряжении tener быстро превращается в шум.
+const shownNow = new Set();
+
+// Сначала — правило к слову, на котором только что ошиблись (missed — id слов, последний
+// промах в конце), как Explain My Answer у Duolingo: правило полезно, когда видно,
+// к чему оно. Нет такого — то, что не показывалось дольше всех: так пользователь
+// увидит все правила, а не одно и то же по кругу.
+// Возвращает { note, word } — word задан, если правило выбрано по ошибке.
+export function pick(missed = []) {
+  for (let i = missed.length - 1; i >= 0; i--) {
+    const word = wordById(missed[i]);
+    const note = ruleFor(word);
+    if (note && !shownNow.has(note.id)) return { note, word };
+  }
   const seen = state.notesSeen || {};
   let best = null;
   let bestSeen = null;
@@ -94,12 +134,22 @@ export function pick() {
       bestSeen = at;
     }
   }
-  return best;
+  return best ? { note: best, word: null } : null;
+}
+
+// Есть ли правило к недавней ошибке, ещё не показанное. Такое правило приходит раньше
+// обычного порога: через пару карточек после промаха, а не через восемь.
+export function hasMissRule(missed = []) {
+  return missed.some((id) => {
+    const note = ruleFor(wordById(id));
+    return note && !shownNow.has(note.id);
+  });
 }
 
 export function markSeen(id) {
   if (!state.notesSeen) state.notesSeen = {};
   state.notesSeen[id] = now();
+  shownNow.add(id);
   sinceLast = 0;
   save();
 }
@@ -176,12 +226,19 @@ export function renderBlocks(note) {
   });
 }
 
-// Правило как карточка внутри занятия.
-export function render({ note, onDone }) {
+// Правило как карточка внутри занятия. word — слово, на котором ошиблись, если правило
+// выбрано по ошибке: подпись объясняет, почему именно это правило и именно сейчас.
+export function render({ note, word, onDone }) {
   return el(
     'div',
     { class: 'mode note' },
-    el('div', { class: 'dir' }, el('span', { text: 'Подсказка' })),
+    el(
+      'div',
+      { class: 'dir' },
+      word
+        ? el('span', null, 'Правило к слову ', el('span', { lang: 'es', text: word.es }))
+        : el('span', { text: 'Подсказка' }),
+    ),
     el('h2', { class: 'note-title', text: note.title || '' }),
     renderBlocks(note),
     el(
@@ -195,4 +252,63 @@ export function render({ note, onDone }) {
       ),
     ),
   );
+}
+
+// ---------------------------------------------------------------------------
+// правило поверх карточки
+// ---------------------------------------------------------------------------
+
+// Ссылка «Правило» в ответе. Открывает правило окном поверх карточки, а не вместо неё:
+// после закрытия на экране тот же разбор ответа с той же кнопкой «Дальше».
+export function ruleLink(note) {
+  if (!note) return null;
+  return el(
+    'button',
+    {
+      class: 'mini rule-link',
+      type: 'button',
+      onclick: (e) => {
+        e.stopPropagation();
+        openRule(note, e.currentTarget);
+      },
+    },
+    'Правило: ' + (note.title || ''),
+  );
+}
+
+let opener = null;
+
+export function openRule(note, from) {
+  const sheet = document.getElementById('sheet');
+  if (!sheet) return;
+  opener = from || document.activeElement;
+  document.getElementById('sheet-title').textContent = note.title || '';
+  replace(document.getElementById('sheet-body'), renderBlocks(note));
+  if (typeof sheet.showModal === 'function') sheet.showModal();
+  else sheet.setAttribute('open', '');
+  sheet.scrollTop = 0;
+  markSeen(note.id);
+}
+
+export function closeRule() {
+  const sheet = document.getElementById('sheet');
+  if (!sheet || !sheet.hasAttribute('open')) return;
+  if (typeof sheet.close === 'function') sheet.close();
+  else sheet.removeAttribute('open');
+}
+
+export function bindSheet() {
+  const sheet = document.getElementById('sheet');
+  if (!sheet) return;
+  document.getElementById('sheet-close').addEventListener('click', closeRule);
+  // Касание по затемнённому фону закрывает окно, как лист в iOS. Сам фон — это
+  // ::backdrop, и клик по нему приходит в dialog с целью — самим dialog.
+  sheet.addEventListener('click', (e) => {
+    if (e.target === sheet) closeRule();
+  });
+  // Фокус возвращаем туда, откуда открыли, — к ссылке «Правило» рядом с ответом.
+  sheet.addEventListener('close', () => {
+    if (opener && opener.isConnected) opener.focus();
+    opener = null;
+  });
 }

@@ -5,7 +5,7 @@
 // Интерфейс отличается от остальных режимов: карточка не одна, а пачка пар.
 // Поэтому вместо onAnswer здесь onMiss на каждую неверную пару и onDone в конце.
 
-import { el, replace } from '../dom.js';
+import { el, replace, announce } from '../dom.js';
 
 function shuffle(a) {
   for (let i = a.length - 1; i > 0; i--) {
@@ -43,7 +43,8 @@ export function render({ words, onMiss, onDone }) {
   function cell(item, side) {
     const btn = el(
       'button',
-      { class: 'pair', dataset: { id: item.id, side }, text: item.text },
+      // Слева испанский: VoiceOver должен читать его испанским голосом.
+      { class: 'pair', lang: side === 'left' ? 'es' : null, dataset: { id: item.id, side }, text: item.text },
     );
     btn.addEventListener('click', () => {
       if (locked || solved.has(item.id)) return;
@@ -67,6 +68,7 @@ export function render({ words, onMiss, onDone }) {
           b.disabled = true;
         }
         pickedLeft = null;
+        announce('Верно');
         finishIfDone();
         return;
       }
@@ -75,6 +77,7 @@ export function render({ words, onMiss, onDone }) {
       // но не требовала отдельного клика «понял».
       const wrongLeft = root.querySelector('.pair[data-side="left"].is-picked');
       onMiss(pickedLeft);
+      announce('Не пара');
       locked = true;
       btn.classList.add('is-wrong');
       if (wrongLeft) wrongLeft.classList.add('is-wrong');

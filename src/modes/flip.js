@@ -1,13 +1,16 @@
 // Режим flip — карточка с переворотом, ES→RU. Узнавание с самооценкой.
-// Потолок режима — коробка 3: «вспомнил при виде слова» это не то же самое,
-// что вспомнить слово с нуля, и двигать выше по такому ответу нечестно.
+// Потолок режима — коробка 5: другого способа поднять es-карточку выше тройки нет
+// (почему — в CLAUDE.md, «Режимы и веса»).
 
-import { el, replace } from '../dom.js';
+import { el, replace, announce } from '../dom.js';
+import { sayable, autoSpeak } from '../speech.js';
+import { stageLabel } from '../srs.js';
+import { ruleLink } from '../notes.js';
 
 const DIR_LABEL = 'Испанский → Русский';
 const HALF_FLIP = 120; // половина переворота, вторая половина доигрывается в CSS
 
-export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initFlagged }) {
+export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initFlagged, rule }) {
   const root = el('div', { class: 'mode' });
   let flagged = !!initFlagged;
 
@@ -27,7 +30,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
     return el(
       'div',
       { class: 'dir' },
-      el('span', { text: DIR_LABEL + ' · ' + (card.arch ? 'архив' : 'коробка ' + card.box) }),
+      el('span', { text: DIR_LABEL + ' · ' + stageLabel(card) }),
       onArchive ? el('button', { class: 'mini', onclick: onArchive }, 'в архив') : null,
       flagBtn,
     );
@@ -54,7 +57,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
     replace(
       root,
       head(),
-      el('div', { class: 'prompt', text: word.es }),
+      sayable(el('div', { class: 'prompt', lang: 'es', text: word.es }), word.es),
       el(
         'div',
         { class: 'row' },
@@ -66,6 +69,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
         ),
       ),
     );
+    autoSpeak(word.es);
   }
 
   // ---- обратная сторона -----------------------------------------------------
@@ -73,12 +77,15 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
     replace(
       root,
       head(),
-      el('div', { class: 'prompt', text: word.es }),
+      sayable(el('div', { class: 'prompt', lang: 'es', text: word.es }), word.es),
       el(
         'div',
-        { class: 'verdict ok' },
+        { class: 'verdict neutral' },
         el('span', { class: 'lbl', text: 'Перевод' }),
         el('b', { text: word.ru }),
+        // Оборот нейтральный, «помнил или нет» решается кнопкой ниже — правило к слову
+        // показываем при любом исходе.
+        ruleLink(rule),
       ),
       el(
         'div',
@@ -97,6 +104,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
         ),
       ),
     );
+    announce('Перевод: ' + word.ru);
   }
 
   ask();

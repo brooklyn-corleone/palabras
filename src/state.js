@@ -109,8 +109,9 @@ function freshState() {
     deviceId: uuid(),
     words: [],
     cards: {},
-    settings: { theme: 'auto', goal: 20 },
+    settings: { theme: 'auto', goal: 20, newPerDay: 20, autoSpeak: false },
     stats: { day: today(), done: 0 },
+    log: {},
   };
 }
 
@@ -146,7 +147,12 @@ function migrate(raw) {
   if (!s.settings) s.settings = {};
   if (!s.settings.theme) s.settings.theme = 'auto';
   if (typeof s.settings.goal !== 'number') s.settings.goal = 20;
+  if (typeof s.settings.newPerDay !== 'number') s.settings.newPerDay = 20;
+  if (typeof s.settings.autoSpeak !== 'boolean') s.settings.autoSpeak = false;
   if (!s.stats) s.stats = { day: today(), done: 0 };
+  // Журнал по дням для точности и серии (см. srs.js). У старых состояний его нет —
+  // серия начинается с нуля: восстановить прошлые дни не из чего.
+  if (!s.log || typeof s.log !== 'object') s.log = {};
   return s;
 }
 
@@ -202,9 +208,19 @@ function makeCards(wordId) {
   }
 }
 
+// Счётчик в id нового слова. Без него id — это миллисекунды плюс случайное число
+// до десяти тысяч, и два слова, заведённых в одну миллисекунду (пачкой, в тестах),
+// изредка получали одинаковый id: второе слово молча теряло свои карточки.
+// Уже выданные id не меняются — меняется только способ выдавать новые.
+let idSeq = 0;
+
 export function addWord({ es, ru, ex = '', mn = '', pos = '' }) {
   const word = {
-    id: 'u' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36),
+    id:
+      'u' +
+      Date.now().toString(36) +
+      (idSeq++).toString(36) +
+      Math.floor(Math.random() * 1e4).toString(36),
     es,
     ru,
     ex,
@@ -241,6 +257,18 @@ export function deleteWord(id) {
   const w = wordById(id);
   if (!w) return;
   w.deleted = true;
+  w.updated = now();
+  bumpDeck();
+  save();
+}
+
+// «Отменить» в тосте после удаления. Это не воскрешение из колоды, против которого
+// стоят tombstone: пользователь передумал через секунду, и прогресс никуда не делся —
+// карточки удалённого слова лежат на месте.
+export function undeleteWord(id) {
+  const w = wordById(id);
+  if (!w) return;
+  w.deleted = false;
   w.updated = now();
   bumpDeck();
   save();
