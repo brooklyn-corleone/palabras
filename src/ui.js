@@ -186,31 +186,11 @@ function sessionSummary() {
 
 const BG = { light: '#F7F7F6', dark: '#121312' };
 
-function isDark(theme) {
-  return theme === 'dark' || (theme === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
-}
-
-function applyTheme(theme) {
-  document.documentElement.dataset.theme = theme;
-  // На Android шапка браузера красится этим мета-тегом и сама за темой не следит.
+// На Android шапка браузера красится мета-тегом theme-color и сама за системной темой
+// не следит. Цвета страницы переключает CSS, а мета-тег — только отсюда.
+function applyTheme() {
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.content = isDark(theme) ? BG.dark : BG.light;
-  for (const btn of document.querySelectorAll('[data-theme-choice]')) {
-    btn.setAttribute('aria-pressed', String(btn.dataset.themeChoice === theme));
-  }
-}
-
-function setTheme(theme) {
-  state.settings.theme = theme;
-  save();
-  // Зеркало для инлайн-скрипта в index.html: он ставит тему до первой отрисовки,
-  // а IndexedDB синхронно не прочитать.
-  try {
-    localStorage.setItem('palabras.theme', theme);
-  } catch (e) {
-    /* приватный режим — обойдёмся без мгновенной темы */
-  }
-  applyTheme(theme);
+  if (meta) meta.content = matchMedia('(prefers-color-scheme: dark)').matches ? BG.dark : BG.light;
 }
 
 // ---------------------------------------------------------------------------
@@ -338,13 +318,8 @@ function bindGoalChoice() {
 }
 
 function bindTheme() {
-  for (const btn of document.querySelectorAll('[data-theme-choice]')) {
-    btn.addEventListener('click', () => setTheme(btn.dataset.themeChoice));
-  }
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-    if (state.settings.theme === 'auto') applyTheme('auto');
-  });
-  applyTheme(state.settings.theme || 'auto');
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+  applyTheme();
 }
 
 // ---------------------------------------------------------------------------
@@ -682,7 +657,8 @@ function renderProgress() {
       'div',
       { class: 'home-stats small' },
       stat(st.days, plural(st.days, 'день подряд', 'дня подряд', 'дней подряд')),
-      stat(acc === null ? '—' : acc + ' %', 'точность за 7 дней'),
+      // Неразрывный пробел: с обычным «%» на узкой колонке уезжал под число.
+      stat(acc === null ? '—' : acc + '\u00a0%', 'верных за неделю'),
       stat(fc.tomorrow, 'придёт завтра'),
       stat(fc.week, 'за 7 дней'),
     ),
@@ -1217,22 +1193,35 @@ function renderRail() {
         ),
       ),
   );
-  railNote.textContent = '';
+  // Отрезки — только рисунок, подписи у них в легенде и в общей подписи кнопки.
+  // Пустая стадия остаётся еле заметной чёрточкой: место под неё видно, шума нет.
   replace(
     railEl,
     segments.map((s) =>
-      el('button', {
-        class:
-          'seg' + (s.key === 'arch' ? ' seg-arch' : '') + (s.count === 0 ? ' is-empty' : ''),
+      el('span', {
+        class: 'seg' + (s.key === 'arch' ? ' seg-arch' : '') + (s.count === 0 ? ' is-empty' : ''),
         dataset: { box: s.key },
         style: 'flex-grow:' + s.count,
-        'aria-label': s.label + ': ' + s.count,
-        onclick: () => {
-          railNote.textContent = s.label + ' · ' + s.count + ' · ' + s.sub;
-        },
       }),
     ),
   );
+  const shown = segments.filter((s) => s.count);
+  railEl.setAttribute(
+    'aria-label',
+    'Колода: ' + shown.map((s) => s.label.toLowerCase() + ' ' + s.count).join(', ') + '. Показать сроки стадий',
+  );
+  railDetails = shown.map((s) => s.label + ' — ' + s.sub).join(' · ');
+  if (railEl.getAttribute('aria-expanded') === 'true') railNote.textContent = railDetails;
+}
+
+let railDetails = '';
+
+function bindRail() {
+  railEl.addEventListener('click', () => {
+    const open = railEl.getAttribute('aria-expanded') !== 'true';
+    railEl.setAttribute('aria-expanded', String(open));
+    railNote.textContent = open ? railDetails : '';
+  });
 }
 
 function pulseSeg(box) {
@@ -1267,16 +1256,23 @@ function renderScope() {
     Object.keys(SCOPE_LABEL)
       .filter((key) => key !== 'hard' || hardCount)
       .map((key) =>
-      el('button', {
-        class: 'pill',
-        text: SCOPE_LABEL[key] + ' · ' + counts[key],
-        'aria-pressed': String(listScope === key),
-        onclick: () => {
-          listScope = key;
-          renderScope();
-          renderList();
+      el(
+        'button',
+        {
+          class: 'pill scope-pill',
+          'aria-label': SCOPE_LABEL[key] + ', ' + counts[key],
+          'aria-pressed': String(listScope === key),
+          onclick: () => {
+            listScope = key;
+            renderScope();
+            renderList();
+          },
         },
-      }),
+        // На телефоне число уходит под подпись, и разделитель прячется — см. styles.css.
+        el('span', { text: SCOPE_LABEL[key] }),
+        el('span', { class: 'scope-sep', 'aria-hidden': 'true', text: ' · ' }),
+        el('span', { class: 'scope-n', text: String(counts[key]) }),
+      ),
     ),
   );
 }
@@ -1324,8 +1320,10 @@ function renderList() {
 
 // Режим выбора, как «Выбрать» в системных списках iOS (HIG, Lists and tables: «people
 // must enter edit mode to select table items»). Вне его строка — слово, перевод и стадия,
-// без галочки: выбор нужен только для занятия «Выбранные», а чекбокс висел на всех
-// 287 строках. В режиме выбора строка целиком — подпись галочки, свайп и действия выключены.
+// без галочки: чекбокс на всех 287 строках нужен был бы только изредка. В режиме выбора
+// строка целиком — подпись галочки, свайп и действия выключены. Над выбранным два
+// действия: учить их отдельным занятием или убрать в архив пачкой — то, что уже знаешь,
+// по одному свайпу отправлять долго.
 let selecting = false;
 let shownCount = 0;
 
@@ -1555,6 +1553,28 @@ function listDelete(w) {
   });
 }
 
+// Пачкой из режима выбора. Ушедшие в архив снимаются с выбора — иначе «Учить N слов»
+// продолжал бы считать слова, которых в списке уже нет. Режим выбора остаётся: знакомые
+// слова отмечают за несколько проходов по темам. «Отменить» возвращает и карточки, и галочки.
+function archivePicked() {
+  const { active, archived } = pickedSplit();
+  const on = active.length > 0;
+  const ids = on ? active : archived;
+  if (!ids.length) return;
+  const snaps = ids.map((id) => [id, srs.snapshotWord(id)]);
+  srs.archiveWords(ids, on);
+  for (const id of ids) session.picked.delete(id);
+  afterListChange();
+  renderPickedBar();
+  const n = ids.length + ' ' + plural(ids.length, 'слово', 'слова', 'слов');
+  toast(on ? n + ' в архиве' : n + ' снова учатся', () => {
+    for (const [id, snap] of snaps) srs.restoreWord(id, snap);
+    for (const id of ids) session.picked.add(id);
+    afterListChange();
+    renderPickedBar();
+  });
+}
+
 function listUnflag(w) {
   flagWord(w.id, false);
   renderList();
@@ -1566,6 +1586,20 @@ function afterListChange() {
   renderRail();
 }
 
+// Выбранное делится на активное и архивное: «В архив» действует на активные, а если
+// выбраны одни архивные (вкладка «Архив»), та же кнопка возвращает их в учёбу.
+// Удалённые из выбора выпадают: их уже нет в списке.
+function pickedSplit() {
+  const live = new Set(activeWords().map((w) => w.id));
+  const active = [];
+  const archived = [];
+  for (const id of session.picked) {
+    if (!live.has(id)) continue;
+    (srs.isArchived(id) ? archived : active).push(id);
+  }
+  return { active, archived };
+}
+
 // Панель действий режима выбора — внизу, у большого пальца, как панель инструментов iOS.
 function renderPickedBar() {
   const n = session.picked.size;
@@ -1573,7 +1607,12 @@ function renderPickedBar() {
   const learn = $('btn-learn-picked');
   learn.textContent = n ? 'Учить ' + n + ' ' + plural(n, 'слово', 'слова', 'слов') : 'Учить выбранные';
   learn.disabled = n === 0;
-  $('btn-clear-picked').disabled = n === 0;
+  const { active, archived } = pickedSplit();
+  const arch = $('btn-archive-picked');
+  arch.textContent = !active.length && archived.length ? 'Вернуть' : 'В архив';
+  arch.disabled = !active.length && !archived.length;
+  const clear = $('btn-clear-picked');
+  clear.classList.toggle('hidden', !selecting || n === 0);
   const toggle = $('btn-select');
   toggle.textContent = selecting ? 'Готово' : 'Выбрать';
   toggle.setAttribute('aria-pressed', String(selecting));
@@ -1598,6 +1637,8 @@ function bindWordsView() {
     showView('learn');
     startSession();
   });
+
+  $('btn-archive-picked').addEventListener('click', archivePicked);
 
   $('btn-clear-picked').addEventListener('click', () => {
     session.picked.clear();
@@ -2150,6 +2191,7 @@ async function init() {
   renderWho();
   $('btn-profile').addEventListener('click', switchProfile);
   bindTheme();
+  bindRail();
 
   // Первый запуск: без колоды показывать нечего, поэтому ждём её.
   // На последующих запусках пополняем в фоне, чтобы не задерживать первую карточку.
