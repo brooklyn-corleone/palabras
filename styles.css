@@ -332,11 +332,15 @@ body.in-session .toast{bottom:auto;top:calc(12px + env(safe-area-inset-top))}
   font:inherit;font-size:14px;font-weight:500;
   min-height:44px;padding:0 16px;
   border:1px solid transparent;border-radius:var(--radius);
-  background:var(--fill);color:var(--muted);
+  background:var(--fill);color:var(--text);
   cursor:pointer;touch-action:manipulation;
   transition:border-color .15s, color .15s, background .15s;
 }
-.pill[aria-pressed="true"]{color:var(--text);border-color:var(--accent);background:var(--ok-soft)}
+/* Невыбранный вариант — обычным текстом, выбранный — заливкой акцентом. Раньше невыбранные
+   были серыми (--muted), а выбранный отличался бледной заливкой и рамкой: «30», «Сразу»,
+   «Светлая» читались как выключенные, хотя их можно нажать. Выключенный (:disabled)
+   остаётся полупрозрачным — теперь его не спутать с невыбранным. */
+.pill[aria-pressed="true"]{color:var(--bg);border-color:var(--accent);background:var(--accent)}
 .pill:disabled{opacity:.4;cursor:default}
 .pill:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .setup .hint{margin:-10px 0 0}
@@ -761,7 +765,7 @@ input.filter:focus{outline:none;border-bottom-color:var(--accent)}
    после касания, и только что нажатая кнопка выглядит выбранной. */
 @media (hover:hover){
   .btn.ghost:hover{background:var(--fill-hover);opacity:1}
-  .pill:hover:not(:disabled){color:var(--text);background:var(--fill-hover)}
+  .pill:hover:not(:disabled):not([aria-pressed="true"]){color:var(--text);background:var(--fill-hover)}
   .option:hover:not(:disabled){background:var(--fill-hover)}
   .chip:hover:not(:disabled){background:var(--fill-hover)}
   .pair:hover:not(:disabled){background:var(--fill-hover)}
