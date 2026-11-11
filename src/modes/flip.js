@@ -54,7 +54,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
     replace(
       root,
       head(),
-      el('div', { class: 'prompt', text: word.es }),
+      el('div', { class: 'prompt', lang: 'es', text: word.es }),
       el(
         'div',
         { class: 'row' },
@@ -73,7 +73,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
     replace(
       root,
       head(),
-      el('div', { class: 'prompt', text: word.es }),
+      el('div', { class: 'prompt', lang: 'es', text: word.es }),
       el(
         'div',
         { class: 'verdict ok' },

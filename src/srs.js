@@ -353,12 +353,45 @@ export function buildExtraQueue(wordIds) {
 // Артикль снимаем последним, уже после чистки и trim. В прототипе он снимался первым,
 // и любой пробел или «¿» в начале строки ломал правило: ответ « la llave» приводился
 // к «la llave», сравнивался с «llave» и считался ошибкой.
-export function norm(s) {
+// Три уровня строгости сравнения, от мягкого к точному:
+//   loose  — без всей диакритики, ñ тоже становится n;
+//   norm   — без ударений, но ñ остаётся буквой;
+//   strict — всё как написано, кроме регистра, знаков препинания и артикля.
+//
+// ñ в испанском — отдельная буква алфавита, а не «n с украшением»: año и ano — разные
+// слова, и второе лучше не говорить вслух. Раньше norm снимал тильду вместе с ударениями
+// (NFD раскладывает ñ на n + U+0303), и ñ в классе [^a-zñ] был мёртвым кодом.
+function loose(s) {
   return (s || '')
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z\s]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/^(el|la|los|las|un|una)\s+/, '');
+}
+
+export function norm(s) {
+  return (s || '')
+    .toLowerCase()
+    .normalize('NFD')
+    // Собираем ñ обратно до того, как снимем ударения, — иначе тильда уйдёт с ними.
+    .replace(/n\u0303/g, 'ñ')
+    .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-zñ\s]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/^(el|la|los|las|un|una)\s+/, '');
+}
+
+const LETTER = /[a-záéíóúüñ]/;
+
+function strict(s) {
+  return (s || '')
+    .toLowerCase()
+    .normalize('NFC')
+    .replace(/[^a-záéíóúüñ\s]/g, '')
     .replace(/\s+/g, ' ')
     .trim()
     .replace(/^(el|la|los|las|un|una)\s+/, '');
@@ -401,7 +434,7 @@ function allAnswers() {
   return set;
 }
 
-// "ok" | "almost" | "no". Опечатка в один символ засчитывается как верный ответ:
+// "ok" | "accent" | "almost" | "no". Опечатка в один символ засчитывается как верный ответ:
 // наказывать за промах пальцем — значит учить печатать, а не язык.
 //
 // Но снисхождение выключается там, где оно вредит: на коротких словах (soy, es, son
@@ -409,13 +442,63 @@ function allAnswers() {
 // Иначе спряжения «выучиваются» на автомате, а таблица глагола этого не прощает.
 const MIN_TYPO_LEN = 5;
 
+// Пары, где диакритика меняет слово: «si» — «если», «sí» — «да». Здесь пропущенный
+// знак — не небрежность, а другой ответ, и засчитывать его нельзя.
+const ACCENT_PAIRS = new Set([
+  'si', 'sí', 'el', 'él', 'tu', 'tú', 'mi', 'mí', 'se', 'sé',
+  'te', 'té', 'de', 'dé', 'mas', 'más', 'ano', 'año',
+]);
+
+// Ответы колоды в точном написании — чтобы «esta» на месте «está» не засчитывалось
+// как пропущенное ударение, если «esta» само есть в колоде.
+let strictCache = null;
+let strictRev = -1;
+
+function allAnswersStrict() {
+  const rev = deckRevision();
+  if (strictCache && strictRev === rev) return strictCache;
+  const set = new Set();
+  for (const w of state.words) if (!w.deleted) set.add(strict(w.es));
+  strictCache = set;
+  strictRev = rev;
+  return set;
+}
+
+// "accent" — всё верно, кроме диакритики (ударение, ñ, ü). Засчитывается, как у Lingvist
+// и Duolingo: наказывать за ударение на телефонной клавиатуре — значит учить печатать.
+// Но молча прощать тоже нельзя: раньше такой ответ получал просто «Верно», и выучить
+// ударения было невозможно. Поэтому отдельный вердикт — режим показывает, где знак.
 export function judge(input, target) {
+  const s = strict(input);
+  const t = strict(target);
+  if (!s) return 'no';
+  if (s === t) return 'ok';
+  if (loose(input) === loose(target)) {
+    if (ACCENT_PAIRS.has(s) && ACCENT_PAIRS.has(t)) return 'no';
+    if (allAnswersStrict().has(s)) return 'no';
+    return 'accent';
+  }
   const a = norm(input);
   const b = norm(target);
-  if (!a) return 'no';
-  if (a === b) return 'ok';
   if (b.length >= MIN_TYPO_LEN && lev(a, b) <= 1 && !allAnswers().has(a)) return 'almost';
   return 'no';
+}
+
+// Позиции букв в target (после NFC), где ответ разошёлся с ним диакритикой. Нужны только
+// для вердикта "accent": тогда буквы двух строк идут один к одному, и достаточно пройти
+// их параллельно, пропуская артикль, пробелы и ¿?. Набранный артикль strict уже срезал.
+export function accentMarks(input, target) {
+  const typed = [...strict(input).replace(/\s+/g, '')];
+  const chars = [...(target || '').normalize('NFC').toLowerCase()];
+  const article = chars.join('').match(/^\s*(el|la|los|las|un|una)\s+/);
+  const marks = new Set();
+  let k = 0;
+  for (let i = article ? [...article[0]].length : 0; i < chars.length; i++) {
+    if (!LETTER.test(chars[i])) continue;
+    if (typed[k] !== chars[i]) marks.add(i);
+    k++;
+  }
+  return marks;
 }
 
 // ---------------------------------------------------------------------------

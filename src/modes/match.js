@@ -43,7 +43,8 @@ export function render({ words, onMiss, onDone }) {
   function cell(item, side) {
     const btn = el(
       'button',
-      { class: 'pair', dataset: { id: item.id, side }, text: item.text },
+      // Слева испанский: VoiceOver должен читать его испанским голосом.
+      { class: 'pair', lang: side === 'left' ? 'es' : null, dataset: { id: item.id, side }, text: item.text },
     );
     btn.addEventListener('click', () => {
       if (locked || solved.has(item.id)) return;

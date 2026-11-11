@@ -2,7 +2,7 @@
 // который поднимает карточку в коробки 4 и 5 (см. MAX_BOX в srs.js).
 
 import { el, replace } from '../dom.js';
-import { judge } from '../srs.js';
+import { judge, accentMarks } from '../srs.js';
 
 const DIR_LABEL = 'Русский → Испанский';
 
@@ -41,6 +41,10 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
       autocorrect: 'off',
       autocapitalize: 'off',
       spellcheck: 'false',
+      // lang подсказывает iOS испанскую раскладку (á, ñ долгим нажатием), а enterkeyhint
+      // подписывает клавишу ввода «Готово» вместо «return».
+      lang: 'es',
+      enterkeyhint: 'done',
       placeholder: 'escribe aquí…',
     });
 
@@ -49,7 +53,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
       head(),
       el('div', { class: 'prompt', text: word.ru }),
       input,
-      el('div', { class: 'hint', text: 'Артикль не обязателен, ударения можно не ставить' }),
+      el('div', { class: 'hint', text: 'Артикль не обязателен. Без ударения засчитаем, но покажем, где оно' }),
       el(
         'div',
         { class: 'row' },
@@ -58,22 +62,30 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
           {
             class: 'btn',
             dataset: { key: 'enter' },
-            onclick: () => reveal(judge(input.value, word.es)),
+            onclick: () => reveal(judge(input.value, word.es), input.value),
           },
           'Проверить',
           el('kbd', { text: 'Enter' }),
         ),
-        el('button', { class: 'btn ghost', onclick: () => reveal('no') }, 'Не знаю'),
+        el('button', { class: 'btn ghost', onclick: () => reveal('no', '') }, 'Не знаю'),
       ),
     );
     input.focus();
   }
 
   // ---- разбор ответа --------------------------------------------------------
-  function reveal(verdict) {
-    const correct = verdict === 'ok' || verdict === 'almost';
-    const label =
-      verdict === 'ok' ? 'Верно' : verdict === 'almost' ? 'Почти — опечатка' : 'Правильный ответ';
+  function reveal(verdict, typed) {
+    const correct = verdict !== 'no';
+    const marks = verdict === 'accent' ? accentMarks(typed, word.es) : null;
+    const label = {
+      ok: 'Верно',
+      accent: accentLabel(marks),
+      almost: 'Почти — опечатка',
+      no: 'Правильный ответ',
+    }[verdict];
+    // Набранное показываем при любом расхождении, кроме ударения: там подсвечена сама
+    // буква, а без своего ответа перед глазами не видно, в чём именно была ошибка.
+    const shown = typed.trim();
 
     replace(
       root,
@@ -83,7 +95,10 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
         'div',
         { class: 'verdict ' + (correct ? 'ok' : 'no') },
         el('span', { class: 'lbl', text: label }),
-        el('b', { text: word.es }),
+        answerText(marks),
+        shown && (verdict === 'almost' || verdict === 'no')
+          ? el('span', { class: 'typed' }, 'ваш ответ: ', el('span', { lang: 'es', text: shown }))
+          : null,
       ),
       el(
         'div',
@@ -97,6 +112,28 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
       ),
     );
     root.querySelector('[data-key="enter"]').focus();
+  }
+
+  // «С ударением» про пропущенную тильду — неправда, а ñ стоит назвать отдельно:
+  // это не знак над буквой, а другая буква алфавита.
+  function accentLabel(marks) {
+    const text = [...word.es.normalize('NFC').toLowerCase()];
+    const missed = [...(marks || [])].map((i) => text[i]);
+    const tilde = missed.filter((ch) => ch === 'ñ').length;
+    if (tilde && tilde === missed.length) return 'Верно, но пишется через ñ';
+    if (tilde) return 'Верно, но с ударением и ñ';
+    return 'Верно, но с ударением';
+  }
+
+  // Правильный ответ с подсвеченными буквами, где пропущена диакритика.
+  function answerText(marks) {
+    const text = word.es.normalize('NFC');
+    if (!marks || !marks.size) return el('b', { lang: 'es', text });
+    return el(
+      'b',
+      { lang: 'es' },
+      [...text].map((ch, i) => (marks.has(i) ? el('mark', { text: ch }) : ch)),
+    );
   }
 
   ask();

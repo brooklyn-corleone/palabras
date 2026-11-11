@@ -76,14 +76,14 @@ export function render({ word, card, dir, onAnswer, onArchive, onFlag, flagged: 
   replace(
     root,
     head(),
-    el('div', { class: 'prompt', text: asking }),
+    el('div', { class: 'prompt', lang: dir === 'es' ? 'es' : null, text: asking }),
     el(
       'div',
       { class: 'options' },
       options.map((value, i) => {
         const btn = el(
           'button',
-          { class: 'option', dataset: { value, key: String(i + 1) } },
+          { class: 'option', lang: dir === 'es' ? null : 'es', dataset: { value, key: String(i + 1) } },
           el('span', { class: 'option-num', text: String(i + 1) }),
           el('span', { text: value }),
         );

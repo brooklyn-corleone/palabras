@@ -103,7 +103,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
       root,
       head(),
       el('div', { class: 'prompt', text: word.ru }),
-      el('div', { class: 'assembled', text: typed() || ' ' }),
+      el('div', { class: 'assembled', lang: 'es', text: typed() || ' ' }),
       el(
         'div',
         { class: 'bank' },
@@ -112,6 +112,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
             'button',
             {
               class: 'chip' + (used.has(i) ? ' is-used' : ''),
+              lang: 'es',
               disabled: used.has(i) || undefined,
               onclick: () => {
                 used.add(i);
@@ -174,7 +175,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
         'div',
         { class: 'verdict ' + (correct ? 'ok' : 'no') },
         el('span', { class: 'lbl', text: correct ? 'Верно' : 'Правильный ответ' }),
-        el('b', { text: word.es }),
+        el('b', { lang: 'es', text: word.es }),
       ),
       el(
         'div',

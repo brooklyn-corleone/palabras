@@ -73,7 +73,9 @@ body{
 .wrap{
   max-width:var(--col);
   margin:0 auto;
-  padding:24px 20px calc(28px + env(safe-area-inset-bottom));
+  /* Слева и справа — вырез камеры в альбомной ориентации: при viewport-fit=cover
+     контент иначе уходит под него. max() оставляет обычный отступ там, где выреза нет. */
+  padding:24px max(20px, env(safe-area-inset-right)) calc(28px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
   min-height:100dvh;
   display:flex;
   flex-direction:column;
@@ -169,6 +171,15 @@ input[type=text]:focus{outline:none;border-bottom-color:var(--accent)}
   color:var(--muted);
 }
 .verdict b{font-size:20px;font-weight:500;letter-spacing:-.01em}
+/* Буква, где пропущено ударение или тильда. Подчёркивание, а не только цвет:
+   смысл не должен держаться на одном цвете. */
+.verdict mark{
+  background:none;color:inherit;
+  text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;
+  text-decoration-color:var(--accent);
+}
+.verdict .typed{display:block;margin-top:6px;font-size:14px;color:var(--muted)}
+.verdict .typed span{text-decoration:line-through;text-decoration-color:var(--err)}
 
 /* ---------- кнопки ---------- */
 .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:28px}
@@ -379,7 +390,8 @@ input.filter{
 }
 input.filter:focus{outline:none;border-bottom-color:var(--accent)}
 .filter-cat{
-  font:inherit;font-size:14px;
+  /* 16px, а не меньше: на поле мельче iOS Safari увеличивает страницу при фокусе. */
+  font:inherit;font-size:16px;
   min-height:44px;padding:0 10px;
   border:1px solid var(--line);border-radius:var(--radius);
   background:var(--bg);color:var(--text);
@@ -436,7 +448,7 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line)}
 
 /* ---------- адаптив ---------- */
 @media (max-width:480px){
-  .wrap{padding:20px 18px calc(20px + env(safe-area-inset-bottom))}
+  .wrap{padding:20px max(18px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left))}
   .note-list{columns:1}
   nav button{padding:10px 8px;font-size:13px}
   #view-learn{display:flex;flex-direction:column;flex:1}
@@ -446,7 +458,9 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line)}
   .stage{order:3}
   .item .ru{padding-left:0}
   /* Кнопки — в зоне большого пальца, у нижнего края экрана. */
-  .row{position:sticky;bottom:0;background:var(--bg);padding-bottom:8px}
+  /* Отступ снизу — под полоску home indicator: в PWA при viewport-fit=cover она лежит
+     поверх контента, и свайп по кнопке «Дальше» сворачивал приложение. */
+  .row{position:sticky;bottom:0;background:var(--bg);padding-bottom:calc(8px + env(safe-area-inset-bottom))}
   /* Кроме кнопки под списком архива: она часть списка, а не панель действий карточки.
      Липкой ей быть нельзя — уезжает к верхнему краю видимой области и наезжает
      на слова, которые как раз предлагает отметить. */
@@ -455,6 +469,12 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line)}
   .add{grid-template-columns:1fr;gap:0}
   .add .btn{margin-top:16px;width:100%;justify-content:center}
   .note-table th,.note-table td{padding-right:18px}
+}
+
+/* Подсказки клавиш нужны только там, где есть клавиатура. На сенсорном экране «Enter»
+   и «Пробел» внутри кнопок — шум. По hover, а не по ширине: планшет с клавиатурой их увидит. */
+@media (hover:none){
+  kbd,.keys{display:none}
 }
 
 @media (min-width:481px){

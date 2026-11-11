@@ -38,19 +38,60 @@ function makeWord(es = 'la llave', ru = 'ключ') {
 
 // ---------------------------------------------------------------------------
 
-test('norm снимает артикль, диакритику и пунктуацию', () => {
+test('norm снимает артикль, ударения и пунктуацию, но ñ оставляет буквой', () => {
   assert.equal(srs.norm('El Teléfono!'), 'telefono');
   assert.equal(srs.norm('  la  Llave  '), 'llave');
-  assert.equal(srs.norm('el niño'), 'nino');
+  assert.equal(srs.norm('el niño'), 'niño');
+  // ñ в разложенном виде (n + U+0303) — так её иногда отдаёт клавиатура или вставка.
+  assert.equal(srs.norm('el nin\u0303o'), 'niño');
+  assert.equal(srs.norm('¿Cuántos años?'), 'cuantos años');
 });
 
 test('judge: точное совпадение, опечатка, промах', () => {
   assert.equal(srs.judge('la llave', 'la llave'), 'ok');
   assert.equal(srs.judge('llave', 'la llave'), 'ok'); // артикль не обязателен
-  assert.equal(srs.judge('telefono', 'el teléfono'), 'ok'); // ударение не обязательно
+  assert.equal(srs.judge('teléfono', 'el teléfono'), 'ok');
+  assert.equal(srs.judge('telefono', 'el teléfono'), 'accent'); // засчитано, но с пометкой
   assert.equal(srs.judge('llavve', 'la llave'), 'almost'); // одна лишняя буква
   assert.equal(srs.judge('puerta', 'la llave'), 'no');
   assert.equal(srs.judge('', 'la llave'), 'no');
+});
+
+test('judge: пропущенная диакритика — отдельный вердикт, кроме пар, где она меняет слово', () => {
+  resetDeck();
+  assert.equal(srs.judge('manana', 'mañana'), 'accent', 'ñ без тильды — та же небрежность, что ударение');
+  assert.equal(srs.judge('hablais', 'habláis'), 'accent');
+  assert.equal(srs.judge('que', '¿qué?'), 'accent', 'знаки ¿? не требуются');
+  assert.equal(srs.judge('pinguino', 'el pingüino'), 'accent');
+
+  // Здесь знак — это другое слово, а не небрежность.
+  assert.equal(srs.judge('ano', 'el año'), 'no');
+  assert.equal(srs.judge('si', 'sí'), 'no');
+  assert.equal(srs.judge('el', 'él'), 'no');
+  assert.equal(srs.judge('tu', 'tú'), 'no');
+
+  // Лишнее ударение там, где его нет, — тоже расхождение диакритикой.
+  assert.equal(srs.judge('cása', 'la casa'), 'accent');
+});
+
+test('judge: ответ без ударения, совпавший с другим словом колоды, — промах', () => {
+  resetDeck();
+  makeWord('esta', 'эта');
+  makeWord('está', 'он/она находится — estar');
+  assert.equal(srs.judge('esta', 'está'), 'no');
+  assert.equal(srs.judge('está', 'está'), 'ok');
+});
+
+test('accentMarks показывает буквы, где разошлась диакритика', () => {
+  // Индексы — в строке ответа как есть, с артиклем и знаками.
+  assert.deepEqual([...srs.accentMarks('telefono', 'el teléfono')], [6]);
+  assert.deepEqual([...srs.accentMarks('el telefono', 'el teléfono')], [6]);
+  assert.deepEqual([...srs.accentMarks('manana', 'mañana')], [2]);
+  assert.deepEqual([...srs.accentMarks('que', '¿qué?')], [3]);
+  assert.deepEqual([...srs.accentMarks('hablais', 'habláis')], [4]);
+  // Одно ударение из двух поставлено — подсвечивается только пропущенное.
+  assert.deepEqual([...srs.accentMarks('cuantos años', '¿Cuántos años?')], [3]);
+  assert.deepEqual([...srs.accentMarks('teléfono', 'el teléfono')], []);
 });
 
 test('type поднимает карточку до коробки 5 и там останавливается', () => {
@@ -445,7 +486,7 @@ test('соседняя форма глагола не проходит как о
   // «esta» — это отдельное слово колоды, а не промах пальцем по «estás».
   assert.equal(srs.judge('esta', 'estás'), 'no');
   assert.equal(srs.judge('estás', 'estás'), 'ok');
-  assert.equal(srs.judge('estas', 'estás'), 'ok', 'ударение ставить не обязательно');
+  assert.equal(srs.judge('estas', 'estás'), 'accent', 'ударение засчитывается, но с пометкой');
 
   // Короткие формы требуют точности: soy/son/es различаются одной буквой.
   resetDeck();

@@ -561,7 +561,7 @@ function renderArchiveOffer() {
       'div',
       { class: 'item' },
       check,
-      el('div', { class: 'es', text: w.es }),
+      el('div', { class: 'es', lang: 'es', text: w.es }),
       el('div', { class: 'ru', text: w.ru }),
     );
   });
@@ -876,7 +876,7 @@ function renderList() {
         'div',
         { class: 'item' + (arch ? ' arch' : '') + (w.flagged ? ' flagged' : '') },
         check,
-        el('div', { class: 'es', text: (w.flagged ? '⚑ ' : '') + w.es }),
+        el('div', { class: 'es', lang: 'es', text: (w.flagged ? '⚑ ' : '') + w.es }),
         el('div', { class: 'box-tag', text: arch ? 'архив' : 'коробка ' + srs.wordBox(w.id) }),
         el(
           'button',
@@ -970,7 +970,7 @@ function bindWordsView() {
     renderRail();
   });
 
-  $('btn-export').addEventListener('click', exportDeck);
+  $('btn-export').addEventListener('click', () => exportDeck());
   $('btn-import').addEventListener('click', () => $('file-input').click());
   $('file-input').addEventListener('change', importDeck);
   $('btn-reset').addEventListener('click', resetProgress);
@@ -982,32 +982,61 @@ function setNote(text) {
 
 // Выгружаем только слова и прогресс. Настройки устройства в файл не кладём —
 // позже там будет токен синхронизации, и ему в скачанном файле не место.
-function exportDeck() {
+function exportDeck(name = 'palabras-' + today() + '.json') {
   const dump = { v: state.v, exported: now(), words: state.words, cards: state.cards };
   const url = URL.createObjectURL(
     new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' }),
   );
-  const a = el('a', { href: url, download: 'palabras-' + today() + '.json' });
+  const a = el('a', { href: url, download: name });
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+function liveCount(words) {
+  return words.filter((w) => w && !w.deleted).length;
+}
+
+// Загрузка заменяет колоду и прогресс целиком, отмены нет. Раньше это происходило молча:
+// старый файл, выбранный по ошибке, стирал месяцы прогресса одним касанием.
+//
+// Поэтому сначала скачиваем копию текущей колоды и только потом спрашиваем. Копия
+// уходит до вопроса, а не после: после «да» сразу идёт перезагрузка, и на телефоне она
+// обрывает начатое скачивание. Лишний файл при «нет» — дешёвая цена за то, что откатиться
+// можно всегда.
 function importDeck(e) {
   const file = e.target.files && e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = () => {
+    let data;
     try {
-      const data = JSON.parse(reader.result);
+      data = JSON.parse(reader.result);
       if (!Array.isArray(data.words) || !data.cards) throw new Error('не колода');
-      state.words = data.words;
-      state.cards = data.cards;
-      // Индекс слов живёт в state.js, а мы подменили массив целиком — перечитываем всё.
-      // Перезагружаемся только после того, как запись действительно легла на диск.
-      save().then(() => location.reload());
     } catch (err) {
       setNote('Файл не похож на колоду Palabras.');
+      return;
     }
+
+    const incoming = liveCount(data.words);
+    const current = liveCount(state.words);
+    const backup = 'palabras-backup-' + today() + '.json';
+    if (current) exportDeck(backup);
+
+    const question =
+      'В файле ' + incoming + ' ' + plural(incoming, 'слово', 'слова', 'слов') +
+      ', сейчас в колоде ' + current + '. Слова и прогресс заменятся содержимым файла.' +
+      (current ? '\n\nКопия текущей колоды скачана: ' + backup + '.' : '') +
+      '\n\nЗаменить?';
+    if (!confirm(question)) {
+      setNote('Загрузка отменена, колода не тронута.');
+      return;
+    }
+
+    state.words = data.words;
+    state.cards = data.cards;
+    // Индекс слов живёт в state.js, а мы подменили массив целиком — перечитываем всё.
+    // Перезагружаемся только после того, как запись действительно легла на диск.
+    save().then(() => location.reload());
   };
   reader.readAsText(file);
   e.target.value = '';
