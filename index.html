@@ -28,6 +28,8 @@ try {
 
 <header>
   <h1 class="mark">Palabras</h1>
+  <!-- Чей прогресс на экране. На общем ноутбуке профиль меняется отсюда же. -->
+  <button class="who hidden" id="btn-profile" type="button" aria-haspopup="dialog"></button>
   <!-- На телефоне это нижняя панель вкладок (HIG: навигация в зоне большого пальца),
        на широком экране — строка в шапке. Значки нарисованы здесь же: без зависимостей. -->
   <nav class="tabs" aria-label="Разделы">
@@ -160,7 +162,7 @@ try {
       <button class="btn" id="btn-sync-connect">Подключить</button>
     </div>
     <p class="hint">Без синхронизации прогресс живёт только в этом браузере: на другом устройстве он свой, а очистка данных сайта стирает его.</p>
-    <p class="hint">Токен: <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com → Fine-grained token</a>, в Account permissions → Gists выбрать Read and write. На своих телефоне, планшете и ноутбуке вставьте один и тот же токен — приложение само найдёт ваш гист. У второго человека — свой аккаунт GitHub и свой токен, тогда прогресс у вас раздельный.</p>
+    <p class="hint">Токен: <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com → Fine-grained token</a>, в Account permissions → Gists выбрать Read and write. Один и тот же токен вставьте на всех устройствах, где занимаетесь, — приложение само найдёт гист. Прогресс каждого профиля лежит там отдельным файлом и не смешивается.</p>
   </div>
   <div id="sync-on" class="hidden">
     <div class="settings-actions">
@@ -202,6 +204,19 @@ try {
       <button class="mini" id="sheet-close" type="button">Закрыть</button>
     </div>
     <div class="rule-body" id="sheet-body"></div>
+  </div>
+</dialog>
+
+<!-- Выбор профиля. При первом запуске на устройстве его не закрыть: без профиля
+     неизвестно, чей прогресс загружать. -->
+<dialog class="sheet profile-sheet" id="profile-sheet" aria-labelledby="profile-title">
+  <div class="sheet-inner">
+    <div class="sheet-head">
+      <h2 class="note-title" id="profile-title">Кто занимается?</h2>
+      <button class="mini hidden" id="profile-close" type="button">Отмена</button>
+    </div>
+    <p class="hint" id="profile-hint"></p>
+    <div class="profile-list" id="profile-list"></div>
   </div>
 </dialog>
 

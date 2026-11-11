@@ -128,6 +128,17 @@ header{
 .mark{
   font-size:1rem;font-weight:600;letter-spacing:-.01em;margin:0;
 }
+/* Имя профиля: на телефоне справа от названия, на широком экране — перед вкладками. */
+.who{
+  font:inherit;font-size:.882rem;font-weight:500;color:var(--text);
+  margin-left:auto;min-height:44px;padding:0 14px;border:0;border-radius:999px;
+  background:var(--fill);cursor:pointer;touch-action:manipulation;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.who::after{content:'';width:6px;height:6px;margin-top:-3px;border:solid currentColor;border-width:0 1.5px 1.5px 0;transform:rotate(45deg);opacity:.6}
+.who:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.profile-list{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.profile-list .btn{width:100%;justify-content:center;min-height:56px;font-size:1rem}
 nav{display:flex;gap:2px}
 nav button{
   font:inherit;font-size:.882rem;font-weight:500;

@@ -6,6 +6,7 @@ import * as srs from './srs.js';
 import * as notes from './notes.js';
 import * as speech from './speech.js';
 import * as sync from './sync.js';
+import * as profiles from './profiles.js';
 import { el, replace, announce } from './dom.js';
 import { render as renderType } from './modes/type.js';
 import { render as renderFlip } from './modes/flip.js';
@@ -2039,6 +2040,95 @@ function bindKeyboard() {
 }
 
 // ---------------------------------------------------------------------------
+// профили
+// ---------------------------------------------------------------------------
+
+// Окно выбора профиля. Разрешается id выбранного или null, если окно закрыли.
+// При первом запуске закрыть его нельзя: без профиля неизвестно, чей прогресс загружать.
+function pickProfile({ first = false, legacy = false } = {}) {
+  return new Promise((resolve) => {
+    const sheet = $('profile-sheet');
+    const cur = profiles.current();
+    $('profile-title').textContent = legacy ? 'Чей прогресс на этом устройстве?' : 'Кто занимается?';
+    $('profile-hint').textContent = legacy
+      ? 'Он останется за выбранным. Второй профиль начнёт со своего: с нуля или из синхронизации.'
+      : first
+        ? 'Выбор запомнится на этом устройстве. Сменить можно кнопкой с именем вверху.'
+        : 'У каждого свой прогресс. Настройки устройства общие.';
+    $('profile-close').classList.toggle('hidden', first);
+
+    let settled = false;
+    const done = (id) => {
+      if (settled) return;
+      settled = true;
+      sheet.removeEventListener('cancel', onCancel);
+      sheet.removeEventListener('close', onClose);
+      if (sheet.open) sheet.close();
+      resolve(id);
+    };
+    const onCancel = (e) => {
+      e.preventDefault();
+      if (!first) done(null);
+    };
+    // Chrome закрывает окно по второму Esc подряд, даже когда cancel отменён.
+    // При первом запуске открываем его снова: приложению без профиля нечего показать.
+    const onClose = () => {
+      if (settled) return;
+      if (first) sheet.showModal();
+      else done(null);
+    };
+    sheet.addEventListener('cancel', onCancel);
+    sheet.addEventListener('close', onClose);
+    $('profile-close').onclick = () => done(null);
+
+    replace(
+      $('profile-list'),
+      profiles.PROFILES.map((p) =>
+        el('button', {
+          type: 'button',
+          class: 'btn' + (cur && cur.id === p.id ? '' : ' ghost'),
+          'aria-current': cur && cur.id === p.id ? 'true' : null,
+          text: p.name,
+          onclick: () => done(p.id),
+        }),
+      ),
+    );
+    if (typeof sheet.showModal === 'function') sheet.showModal();
+    else sheet.setAttribute('open', '');
+  });
+}
+
+function renderWho() {
+  const p = profiles.current();
+  const btn = $('btn-profile');
+  btn.textContent = p ? p.name : '';
+  btn.setAttribute('aria-label', p ? 'Профиль: ' + p.name + '. Сменить' : 'Выбрать профиль');
+  btn.classList.toggle('hidden', !p);
+}
+
+// Смена профиля — через перезагрузку: состояние, очередь занятия и синхронизация
+// держатся в модулях, и чистый запуск надёжнее, чем подменять их на ходу.
+// Отложенную отправку в гист делаем сейчас, но больше пары секунд не ждём: без сети
+// она уедет при следующем запуске этого профиля, прогресс лежит на устройстве.
+async function switchProfile() {
+  const id = await pickProfile();
+  const cur = profiles.current();
+  if (!id || (cur && cur.id === id)) return;
+  await save();
+  await Promise.race([sync.flush(), new Promise((r) => setTimeout(r, 2500))]);
+  await profiles.choose(id);
+  location.reload();
+}
+
+async function ensureProfile() {
+  await profiles.loadConfig();
+  if (profiles.current()) return;
+  const legacy = await profiles.hasUnclaimedLegacy();
+  const id = await pickProfile({ first: true, legacy });
+  await profiles.choose(id);
+}
+
+// ---------------------------------------------------------------------------
 // запуск
 // ---------------------------------------------------------------------------
 
@@ -2053,7 +2143,10 @@ function warnAboutStorage() {
 }
 
 async function init() {
-  await load();
+  await ensureProfile();
+  await load(profiles.stateKey());
+  renderWho();
+  $('btn-profile').addEventListener('click', switchProfile);
   bindTheme();
 
   // Первый запуск: без колоды показывать нечего, поэтому ждём её.
@@ -2085,7 +2178,7 @@ async function init() {
 
   // Синхронизация — после первой отрисовки: без сети или без токена приложение
   // не должно ждать ни секунды.
-  sync.start({ onChange: refreshAfterData, onStatus: renderSync });
+  sync.start({ onChange: refreshAfterData, onStatus: renderSync }, profiles.current().id);
 
   if (!firstRun) {
     mergeSeed().then((added) => {

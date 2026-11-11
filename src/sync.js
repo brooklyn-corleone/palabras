@@ -1,8 +1,9 @@
 // Синхронизация своих устройств через приватный GitHub Gist (спека, раздел 3).
 //
-// Чей это прогресс, определяет токен: один человек вставляет свой токен на телефоне,
-// планшете и ноутбуке, и все три пишут в один его гист. У второго человека свой аккаунт
-// GitHub, свой токен и свой гист — их прогресс не пересекается ни в одной точке.
+// Чей это прогресс, определяет профиль (profiles.js): у каждого свой файл в гисте,
+// `palabras-<id профиля>.json`. Токен один на всех — его вставляют на каждом устройстве,
+// и все устройства пишут в один приватный гист, каждый профиль в свой файл. Аккаунт
+// GitHub нужен одному человеку, второму достаточно выбрать себя при запуске.
 //
 // Приложение обязано работать без этого модуля: нет токена или нет сети — синхронизация
 // тихо пропускается, и всё живёт в IndexedDB, как раньше.
@@ -14,7 +15,8 @@
 import { state, save, now, onSave, reindex } from './state.js';
 
 const API = 'https://api.github.com';
-const FILE = 'palabras.json';
+// Файл текущего профиля. Ставится в start() до первой синхронизации.
+let file = fileFor('');
 const CONFIG_KEY = 'palabras.sync';
 const LOG_DAYS = 90; // столько же, сколько хранит журнал srs.js
 
@@ -165,6 +167,17 @@ export function parseRemote(text) {
   return data;
 }
 
+// Имя файла профиля в гисте. Без профиля — старое имя, с которого всё начиналось.
+export function fileFor(profileId) {
+  return profileId ? 'palabras-' + profileId + '.json' : 'palabras.json';
+}
+
+// Наш гист — тот, где есть файл любого профиля: на втором устройстве второй человек
+// подключается тем же токеном и находит тот же гист, хотя своего файла в нём ещё нет.
+export function isOurGist(g) {
+  return !!(g && g.files && Object.keys(g.files).some((name) => /^palabras(-[a-z0-9]+)?\.json$/.test(name)));
+}
+
 // Пользователь может вставить и ID, и адрес гиста целиком.
 export function parseGistId(text) {
   const s = String(text || '').trim().replace(/\/+$/, '');
@@ -250,11 +263,11 @@ async function gh(path, token, opts = {}) {
 // Больше мегабайта API отдаёт файл обрезанным, и тогда его надо дочитать по raw_url.
 // Колода на триста слов весит около ста килобайт, но молча слить половину файла нельзя.
 async function readFile(gist) {
-  const file = gist.files && gist.files[FILE];
-  if (!file) return null;
-  if (!file.truncated) return file.content;
+  const f = gist.files && gist.files[file];
+  if (!f) return null;
+  if (!f.truncated) return f.content;
   try {
-    const res = await fetch(file.raw_url, { cache: 'no-store' });
+    const res = await fetch(f.raw_url, { cache: 'no-store' });
     if (!res.ok) throw new Error();
     return await res.text();
   } catch (e) {
@@ -269,7 +282,8 @@ function fromDay() {
 }
 
 function body() {
-  return JSON.stringify({ files: { [FILE]: { content: JSON.stringify(payload(state, fromDay())) } } });
+  // PATCH меняет только перечисленные файлы: файл второго профиля остаётся как был.
+  return JSON.stringify({ files: { [file]: { content: JSON.stringify(payload(state, fromDay())) } } });
 }
 
 // ---------------------------------------------------------------------------
@@ -345,12 +359,12 @@ export async function connect(token, gistText) {
   } else {
     const list = await gh('/gists?per_page=100', token);
     const found = (Array.isArray(list) ? list : [])
-      .filter((g) => g && g.files && g.files[FILE])
+      .filter(isOurGist)
       .sort((a, b) => String(b.updated_at).localeCompare(String(a.updated_at)))[0];
     if (found) {
       gistId = found.id;
     } else {
-      const files = { [FILE]: { content: JSON.stringify(payload(state, fromDay())) } };
+      const files = { [file]: { content: JSON.stringify(payload(state, fromDay())) } };
       const gist = await gh('/gists', token, {
         method: 'POST',
         body: JSON.stringify({ description: 'Palabras — прогресс', public: false, files }),
@@ -372,6 +386,15 @@ export function disconnect() {
   hooks.onStatus();
 }
 
+// Отправить отложенное сейчас — перед сменой профиля страница перезагружается,
+// и таймер на десять секунд до отправки не доживёт.
+export function flush() {
+  if (!timer) return running || Promise.resolve();
+  clearTimeout(timer);
+  timer = null;
+  return syncNow();
+}
+
 // ---------------------------------------------------------------------------
 // когда синхронизироваться
 // ---------------------------------------------------------------------------
@@ -390,8 +413,9 @@ function schedule() {
 // При запуске, при возврате в приложение и через десять секунд после последнего ответа.
 // Уход из приложения отправляет сразу: на телефоне его могут выгрузить из памяти
 // раньше, чем истекут десять секунд.
-export function start(h) {
+export function start(h, profileId) {
   hooks = { ...hooks, ...h };
+  file = fileFor(profileId);
   onSave(schedule);
   document.addEventListener('visibilitychange', () => {
     if (!config || !config.token) return;

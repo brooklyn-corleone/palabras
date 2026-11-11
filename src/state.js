@@ -3,7 +3,8 @@
 
 import * as db from './db.js';
 
-const STATE_KEY = 'state';
+// Ключ состояния в хранилище. У каждого профиля свой (profiles.js), load его получает.
+let stateKey = 'state';
 const VERSION = 4;
 
 // "es" — показываем испанское, вспоминаем русское (узнавание).
@@ -173,10 +174,11 @@ function rollDay() {
 // загрузка и сохранение
 // ---------------------------------------------------------------------------
 
-export async function load() {
+export async function load(key = 'state') {
+  stateKey = key;
   let raw = null;
   try {
-    raw = await db.get(STATE_KEY);
+    raw = await db.get(stateKey);
   } catch (e) {
     console.warn('не удалось прочитать состояние:', e);
   }
@@ -205,7 +207,7 @@ export function onSave(fn) {
 export function save() {
   for (const fn of saveListeners) fn();
   writeChain = writeChain
-    .then(() => db.set(STATE_KEY, state))
+    .then(() => db.set(stateKey, state))
     .catch((e) => console.warn('не удалось сохранить состояние:', e));
   return writeChain;
 }
