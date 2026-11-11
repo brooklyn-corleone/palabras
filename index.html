@@ -76,22 +76,28 @@ try {
 
 <!-- ============ СЛОВА ============ -->
 <section id="view-words" class="hidden">
-  <div class="add">
-    <input id="new-es" type="text" lang="es" placeholder="la palabra" autocapitalize="off" autocorrect="off" spellcheck="false">
-    <input id="new-ru" type="text" placeholder="перевод на русский">
+  <div class="chooser-row list-scope" id="list-scope"></div>
+  <div class="list-filters">
+    <input type="text" id="filter" class="filter" placeholder="Найти слово" enterkeyhint="search">
+    <select id="filter-cat" class="filter-cat" aria-label="Тема"></select>
+    <!-- Форма добавления раньше занимала весь первый экран телефона. Теперь она за «+»,
+         как в системных списках iOS. -->
+    <button class="add-open" id="btn-add-open" aria-label="Добавить слово" aria-expanded="false" aria-controls="add-form">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+  </div>
+  <div class="add hidden" id="add-form">
+    <input id="new-es" type="text" lang="es" placeholder="la palabra" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="next">
+    <input id="new-ru" type="text" placeholder="перевод на русский" enterkeyhint="done">
     <button class="btn" id="btn-add">Добавить</button>
   </div>
   <div class="note" id="words-note" role="status"></div>
-  <div class="chooser-row list-scope" id="list-scope"></div>
-  <div class="list-filters">
-    <input type="text" id="filter" class="filter" placeholder="Найти слово">
-    <select id="filter-cat" class="filter-cat" aria-label="Тема"></select>
-  </div>
   <div class="picked-bar hidden" id="picked-bar">
     <span class="cap" id="picked-count">Выбрано: 0</span>
     <button class="mini" id="btn-learn-picked">Учить выбранные</button>
     <button class="mini" id="btn-clear-picked">Снять всё</button>
   </div>
+  <p class="hint list-hint" id="list-hint">Смахни строку влево или нажми на неё — появятся «в архив» и «удалить».</p>
   <div class="list" id="list"></div>
 </section>
 
@@ -112,6 +118,22 @@ try {
     <button class="pill" data-goal-choice="40">40</button>
   </div>
   <p class="hint">Столько верных ответов в одном занятии. Слов вдвое меньше: у каждого два направления.</p>
+
+  <h2 class="settings-title">Новых слов в день</h2>
+  <div class="chooser-row" role="group" aria-label="Новых слов в день" id="new-choice">
+    <button class="pill" data-new-choice="10">10</button>
+    <button class="pill" data-new-choice="20">20</button>
+    <button class="pill" data-new-choice="40">40</button>
+    <button class="pill" data-new-choice="0">Без лимита</button>
+  </div>
+  <p class="hint">Новое слово возвращается через два дня, потом через четыре и дальше. При двадцати новых через неделю в день набегает около шестидесяти слов: двадцать новых и сорок на повторение.</p>
+
+  <h2 class="settings-title">Произношение</h2>
+  <div class="chooser-row" role="group" aria-label="Произношение" id="speak-choice">
+    <button class="pill" data-speak-choice="off">По кнопке</button>
+    <button class="pill" data-speak-choice="on">Сразу</button>
+  </div>
+  <p class="hint" id="voice-note"></p>
 
   <h2 class="settings-title">Оформление</h2>
   <div class="chooser-row" role="group" aria-label="Тема оформления">
@@ -138,6 +160,10 @@ try {
 </section>
 
 </div>
+
+<!-- Тост «Отменить» после архива и удаления. Вне .wrap: он висит над вкладками
+     и над кнопками карточки, а не уезжает вместе со страницей. -->
+<div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
 
 <script type="module" src="src/ui.js"></script>
 </body>

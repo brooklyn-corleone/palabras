@@ -174,6 +174,124 @@ export function pickMatchWords() {
 // очередь сессии
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// трудные слова и новые слова за день
+// ---------------------------------------------------------------------------
+
+// Слово становится трудным после четырёх промахов. Промах засчитывается не чаще раза
+// в день на карточку: неверная карточка возвращается в очередь и может провалиться
+// ещё дважды за то же занятие, а трудность — это «не держится от дня ко дню».
+// В Anki такие карточки называются leech, порог по умолчанию — восемь; у нас коробок
+// пять, а не десятки ступеней, поэтому порог ниже.
+export const LEECH = 4;
+
+function noteLapse(c) {
+  const t = today();
+  if (c.lapseDay === t) return;
+  c.lapseDay = t;
+  c.lapses = (c.lapses || 0) + 1;
+}
+
+// Трудное — пока не выучено: слово, дошедшее до архива, справилось с трудностью само.
+export function isHard(id) {
+  const es = state.cards[id + '|es'];
+  const ru = state.cards[id + '|ru'];
+  if (!es && !ru) return false;
+  if ((es && es.arch) || (ru && ru.arch)) return false;
+  return Math.max((es && es.lapses) || 0, (ru && ru.lapses) || 0) >= LEECH;
+}
+
+export function hardWordIds() {
+  const ids = new Set();
+  for (const key of Object.keys(state.cards)) {
+    if (!isLiveKey(key)) continue;
+    const id = parseKey(key).wordId;
+    if (!ids.has(id) && isHard(id)) ids.add(id);
+  }
+  return ids;
+}
+
+// Новых слов в день — отдельно от размера занятия, как в Anki и Lingvist. Без этого
+// свежая колода в двести сорок слов отдаёт новые занятие за занятием, пока не кончится,
+// а через день все они разом возвращаются на повторение. 0 — без лимита.
+export const NEW_PER_DAY = [10, 20, 40, 0];
+
+export function newPerDay() {
+  const n = state.settings && state.settings.newPerDay;
+  return typeof n === 'number' ? n : 20;
+}
+
+// Карточка новая, если её ещё ни разу не спрашивали. У карточек, заведённых до появления
+// поля seen, его нет: тех, что выше первой коробки, явно спрашивали, а лежащие в первой
+// считаем новыми — для слова, которое так и не поднялось, это почти правда.
+function isNewCard(c) {
+  return !c.seen && !c.arch && c.box === 1;
+}
+
+function wordCards(id) {
+  return ['|es', '|ru'].map((s) => state.cards[id + s]).filter(Boolean);
+}
+
+export function isNewWord(id) {
+  const cards = wordCards(id);
+  return cards.length > 0 && cards.every(isNewCard);
+}
+
+// Сколько слов впервые встретилось сегодня: хотя бы одна карточка спрошена сегодня,
+// и ни одна — раньше.
+function introducedToday() {
+  const t = today();
+  const ids = new Set();
+  for (const key of Object.keys(state.cards)) {
+    if (!isLiveKey(key)) continue;
+    const id = parseKey(key).wordId;
+    if (ids.has(id)) continue;
+    const cards = wordCards(id);
+    if (cards.some((c) => c.seen === t) && cards.every((c) => c.seen === t || isNewCard(c))) {
+      ids.add(id);
+    }
+  }
+  return ids.size;
+}
+
+export function newLeftToday() {
+  const limit = newPerDay();
+  if (!limit) return Infinity;
+  return Math.max(0, limit - introducedToday());
+}
+
+// Сколько ждёт сегодня, без оглядки на настройки занятия: повторение отдельно,
+// новые — отдельно и уже с учётом дневного лимита.
+export function todayCounts() {
+  const t = today();
+  const review = new Set();
+  const fresh = new Set();
+  for (const key of Object.keys(state.cards)) {
+    if (!isLiveKey(key)) continue;
+    const c = state.cards[key];
+    if (c.arch || c.due > t) continue;
+    const id = parseKey(key).wordId;
+    if (isNewWord(id)) fresh.add(id);
+    else review.add(id);
+  }
+  return { review: review.size, fresh: Math.min(fresh.size, newLeftToday()) };
+}
+
+// Оставить в очереди не больше `left` новых слов. Порядок ключей уже случайный,
+// поэтому берём первые встретившиеся.
+function limitNew(keys, left) {
+  if (left === Infinity) return keys;
+  const allowed = new Set();
+  return keys.filter((key) => {
+    const id = parseKey(key).wordId;
+    if (!isNewWord(id)) return true;
+    if (allowed.has(id)) return true;
+    if (allowed.size >= left) return false;
+    allowed.add(id);
+    return true;
+  });
+}
+
 let queue = [];
 
 function shuffle(a) {
@@ -230,6 +348,10 @@ export function buildQueue(options) {
     // Просил именно его, прятать нечего.
     const picked = session.picked;
     out = out.filter((key) => picked && picked.has(parseKey(key).wordId));
+  } else if (source === 'hard') {
+    // Трудные — независимо от срока: их и выбирают, чтобы прогнать вне очереди.
+    const hard = hardWordIds();
+    out = out.filter((key) => hard.has(parseKey(key).wordId));
   } else {
     // Архив — отдельное состояние «выучено, проверяем изредка», и сам по себе в занятие
     // он не идёт: подмешивается ниже и дозированно. Раньше у «случайных» этого фильтра
@@ -248,6 +370,9 @@ export function buildQueue(options) {
   }
 
   shuffle(out);
+  // Дневной лимит новых — только для обычного повторения. Случайные, выбранные
+  // и трудные заказаны руками, и урезать заказ было бы самоуправством.
+  if (source === 'due') out = limitNew(out, newLeftToday());
   queue = limitByWords(out, session.size);
 
   // Выученные подмешиваем только в обычное занятие: если слова выбраны руками
@@ -309,15 +434,10 @@ export function nextKey() {
 // Сколько слов ещё ждут повторения сегодня — без оглядки на настройки занятия.
 // Нужно экрану в конце: «занятие закончено» и «на сегодня всё» — разные вещи,
 // и обещать второе, когда созрело ещё две сотни карточек, нельзя.
+// Новые сверх дневного лимита сегодня не придут, поэтому и ждущими не считаются.
 export function dueWordCount() {
-  const t = today();
-  const ids = new Set();
-  for (const key of Object.keys(state.cards)) {
-    if (!isLiveKey(key)) continue;
-    const c = state.cards[key];
-    if (!c.arch && c.due <= t) ids.add(parseKey(key).wordId);
-  }
-  return ids.size;
+  const { review, fresh } = todayCounts();
+  return review + fresh;
 }
 
 export function requeue(key) {
@@ -573,18 +693,53 @@ function setArchived(id, on) {
   }
 }
 
+// Очередь после этого не пересобирается, а только теряет карточки слова. Раньше здесь
+// стоял buildQueue(), и «в архив» посреди занятия перетасовывало его заново: при лимите
+// «десять слов» оставшиеся девять менялись на другие случайные.
 export function archiveWord(id, on) {
   setArchived(id, on);
   save();
-  buildQueue();
+  return on !== false ? dropWord(id) : [];
 }
 
 // Пачкой: на экране конца занятия отмечают сразу по десятку слов, и делать
-// столько же записей в базу и пересборок очереди незачем.
+// столько же записей в базу незачем.
 export function archiveWords(ids, on) {
   for (const id of ids) setArchived(id, on);
   save();
-  buildQueue();
+  if (on !== false) for (const id of ids) dropWord(id);
+}
+
+// Убрать карточки слова из текущей очереди. Возвращает убранные — для «Отменить».
+export function dropWord(id) {
+  const gone = queue.filter((key) => parseKey(key).wordId === id);
+  if (gone.length) queue = queue.filter((key) => parseKey(key).wordId !== id);
+  return gone;
+}
+
+// Снимок обеих карточек слова до действия и возврат к нему — это и есть «Отменить»
+// у тоста. Копируем записи целиком: коробка, срок, архив, счётчик промахов.
+export function snapshotWord(id) {
+  const snap = {};
+  for (const suffix of ['|es', '|ru']) {
+    const c = state.cards[id + suffix];
+    if (c) snap[suffix] = { ...c };
+  }
+  return snap;
+}
+
+export function restoreWord(id, snap) {
+  for (const [suffix, card] of Object.entries(snap)) {
+    state.cards[id + suffix] = { ...card, updated: now() };
+  }
+  save();
+}
+
+// Вернуть карточки в начало очереди: отменённое действие должно вернуть ту карточку,
+// с которой ушли, а не отправить её в конец занятия.
+export function unshiftKeys(keys) {
+  const fresh = keys.filter((key) => !queue.includes(key));
+  queue.unshift(...fresh);
 }
 
 // Потолок для ответа с опечаткой: см. opts.cap в grade.
@@ -596,6 +751,11 @@ export const ALMOST_CAP = 4;
 export function grade(key, mode, correct, opts = {}) {
   const c = state.cards[key];
   if (!c) return null;
+
+  // Первая встреча с карточкой — для дневного лимита новых слов (см. newLeftToday).
+  if (!c.seen) c.seen = today();
+  // Промах пальцем в «Парах» трудным слово не делает.
+  if (!correct && mode !== 'match') noteLapse(c);
 
   if (c.arch) {
     if (correct) {

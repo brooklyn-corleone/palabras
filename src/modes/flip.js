@@ -3,6 +3,7 @@
 // (почему — в CLAUDE.md, «Режимы и веса»).
 
 import { el, replace, announce } from '../dom.js';
+import { sayable, autoSpeak } from '../speech.js';
 
 const DIR_LABEL = 'Испанский → Русский';
 const HALF_FLIP = 120; // половина переворота, вторая половина доигрывается в CSS
@@ -54,7 +55,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
     replace(
       root,
       head(),
-      el('div', { class: 'prompt', lang: 'es', text: word.es }),
+      sayable(el('div', { class: 'prompt', lang: 'es', text: word.es }), word.es),
       el(
         'div',
         { class: 'row' },
@@ -66,6 +67,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
         ),
       ),
     );
+    autoSpeak(word.es);
   }
 
   // ---- обратная сторона -----------------------------------------------------
@@ -73,7 +75,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
     replace(
       root,
       head(),
-      el('div', { class: 'prompt', lang: 'es', text: word.es }),
+      sayable(el('div', { class: 'prompt', lang: 'es', text: word.es }), word.es),
       el(
         'div',
         { class: 'verdict neutral' },

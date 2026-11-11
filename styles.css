@@ -250,6 +250,43 @@ kbd{
 .home-summary{margin-bottom:10px}
 .home h2{font-size:26px;font-weight:400;letter-spacing:-.02em;line-height:1.2;margin:0 0 8px}
 .home p{color:var(--muted);margin:0}
+/* Счётчик на старте: числа крупно, подписи мелко — читается одним взглядом. */
+.home-stats{display:flex;gap:28px;margin-top:20px}
+.stat{display:flex;flex-direction:column;gap:2px}
+.stat b{font-size:28px;font-weight:400;letter-spacing:-.02em;line-height:1.1;font-variant-numeric:tabular-nums}
+
+/* 🔊 рядом с испанским словом. */
+.say{display:flex;align-items:center;gap:6px}
+.say .prompt{min-width:0}
+.verdict .say{margin:-6px 0}
+.speak{
+  flex-shrink:0;width:44px;height:44px;
+  display:inline-flex;align-items:center;justify-content:center;
+  border:0;border-radius:50%;background:none;color:var(--muted);cursor:pointer;touch-action:manipulation;
+}
+.say .prompt + .speak{margin-bottom:28px} /* по центру строки, а не всего блока с отступом */
+.speak svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.speak:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Тост «Отменить». Снизу над вкладками; во время занятия — сверху, иначе закрыл бы
+   кнопки ответа. */
+.toast{
+  position:fixed;z-index:20;left:50%;transform:translateX(-50%);
+  bottom:calc(16px + max(var(--tabbar-h), env(safe-area-inset-bottom)));
+  width:min(calc(100% - 32px), 480px);
+  display:flex;align-items:center;gap:12px;
+  padding:6px 6px 6px 16px;border-radius:14px;
+  background:var(--text);color:var(--bg);
+  font-size:15px;
+}
+body.in-session .toast{bottom:auto;top:calc(12px + env(safe-area-inset-top))}
+.toast-text{flex:1;min-width:0;overflow-wrap:anywhere}
+.toast-undo{
+  flex-shrink:0;min-height:44px;padding:0 14px;
+  font:inherit;font-weight:600;border:0;border-radius:10px;cursor:pointer;
+  background:none;color:var(--bg);text-decoration:underline;text-underline-offset:3px;
+}
+.toast-undo:focus-visible{outline:2px solid var(--bg);outline-offset:-2px}
 
 /* ---------- настройка занятия ---------- */
 
@@ -426,7 +463,7 @@ input.pick{
 .rule-body .note-body:first-child{margin-top:0}
 
 /* ---------- список слов ---------- */
-.add{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin-bottom:20px}
+.add{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin-bottom:12px}
 .add input[type=text]{font-size:16px;padding:12px 0}
 .note{min-height:18px;margin-bottom:12px}
 .note:empty{margin-bottom:0}
@@ -449,17 +486,62 @@ input.filter:focus{outline:none;border-bottom-color:var(--accent)}
 .filter-cat:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 .list{margin-top:4px}
-/* Flex, а не grid: количество кнопок в строке может меняться, а перенос должен
-   происходить сам. Перевод всегда уходит на отдельную строку через order. */
-.item{
-  display:flex;flex-wrap:wrap;align-items:center;
-  gap:8px 12px;
-  padding:14px 0;border-bottom:1px solid var(--line);
+.list-hint{margin:4px 0 4px}
+.list-empty{color:var(--muted);padding:14px 0;margin:0}
+/* Строка в стиле iOS: слово над переводом, коробка справа, действия под строкой
+   и выезжают свайпом влево (см. bindSwipe в ui.js). Уехавшую влево строку обрезаем,
+   но не overflow: тот срезал бы и зону нажатия галочки, заходящую на поле страницы
+   на 12 px. clip-path с отрицательным отступом слева эти 12 px оставляет. */
+.item{position:relative;border-bottom:1px solid var(--line);clip-path:inset(0 0 0 -12px)}
+.item-main{
+  position:relative;z-index:1;
+  display:flex;align-items:center;gap:12px;
+  background:var(--bg);
+  transition:transform .22s ease;
+  touch-action:pan-y; /* вертикальная прокрутка — браузеру, горизонталь — жесту */
 }
-.item .es{flex:1;min-width:120px;font-size:17px;font-weight:500;letter-spacing:-.01em}
-.item .ru{order:10;flex-basis:100%;color:var(--muted);margin-top:-4px;padding-left:32px}
+.item.open .item-main{transform:translateX(var(--open))}
+.item.dragging .item-main{transition:none}
+.item-body{
+  flex:1;min-width:0;min-height:56px;
+  display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:2px;
+  padding:10px 0;margin:0;
+  font:inherit;text-align:left;color:var(--text);
+  background:none;border:0;cursor:pointer;touch-action:pan-y;
+}
+.item-body:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:var(--radius)}
+.item .es{font-size:17px;font-weight:500;letter-spacing:-.01em;overflow-wrap:anywhere}
+.item .ru{color:var(--muted);font-size:15px;overflow-wrap:anywhere}
 .item.arch .es{color:var(--muted)}
-.item .box-tag{white-space:nowrap;text-transform:uppercase}
+.item.flagged .es{color:var(--err)}
+.item .box-tag{white-space:nowrap;text-transform:uppercase;flex-shrink:0}
+.item.hard .box-tag{color:var(--err)}
+/* Кнопки действий лежат под строкой. Пока строка закрыта, их не видно и до них
+   не дотянуться Tab'ом: visibility, а не display, — ширина нужна для расчёта сдвига. */
+.item-actions{
+  position:absolute;top:0;right:0;bottom:0;
+  display:flex;visibility:hidden;
+}
+.item.open .item-actions,.item.dragging .item-actions{visibility:visible}
+.act{
+  font:inherit;font-size:14px;font-weight:500;
+  min-width:84px;padding:0 14px;border:0;cursor:pointer;
+}
+.act-plain{background:var(--line);color:var(--text)}
+.act-arch{background:var(--accent);color:var(--bg)}
+.act-del{background:var(--err);color:var(--bg)}
+.act:focus-visible{outline:2px solid var(--text);outline-offset:-4px}
+
+/* «+» в строке поиска: открывает форму добавления. Открытая — крестиком. */
+.add-open{
+  flex-shrink:0;width:44px;height:44px;
+  display:inline-flex;align-items:center;justify-content:center;
+  border:0;border-radius:var(--radius);background:var(--fill);color:var(--text);cursor:pointer;
+}
+.add-open svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;transition:transform .2s}
+.add-open[aria-expanded="true"] svg{transform:rotate(45deg)}
+.add-open:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.add{margin-top:8px}
 .mini{
   font:inherit;font-size:13px;font-weight:500;
   min-height:44px;padding:0 12px;
@@ -468,7 +550,6 @@ input.filter:focus{outline:none;border-bottom-color:var(--accent)}
 }
 .mini.danger{color:var(--err)}
 .mini.flagged{color:var(--err);border-color:var(--err)}
-.item.flagged .es{color:var(--err)}
 
 /* ---------- служебное ---------- */
 .warn{
@@ -526,7 +607,6 @@ input.filter:focus{outline:none;border-bottom-color:var(--accent)}
   .goal{order:0;margin-bottom:20px}
   .rail-block{order:2;margin:0 0 24px}
   .stage{order:3}
-  .item .ru{padding-left:0}
   /* Кнопки — в зоне большого пальца, у нижнего края экрана. */
   /* Отступ снизу — под полоску home indicator: в PWA при viewport-fit=cover она лежит
      поверх контента, и свайп по кнопке «Дальше» сворачивал приложение. */
@@ -539,6 +619,12 @@ input.filter:focus{outline:none;border-bottom-color:var(--accent)}
   .end-archive .row{position:static;background:none;padding-bottom:0}
   .keys{display:none}
   .add{grid-template-columns:1fr;gap:0}
+  /* «Активные · Трудные · Архив · Все» — одной строкой с прокруткой: в два ряда
+     на iPhone SE они съедали место трёх слов списка. */
+  .list-scope{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-right:-18px;padding-right:18px}
+  .list-scope::-webkit-scrollbar{display:none}
+  .list-scope .pill{flex-shrink:0}
+  .filter-cat{max-width:40%}
   .add .btn{margin-top:16px;width:100%;justify-content:center}
   .note-table th,.note-table td{padding-right:18px}
 }

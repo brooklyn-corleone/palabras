@@ -2,6 +2,7 @@
 // поэтому потолок — коробка 3: узнавание среди вариантов ещё не значит знание.
 
 import { el, replace, announce } from '../dom.js';
+import { sayable, autoSpeak } from '../speech.js';
 import { pickDistractors } from '../srs.js';
 
 const OPTIONS = 3;
@@ -58,6 +59,8 @@ export function render({ word, card, dir, onAnswer, onArchive, onFlag, flagged: 
       if (btn.dataset.value === answer) mark(btn, 'is-right', '✓', 'верно');
     }
     if (!correct) mark(button, 'is-wrong', '✕', 'ваш ответ');
+    // В RU→ES испанское слово — это ответ, и прозвучать оно может только после выбора.
+    if (dir === 'ru') autoSpeak(answer);
     announce(correct ? 'Верно: ' + answer : 'Неверно. Правильный ответ: ' + answer);
 
     replace(
@@ -86,7 +89,9 @@ export function render({ word, card, dir, onAnswer, onArchive, onFlag, flagged: 
   replace(
     root,
     head(),
-    el('div', { class: 'prompt', lang: dir === 'es' ? 'es' : null, text: asking }),
+    dir === 'es'
+      ? sayable(el('div', { class: 'prompt', lang: 'es', text: asking }), asking)
+      : el('div', { class: 'prompt', text: asking }),
     el(
       'div',
       { class: 'options' },
@@ -103,6 +108,7 @@ export function render({ word, card, dir, onAnswer, onArchive, onFlag, flagged: 
     ),
     el('div', { class: 'row' }),
   );
+  if (dir === 'es') autoSpeak(asking);
 
   return root;
 }

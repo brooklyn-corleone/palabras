@@ -4,6 +4,7 @@
 
 import { el, replace, announce } from '../dom.js';
 import { norm } from '../srs.js';
+import { sayable, autoSpeak } from '../speech.js';
 
 const DIR_LABEL = 'Русский → Испанский';
 const DECOYS = 4;
@@ -175,7 +176,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
         'div',
         { class: 'verdict ' + (correct ? 'ok' : 'no') },
         el('span', { class: 'lbl', text: correct ? 'Верно' : 'Правильный ответ' }),
-        el('b', { lang: 'es', text: word.es }),
+        sayable(el('b', { lang: 'es', text: word.es }), word.es),
       ),
       el(
         'div',
@@ -189,6 +190,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
       ),
     );
     announce((correct ? 'Верно: ' : 'Правильный ответ: ') + word.es);
+    autoSpeak(word.es);
     root.querySelector('[data-key="enter"]').focus();
   }
 

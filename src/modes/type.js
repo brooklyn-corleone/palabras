@@ -2,6 +2,7 @@
 // который поднимает карточку в коробки 4 и 5 (см. MAX_BOX в srs.js).
 
 import { el, replace, announce } from '../dom.js';
+import { sayable, autoSpeak } from '../speech.js';
 import { judge, accentMarks, diffMarks, ALMOST_CAP } from '../srs.js';
 
 const DIR_LABEL = 'Русский → Испанский';
@@ -95,7 +96,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
       'div',
       { class: 'verdict ' + (correct ? 'ok' : 'no') },
       el('span', { class: 'lbl', text: label }),
-      answerText(marks),
+      sayable(answerText(marks), word.es),
       shown && (verdict === 'almost' || verdict === 'no') ? typedLine(shown, diff) : null,
     );
 
@@ -132,6 +133,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
       ),
     );
     announce(label + ': ' + word.es + (shown && !correct ? '. Ваш ответ: ' + shown : ''));
+    autoSpeak(word.es);
     root.querySelector('[data-key="enter"]').focus();
   }
 

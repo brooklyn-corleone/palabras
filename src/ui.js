@@ -4,6 +4,7 @@
 import * as db from './db.js';
 import * as srs from './srs.js';
 import * as notes from './notes.js';
+import * as speech from './speech.js';
 import { el, replace } from './dom.js';
 import { render as renderType } from './modes/type.js';
 import { render as renderFlip } from './modes/flip.js';
@@ -20,6 +21,7 @@ import {
   activeWords,
   addWord,
   deleteWord,
+  undeleteWord,
   flagWord,
   categories,
   DIRS,
@@ -73,7 +75,7 @@ const session = {
   picked: new Set(),
 };
 
-const SOURCE_LABEL = { due: 'к повторению', random: 'случайные', picked: 'выбранные' };
+const SOURCE_LABEL = { due: 'к повторению', random: 'случайные', picked: 'выбранные', hard: 'трудные' };
 const SIZES = [0, 10, 20, 30, 40];
 
 // Длина урока — сколько верных ответов он занимает (state.settings.goal). У слова два
@@ -215,6 +217,101 @@ function setGoal(n) {
   if (screen === 'home') renderHome();
 }
 
+// ---------------------------------------------------------------------------
+// новых в день и произношение
+// ---------------------------------------------------------------------------
+
+function applyNewChoice() {
+  for (const btn of document.querySelectorAll('[data-new-choice]')) {
+    btn.setAttribute('aria-pressed', String(Number(btn.dataset.newChoice) === srs.newPerDay()));
+  }
+}
+
+function setNewPerDay(n) {
+  if (!srs.NEW_PER_DAY.includes(n) || n === srs.newPerDay()) return;
+  state.settings.newPerDay = n;
+  save();
+  applyNewChoice();
+  // Занятие ещё не начато — пересобрать с новым лимитом. Начатое не трогаем.
+  if (screen === 'home' && !resume) {
+    prepareSession();
+    renderHome();
+  }
+}
+
+function applySpeakChoice() {
+  const on = !!state.settings.autoSpeak;
+  for (const btn of document.querySelectorAll('[data-speak-choice]')) {
+    btn.setAttribute('aria-pressed', String((btn.dataset.speakChoice === 'on') === on));
+  }
+  // Голоса нет — так и сказать, и где его взять. Иначе пропавшая кнопка выглядит поломкой.
+  $('voice-note').textContent = speech.canSpeak()
+    ? 'Голос: ' + speech.voiceName() + '. Кнопка 🔊 стоит рядом с испанским словом.'
+    : 'Испанского голоса на устройстве нет, поэтому кнопки 🔊 не будет. На iPhone голос ставится в Настройках: Универсальный доступ → Устный контент → Голоса → Испанский.';
+}
+
+function bindSpeech() {
+  for (const btn of document.querySelectorAll('[data-new-choice]')) {
+    btn.addEventListener('click', () => setNewPerDay(Number(btn.dataset.newChoice)));
+  }
+  applyNewChoice();
+  for (const btn of document.querySelectorAll('[data-speak-choice]')) {
+    btn.addEventListener('click', () => {
+      state.settings.autoSpeak = btn.dataset.speakChoice === 'on';
+      save();
+      applySpeakChoice();
+    });
+  }
+  speech.initSpeech(applySpeakChoice);
+  applySpeakChoice();
+}
+
+// ---------------------------------------------------------------------------
+// тост «Отменить»
+// ---------------------------------------------------------------------------
+
+// Шесть секунд, а не четыре: успеть прочитать, понять и дотянуться. Пока фокус
+// внутри тоста — с клавиатуры или VoiceOver, — он не исчезает.
+const TOAST_MS = 6000;
+let toastTimer = null;
+
+function toast(text, onUndo) {
+  const box = $('toast');
+  clearTimeout(toastTimer);
+  replace(
+    box,
+    el('span', { class: 'toast-text', text }),
+    onUndo
+      ? el(
+          'button',
+          {
+            class: 'toast-undo',
+            onclick: () => {
+              hideToast();
+              onUndo();
+            },
+          },
+          'Отменить',
+        )
+      : null,
+  );
+  box.classList.remove('hidden');
+  toastTimer = setTimeout(hideToast, TOAST_MS);
+}
+
+function hideToast() {
+  clearTimeout(toastTimer);
+  $('toast').classList.add('hidden');
+}
+
+function bindToast() {
+  const box = $('toast');
+  box.addEventListener('focusin', () => clearTimeout(toastTimer));
+  box.addEventListener('focusout', () => {
+    toastTimer = setTimeout(hideToast, TOAST_MS);
+  });
+}
+
 function bindGoalChoice() {
   for (const btn of document.querySelectorAll('[data-goal-choice]')) {
     btn.addEventListener('click', () => setGoal(Number(btn.dataset.goalChoice)));
@@ -321,6 +418,7 @@ function renderSetup() {
   screen = 'setup';
   setFocus(false);
   const picked = session.picked.size;
+  const hard = srs.hardWordIds().size;
   const cats = categories();
   replace(
     stage,
@@ -335,6 +433,7 @@ function renderSetup() {
           ['due', 'К повторению'],
           ['random', 'Случайные'],
           ['picked', picked ? 'Выбранные · ' + picked : 'Выбранные', picked === 0],
+          ['hard', hard ? 'Трудные · ' + hard : 'Трудные', hard === 0],
         ],
         session.source,
         (v) => {
@@ -364,6 +463,12 @@ function renderSetup() {
 
       session.source === 'picked' && picked === 0
         ? el('p', { class: 'hint', text: 'Слова отмечаются галочками на вкладке «Слова».' })
+        : null,
+      session.source === 'hard'
+        ? el('p', {
+            class: 'hint',
+            text: 'Трудное — слово, забытое в ' + srs.LEECH + ' разных днях. Уходит из списка, когда дойдёт до архива.',
+          })
         : null,
 
       el(
@@ -471,7 +576,8 @@ function renderHome() {
   }
 
   const words = srs.sessionWords().length;
-  const left = srs.dueWordCount();
+  const counts = srs.todayCounts();
+  const hard = srs.hardWordIds().size;
   const hasWork = !!resume || srs.queueLength() > 0 || matchPacks.length > 0;
 
   let title = 'На сегодня всё';
@@ -481,10 +587,22 @@ function renderHome() {
     text = 'Верных ответов: ' + Math.min(state.stats.done, state.settings.goal) + ' из ' + state.settings.goal + '.';
   } else if (hasWork) {
     title = words + ' ' + plural(words, 'слово', 'слова', 'слов') + ' в занятии';
-    text = left
-      ? 'Всего ждут повторения: ' + left + ' ' + plural(left, 'слово', 'слова', 'слов') + '.'
-      : 'Повторять по сроку нечего — занятие собрано по настройке.';
+    text = counts.review || counts.fresh ? '' : 'Повторять по сроку нечего — занятие собрано по настройке.';
   }
+  // Новые кончились по лимиту, а не по колоде, — сказать, где лимит меняется.
+  // Иначе «на сегодня всё» при двухстах невыученных словах выглядит как поломка.
+  if (!resume && !counts.fresh && srs.newLeftToday() === 0 && hasNewWords()) {
+    text = (text ? text + ' ' : '') + 'Новых на сегодня больше нет: лимит ' + srs.newPerDay() + ' в день, он меняется в «Настройках».';
+  }
+
+  // Счётчик как в Anki: что ждёт сегодня, повторение и новое отдельно.
+  const stats = el(
+    'div',
+    { class: 'home-stats' },
+    stat(counts.review, 'к повторению'),
+    stat(counts.fresh, 'новых сегодня'),
+    hard ? stat(hard, plural(hard, 'трудное', 'трудных', 'трудных')) : null,
+  );
 
   const start = () => {
     const go = resume || nextCard;
@@ -499,7 +617,8 @@ function renderHome() {
       { class: 'home' },
       el('div', { class: 'cap home-summary', text: sessionSummary() }),
       el('h2', { text: title }),
-      el('p', { text }),
+      text ? el('p', { text }) : null,
+      stats,
       el(
         'div',
         { class: 'row' },
@@ -515,6 +634,14 @@ function renderHome() {
       ),
     ),
   );
+}
+
+function stat(n, label) {
+  return el('div', { class: 'stat' }, el('b', { text: String(n) }), el('span', { class: 'cap', text: label }));
+}
+
+function hasNewWords() {
+  return activeWords().some((w) => srs.isNewWord(w.id));
 }
 
 // ✕ во время занятия: ставим на паузу и возвращаемся на старт. Неотвеченная карточка
@@ -555,18 +682,36 @@ function renderStage() {
       card,
       dir: currentKey.slice(currentKey.lastIndexOf('|') + 1),
       onAnswer: (ok, opts) => answer(mode, ok, opts),
-      onArchive: card.arch
-        ? null
-        : () => {
-            srs.archiveWord(word.id, true);
-            nextCard();
-          },
+      onArchive: card.arch ? null : () => archiveFromCard(word),
       // Переключатель живёт в самом режиме и правит DOM точечно (см. modes/*),
       // поэтому здесь только пишем состояние — экран из-за жалобы не перерисовываем.
       onFlag: (on) => flagWord(word.id, on),
       flagged: !!word.flagged,
     }),
   );
+}
+
+// «В архив» посреди занятия — одно касание рядом с «проблема», и промахнуться легко.
+// Поэтому без вопроса, но с тостом «Отменить»: вопрос перед каждым архивом раздражал бы
+// тех, кто нажал нарочно, а отмена спасает тех, кто промахнулся (HIG, Undo).
+function archiveFromCard(word) {
+  const key = currentKey;
+  const snap = srs.snapshotWord(word.id);
+  const dropped = srs.archiveWord(word.id, true).filter((k) => k !== key);
+  nextCard();
+  pulseSeg('arch');
+  toast('«' + word.es + '» в архиве', () => {
+    srs.restoreWord(word.id, snap);
+    // Вернуть ту же карточку на экран, а успевшую показаться — следом за ней.
+    const back = [key];
+    if (screen === 'card' && currentKey && currentKey !== key) back.push(currentKey);
+    srs.unshiftKeys(back);
+    for (const k of dropped) srs.requeue(k);
+    renderRail();
+    if (screen === 'card' || screen === 'end') nextCard();
+    renderScope();
+    if (view === 'words') renderList();
+  });
 }
 
 // Пачка из шести пар — и разминка в начале обычного занятия, и единица работы
@@ -932,18 +1077,25 @@ function pulseSeg(box) {
 
 // Активные и выученные вперемешку — это терпимо на семидесяти словах и каша на пятистах.
 // Поэтому список всегда показывает что-то одно, а «Все» остаётся отдельным выбором.
-let listScope = 'active'; // 'active' | 'arch' | 'all'
+let listScope = 'active'; // 'active' | 'hard' | 'arch' | 'all'
 
-const SCOPE_LABEL = { active: 'Активные', arch: 'Архив', all: 'Все' };
+const SCOPE_LABEL = { active: 'Активные', hard: 'Трудные', arch: 'Архив', all: 'Все' };
 
 function renderScope() {
   const words = activeWords();
   const archived = words.filter((w) => srs.isArchived(w.id)).length;
-  const counts = { active: words.length - archived, arch: archived, all: words.length };
+  const hard = srs.hardWordIds();
+  const hardCount = words.filter((w) => hard.has(w.id)).length;
+  const counts = { active: words.length - archived, hard: hardCount, arch: archived, all: words.length };
+  // Трудных обычно нет, и пустая кнопка была бы шумом. Последнее трудное ушло,
+  // пока список был открыт на них, — возвращаемся к активным.
+  if (listScope === 'hard' && !hardCount) listScope = 'active';
 
   replace(
     $('list-scope'),
-    Object.keys(SCOPE_LABEL).map((key) =>
+    Object.keys(SCOPE_LABEL)
+      .filter((key) => key !== 'hard' || hardCount)
+      .map((key) =>
       el('button', {
         class: 'pill',
         text: SCOPE_LABEL[key] + ' · ' + counts[key],
@@ -975,83 +1127,227 @@ function syncCatFilter() {
   select.value = current;
 }
 
+// Строка в стиле iOS: слово и перевод слева, коробка справа, действия — за свайпом влево.
+// Раньше «в архив» и «удалить» стояли на каждой строке, и слово переносилось в три ряда:
+// двести сорок слов — это около ста двадцати экранов прокрутки. И удалить можно было
+// промахнувшись мимо галочки.
+//
+// Свайп — не единственный путь: нажатие на строку раскрывает те же действия. Свайп
+// не найти ни мышью, ни экранным чтецом, ни просто не зная о нём.
 function renderList() {
   syncCatFilter();
+  openItem = null;
   const q = (filterEl.value || '').toLowerCase().trim();
   const cat = $('filter-cat').value;
+  const hard = srs.hardWordIds();
   const items = activeWords()
-    .filter((w) => listScope === 'all' || srs.isArchived(w.id) === (listScope === 'arch'))
+    .filter((w) => inScope(w, hard))
     .filter((w) => !cat || w.cat === cat)
     .filter((w) => !q || (w.es + ' ' + w.ru).toLowerCase().includes(q))
-    .map((w) => {
-      const arch = srs.isArchived(w.id);
-      const check = el('input', { type: 'checkbox', class: 'pick', 'aria-label': 'Учить ' + w.es });
-      check.checked = session.picked.has(w.id);
-      check.addEventListener('change', () => {
-        if (check.checked) session.picked.add(w.id);
-        else session.picked.delete(w.id);
-        renderPickedBar();
-      });
+    .map((w) => listRow(w, hard.has(w.id)));
 
-      return el(
-        'div',
-        { class: 'item' + (arch ? ' arch' : '') + (w.flagged ? ' flagged' : '') },
-        pickHit(check),
-        el('div', { class: 'es', lang: 'es', text: (w.flagged ? '⚑ ' : '') + w.es }),
-        el('div', { class: 'box-tag', text: arch ? 'архив' : 'коробка ' + srs.wordBox(w.id) }),
-        el(
-          'button',
-          {
-            class: 'mini',
-            // Без имени слова VoiceOver читает «в архив, кнопка» на каждой строке подряд.
-            'aria-label': (arch ? 'Вернуть из архива: ' : 'В архив: ') + w.es,
-            onclick: () => {
-              srs.archiveWord(w.id, !arch);
-              renderScope();
-              renderList();
-              renderRail();
-            },
-          },
-          arch ? 'вернуть' : 'в архив',
-        ),
-        w.flagged
-          ? el(
-              'button',
-              {
-                class: 'mini',
-                'aria-label': 'Снять пометку: ' + w.es,
-                onclick: () => {
-                  flagWord(w.id, false);
-                  renderList();
-                },
-              },
-              'снять пометку',
-            )
-          : null,
-        el('div', { class: 'ru', text: w.ru }),
-        el(
-          'button',
-          {
-            class: 'mini danger',
-            'aria-label': 'Удалить: ' + w.es,
-            onclick: () => {
-              if (!confirm('Удалить «' + w.es + '»? Прогресс по слову тоже исчезнет.')) return;
-              deleteWord(w.id);
-              srs.buildQueue();
-              renderScope();
-              renderList();
-              renderRail();
-            },
-          },
-          'удалить',
-        ),
-      );
-    });
+  replace(listEl, items.length ? items : el('p', { class: 'list-empty', text: 'Ничего не нашлось.' }));
+}
 
-  replace(
-    listEl,
-    items.length ? items : el('div', { class: 'item' }, el('div', { class: 'ru', text: 'Ничего не нашлось.' })),
+function inScope(w, hard) {
+  if (listScope === 'all') return true;
+  const arch = srs.isArchived(w.id);
+  if (listScope === 'arch') return arch;
+  if (listScope === 'hard') return hard.has(w.id);
+  return !arch;
+}
+
+function listRow(w, hard) {
+  const arch = srs.isArchived(w.id);
+  const check = el('input', { type: 'checkbox', class: 'pick', 'aria-label': 'Учить ' + w.es });
+  check.checked = session.picked.has(w.id);
+  check.addEventListener('change', () => {
+    if (check.checked) session.picked.add(w.id);
+    else session.picked.delete(w.id);
+    renderPickedBar();
+  });
+
+  const actions = el(
+    'div',
+    { class: 'item-actions' },
+    w.flagged
+      ? el('button', { class: 'act act-plain', onclick: () => listUnflag(w) }, 'Снять пометку')
+      : null,
+    el('button', { class: 'act act-arch', onclick: () => listArchive(w, !arch) }, arch ? 'Вернуть' : 'В архив'),
+    el('button', { class: 'act act-del', onclick: () => listDelete(w) }, 'Удалить'),
   );
+
+  const tag = arch ? 'архив' : hard ? 'трудное' : 'коробка ' + srs.wordBox(w.id);
+  return el(
+    'div',
+    {
+      class: 'item' + (arch ? ' arch' : '') + (w.flagged ? ' flagged' : '') + (hard ? ' hard' : ''),
+      dataset: { id: w.id },
+    },
+    actions,
+    el(
+      'div',
+      { class: 'item-main' },
+      pickHit(check),
+      el(
+        'button',
+        { class: 'item-body', 'aria-expanded': 'false' },
+        el('span', { class: 'es', lang: 'es', text: (w.flagged ? '⚑ ' : '') + w.es }),
+        el('span', { class: 'ru', text: w.ru }),
+      ),
+      el('span', { class: 'box-tag', text: tag }),
+    ),
+  );
+}
+
+// Открытой может быть одна строка за раз, как в iOS.
+let openItem = null;
+
+function setOpen(item, on) {
+  if (on && openItem && openItem !== item) setOpen(openItem, false);
+  const actions = item.querySelector('.item-actions');
+  item.classList.toggle('open', on);
+  item.querySelector('.item-body').setAttribute('aria-expanded', String(on));
+  if (on) item.style.setProperty('--open', -actions.offsetWidth + 'px');
+  if (on) {
+    openItem = item;
+    hideSwipeHint(true);
+  }
+  else if (openItem === item) openItem = null;
+}
+
+// Подсказка про свайп нужна, пока жест не найден. Открыл строку хоть раз — больше
+// не показываем. Это удобство одного устройства, поэтому localStorage, а не состояние.
+const HINT_KEY = 'palabras.swipeHint';
+
+function hideSwipeHint(remember) {
+  let seen = remember;
+  try {
+    if (remember) localStorage.setItem(HINT_KEY, '1');
+    else seen = localStorage.getItem(HINT_KEY) === '1';
+  } catch (e) {
+    /* хранилище закрыто — подсказка просто останется */
+  }
+  if (seen) $('list-hint').classList.add('hidden');
+}
+
+// Свайп влево открывает действия, вправо — закрывает. Слушаем весь список, а не каждую
+// строку: строк сотни. Мышью не тянем — у неё есть нажатие.
+function bindSwipe() {
+  const SLOP = 10; // столько пикселей движения ещё считается касанием, а не жестом
+  let drag = null;
+  let blockClickUntil = 0;
+  let blockClickIn = null;
+
+  listEl.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'mouse') return;
+    const main = e.target.closest('.item-main');
+    if (!main) return;
+    const item = main.parentNode;
+    const width = item.querySelector('.item-actions').offsetWidth;
+    drag = {
+      item,
+      main,
+      width,
+      x: e.clientX,
+      y: e.clientY,
+      base: item.classList.contains('open') ? -width : 0,
+      offset: 0,
+      active: false,
+    };
+  });
+
+  listEl.addEventListener('pointermove', (e) => {
+    if (!drag) return;
+    const dx = e.clientX - drag.x;
+    const dy = e.clientY - drag.y;
+    if (!drag.active) {
+      // Вертикальное движение — это прокрутка списка, её не трогаем.
+      if (Math.abs(dy) > SLOP && Math.abs(dy) > Math.abs(dx)) {
+        drag = null;
+        return;
+      }
+      if (Math.abs(dx) < SLOP) return;
+      drag.active = true;
+      if (openItem && openItem !== drag.item) setOpen(openItem, false);
+      drag.item.style.setProperty('--open', -drag.width + 'px');
+      drag.item.classList.add('dragging');
+    }
+    // Чуть дальше кнопок тянется с сопротивлением, дальше не идёт.
+    drag.offset = Math.min(0, Math.max(-drag.width * 1.25, drag.base + dx));
+    drag.main.style.transform = 'translateX(' + drag.offset + 'px)';
+  });
+
+  const finish = () => {
+    if (!drag) return;
+    if (drag.active) {
+      drag.item.classList.remove('dragging');
+      drag.main.style.transform = '';
+      setOpen(drag.item, drag.offset < -drag.width / 2);
+      // За жестом браузер присылает click — он не должен тут же переключить строку обратно.
+      // Только в самой строке: кнопки действий под ней должны нажиматься сразу.
+      blockClickUntil = performance.now() + 400;
+      blockClickIn = drag.main;
+    }
+    drag = null;
+  };
+  listEl.addEventListener('pointerup', finish);
+  listEl.addEventListener('pointercancel', finish);
+
+  listEl.addEventListener(
+    'click',
+    (e) => {
+      if (performance.now() < blockClickUntil && blockClickIn && blockClickIn.contains(e.target)) {
+        e.stopPropagation();
+        e.preventDefault();
+      }
+    },
+    true,
+  );
+  listEl.addEventListener('click', (e) => {
+    const body = e.target.closest('.item-body');
+    if (!body) return;
+    const item = body.closest('.item');
+    setOpen(item, !item.classList.contains('open'));
+  });
+
+  // Касание мимо открытой строки закрывает её.
+  document.addEventListener('pointerdown', (e) => {
+    if (openItem && !openItem.contains(e.target)) setOpen(openItem, false);
+  });
+}
+
+// Действия из списка — без confirm, но с тостом «Отменить». Системный confirm
+// выдёргивает из списка и на каждое удаление требует второго касания в другом месте экрана.
+function listArchive(w, on) {
+  const snap = srs.snapshotWord(w.id);
+  srs.archiveWord(w.id, on);
+  afterListChange();
+  toast(on ? '«' + w.es + '» в архиве' : '«' + w.es + '» снова учится', () => {
+    srs.restoreWord(w.id, snap);
+    afterListChange();
+  });
+}
+
+function listDelete(w) {
+  deleteWord(w.id);
+  srs.dropWord(w.id);
+  afterListChange();
+  toast('«' + w.es + '» удалено', () => {
+    undeleteWord(w.id);
+    afterListChange();
+  });
+}
+
+function listUnflag(w) {
+  flagWord(w.id, false);
+  renderList();
+}
+
+function afterListChange() {
+  renderScope();
+  renderList();
+  renderRail();
 }
 
 function renderPickedBar() {
@@ -1078,6 +1374,17 @@ function bindWordsView() {
 
   $('filter-cat').addEventListener('change', renderList);
 
+  $('btn-add-open').addEventListener('click', () => setAddOpen($('add-form').classList.contains('hidden')));
+
+  // Enter в первом поле ведёт во второе, во втором — добавляет: без мыши и без
+  // лишнего касания по кнопке.
+  $('new-es').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') $('new-ru').focus();
+  });
+  $('new-ru').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') $('btn-add').click();
+  });
+
   $('btn-add').addEventListener('click', () => {
     const es = $('new-es').value.trim();
     const ru = $('new-ru').value.trim();
@@ -1088,17 +1395,28 @@ function bindWordsView() {
     addWord({ es, ru });
     $('new-es').value = '';
     $('new-ru').value = '';
-    setNote('Слово добавлено.');
-    srs.buildQueue();
+    // Форма остаётся открытой: слова обычно добавляют пачкой.
+    $('new-es').focus();
+    setNote('Добавлено: ' + es + '.');
     renderScope();
     renderList();
     renderRail();
   });
 
+  bindSwipe();
+  hideSwipeHint(false);
+
   $('btn-export').addEventListener('click', () => exportDeck());
   $('btn-import').addEventListener('click', () => $('file-input').click());
   $('file-input').addEventListener('change', importDeck);
   $('btn-reset').addEventListener('click', resetProgress);
+}
+
+function setAddOpen(on) {
+  $('add-form').classList.toggle('hidden', !on);
+  $('btn-add-open').setAttribute('aria-expanded', String(on));
+  if (on) $('new-es').focus();
+  else setNote('');
 }
 
 // Сообщения о колоде пишутся там, откуда нажали: добавление — в «Словах»,
@@ -1202,6 +1520,13 @@ function showView(which) {
     renderScope();
     renderList();
     renderPickedBar();
+    if (!activeWords().length) setAddOpen(true);
+  }
+  // Пока занятие не начато, его можно собрать заново: в «Словах» могли добавить,
+  // удалить или убрать в архив. Начатое на паузе не трогаем — «Продолжить» вернёт его.
+  if (which === 'learn' && screen === 'home') {
+    if (!resume) prepareSession();
+    renderHome();
   }
   if (which === 'rules') renderRules();
 }
@@ -1318,6 +1643,8 @@ async function init() {
   bindGoalChoice();
   applyLessonSize();
   bindWordsView();
+  bindSpeech();
+  bindToast();
   bindKeyboard();
   for (const name of VIEWS) {
     $('tab-' + name).addEventListener('click', () => showView(name));
@@ -1335,10 +1662,13 @@ async function init() {
   if (!firstRun) {
     mergeSeed().then((added) => {
       if (!added) return;
-      srs.buildQueue();
       renderRail();
-      // На старте и в итоге — пересчитать, что теперь ждёт. Посреди занятия экран не трогаем.
-      if (screen === 'home' || screen === 'end') renderHome();
+      // На несобранном старте — пересобрать с новыми словами. Посреди занятия и на паузе
+      // очередь не трогаем: пересборка подменила бы оставшиеся слова другими.
+      if (screen === 'home' && !resume) {
+        prepareSession();
+        renderHome();
+      }
       if (view === 'words') renderList();
     });
   }

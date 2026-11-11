@@ -109,7 +109,7 @@ function freshState() {
     deviceId: uuid(),
     words: [],
     cards: {},
-    settings: { theme: 'auto', goal: 20 },
+    settings: { theme: 'auto', goal: 20, newPerDay: 20, autoSpeak: false },
     stats: { day: today(), done: 0 },
   };
 }
@@ -146,6 +146,8 @@ function migrate(raw) {
   if (!s.settings) s.settings = {};
   if (!s.settings.theme) s.settings.theme = 'auto';
   if (typeof s.settings.goal !== 'number') s.settings.goal = 20;
+  if (typeof s.settings.newPerDay !== 'number') s.settings.newPerDay = 20;
+  if (typeof s.settings.autoSpeak !== 'boolean') s.settings.autoSpeak = false;
   if (!s.stats) s.stats = { day: today(), done: 0 };
   return s;
 }
@@ -241,6 +243,18 @@ export function deleteWord(id) {
   const w = wordById(id);
   if (!w) return;
   w.deleted = true;
+  w.updated = now();
+  bumpDeck();
+  save();
+}
+
+// «Отменить» в тосте после удаления. Это не воскрешение из колоды, против которого
+// стоят tombstone: пользователь передумал через секунду, и прогресс никуда не делся —
+// карточки удалённого слова лежат на месте.
+export function undeleteWord(id) {
+  const w = wordById(id);
+  if (!w) return;
+  w.deleted = false;
   w.updated = now();
   bumpDeck();
   save();

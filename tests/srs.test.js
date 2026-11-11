@@ -736,3 +736,104 @@ test('лимит занятия не съедает подмешанные вы�
   assert.ok(archived.length <= srs.MAX_ARCHIVE_MIX);
   srs.setSession({});
 });
+
+// ---------------------------------------------------------------------------
+// трудные слова, лимит новых, отмена
+// ---------------------------------------------------------------------------
+
+test('трудное слово: четыре промаха в разные дни, не больше одного в день', () => {
+  resetDeck();
+  const w = makeWord('la trampa', 'ловушка');
+  const key = w.id + '|ru';
+  srs.grade(key, 'type', false);
+  srs.grade(key, 'type', false);
+  srs.grade(key, 'type', false);
+  assert.equal(state.cards[key].lapses, 1, 'три промаха за день — один промах');
+  assert.equal(srs.isHard(w.id), false);
+
+  // Промахи в другие дни подделываем сдвигом даты последнего промаха.
+  for (let i = 0; i < 3; i++) {
+    state.cards[key].lapseDay = '2000-01-0' + (i + 1);
+    srs.grade(key, 'type', false);
+  }
+  assert.equal(state.cards[key].lapses, 4);
+  assert.equal(srs.isHard(w.id), true);
+  assert.ok(srs.hardWordIds().has(w.id));
+
+  // «Пары» трудным не делают: там промахи пальцем.
+  const m = makeWord('el dedo', 'палец');
+  for (let i = 0; i < 6; i++) {
+    state.cards[m.id + '|es'].lapseDay = '';
+    srs.grade(m.id + '|es', 'match', false);
+  }
+  assert.equal(srs.isHard(m.id), false);
+
+  // Дошло до архива — уже не трудное.
+  srs.archiveWord(w.id, true);
+  assert.equal(srs.isHard(w.id), false);
+});
+
+test('занятие «трудные» берёт только трудные слова и без оглядки на срок', () => {
+  resetDeck();
+  const hard = makeWord('difícil', 'трудный');
+  makeWord('fácil', 'лёгкий');
+  state.cards[hard.id + '|es'].lapses = srs.LEECH;
+  state.cards[hard.id + '|es'].due = addDays(10);
+  state.cards[hard.id + '|ru'].due = addDays(10);
+  const n = srs.buildQueue({ source: 'hard', size: 0, modes: new Set() });
+  assert.equal(n, 2);
+  for (let i = 0; i < n; i++) assert.ok(srs.nextKey().startsWith(hard.id + '|'));
+  srs.setSession({});
+});
+
+test('лимит новых слов в день: в обычное занятие не больше остатка лимита', () => {
+  resetDeck();
+  const saved = state.settings.newPerDay;
+  state.settings.newPerDay = 5;
+  for (let i = 0; i < 12; i++) makeWord('nuevo' + i, 'новое' + i);
+  const old = makeWord('viejo', 'старое');
+  // Старое слово уже спрашивали вчера — это повторение, а не новое.
+  for (const d of ['|es', '|ru']) Object.assign(state.cards[old.id + d], { seen: addDays(-1), box: 2, due: today() });
+
+  assert.deepEqual(srs.todayCounts(), { review: 1, fresh: 5 });
+  assert.equal(srs.dueWordCount(), 6, 'новые сверх лимита сегодня не ждут');
+
+  srs.buildQueue({ source: 'due', size: 0, modes: new Set() });
+  assert.equal(srs.sessionWords().length, 6, 'пять новых и одно повторение');
+
+  // Ответил на два новых слова — лимит на сегодня уменьшился на два.
+  const ids = srs.sessionWords().filter((w) => w.id !== old.id).slice(0, 2).map((w) => w.id);
+  for (const id of ids) srs.grade(id + '|es', 'flip', true);
+  assert.equal(srs.newLeftToday(), 3);
+
+  // Случайные лимитом не режутся: их заказали руками.
+  assert.equal(srs.buildQueue({ source: 'random', size: 0, modes: new Set() }), 26);
+
+  state.settings.newPerDay = 0;
+  assert.equal(srs.newLeftToday(), Infinity, '0 — без лимита');
+  state.settings.newPerDay = saved;
+  srs.setSession({});
+});
+
+test('«в архив» посреди занятия не перетасовывает очередь, а «Отменить» всё возвращает', () => {
+  resetDeck();
+  const words = [];
+  for (let i = 0; i < 6; i++) words.push(makeWord('palabra' + i, 'слово' + i));
+  srs.buildQueue({ source: 'due', size: 0, modes: new Set() });
+  const first = srs.nextKey();
+  const id = first.split('|')[0];
+  const before = srs.sessionWords().map((w) => w.id).filter((x) => x !== id);
+
+  const snap = srs.snapshotWord(id);
+  const dropped = srs.archiveWord(id, true);
+  assert.equal(dropped.length, 1, 'вторая карточка слова ушла из очереди');
+  assert.deepEqual(srs.sessionWords().map((w) => w.id), before, 'остальные слова и порядок на месте');
+
+  srs.restoreWord(id, snap);
+  srs.unshiftKeys([first]);
+  for (const k of dropped) srs.requeue(k);
+  assert.equal(srs.isArchived(id), false);
+  assert.equal(state.cards[first].box, 1);
+  assert.equal(srs.nextKey(), first, 'отменённая карточка возвращается первой');
+  srs.setSession({});
+});
