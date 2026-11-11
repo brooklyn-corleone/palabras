@@ -186,31 +186,11 @@ function sessionSummary() {
 
 const BG = { light: '#F7F7F6', dark: '#121312' };
 
-function isDark(theme) {
-  return theme === 'dark' || (theme === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
-}
-
-function applyTheme(theme) {
-  document.documentElement.dataset.theme = theme;
-  // На Android шапка браузера красится этим мета-тегом и сама за темой не следит.
+// На Android шапка браузера красится мета-тегом theme-color и сама за системной темой
+// не следит. Цвета страницы переключает CSS, а мета-тег — только отсюда.
+function applyTheme() {
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.content = isDark(theme) ? BG.dark : BG.light;
-  for (const btn of document.querySelectorAll('[data-theme-choice]')) {
-    btn.setAttribute('aria-pressed', String(btn.dataset.themeChoice === theme));
-  }
-}
-
-function setTheme(theme) {
-  state.settings.theme = theme;
-  save();
-  // Зеркало для инлайн-скрипта в index.html: он ставит тему до первой отрисовки,
-  // а IndexedDB синхронно не прочитать.
-  try {
-    localStorage.setItem('palabras.theme', theme);
-  } catch (e) {
-    /* приватный режим — обойдёмся без мгновенной темы */
-  }
-  applyTheme(theme);
+  if (meta) meta.content = matchMedia('(prefers-color-scheme: dark)').matches ? BG.dark : BG.light;
 }
 
 // ---------------------------------------------------------------------------
@@ -338,13 +318,8 @@ function bindGoalChoice() {
 }
 
 function bindTheme() {
-  for (const btn of document.querySelectorAll('[data-theme-choice]')) {
-    btn.addEventListener('click', () => setTheme(btn.dataset.themeChoice));
-  }
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-    if (state.settings.theme === 'auto') applyTheme('auto');
-  });
-  applyTheme(state.settings.theme || 'auto');
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+  applyTheme();
 }
 
 // ---------------------------------------------------------------------------
@@ -1218,22 +1193,35 @@ function renderRail() {
         ),
       ),
   );
-  railNote.textContent = '';
+  // Отрезки — только рисунок, подписи у них в легенде и в общей подписи кнопки.
+  // Пустая стадия остаётся еле заметной чёрточкой: место под неё видно, шума нет.
   replace(
     railEl,
     segments.map((s) =>
-      el('button', {
-        class:
-          'seg' + (s.key === 'arch' ? ' seg-arch' : '') + (s.count === 0 ? ' is-empty' : ''),
+      el('span', {
+        class: 'seg' + (s.key === 'arch' ? ' seg-arch' : '') + (s.count === 0 ? ' is-empty' : ''),
         dataset: { box: s.key },
         style: 'flex-grow:' + s.count,
-        'aria-label': s.label + ': ' + s.count,
-        onclick: () => {
-          railNote.textContent = s.label + ' · ' + s.count + ' · ' + s.sub;
-        },
       }),
     ),
   );
+  const shown = segments.filter((s) => s.count);
+  railEl.setAttribute(
+    'aria-label',
+    'Колода: ' + shown.map((s) => s.label.toLowerCase() + ' ' + s.count).join(', ') + '. Показать сроки стадий',
+  );
+  railDetails = shown.map((s) => s.label + ' — ' + s.sub).join(' · ');
+  if (railEl.getAttribute('aria-expanded') === 'true') railNote.textContent = railDetails;
+}
+
+let railDetails = '';
+
+function bindRail() {
+  railEl.addEventListener('click', () => {
+    const open = railEl.getAttribute('aria-expanded') !== 'true';
+    railEl.setAttribute('aria-expanded', String(open));
+    railNote.textContent = open ? railDetails : '';
+  });
 }
 
 function pulseSeg(box) {
@@ -1268,16 +1256,23 @@ function renderScope() {
     Object.keys(SCOPE_LABEL)
       .filter((key) => key !== 'hard' || hardCount)
       .map((key) =>
-      el('button', {
-        class: 'pill',
-        text: SCOPE_LABEL[key] + ' · ' + counts[key],
-        'aria-pressed': String(listScope === key),
-        onclick: () => {
-          listScope = key;
-          renderScope();
-          renderList();
+      el(
+        'button',
+        {
+          class: 'pill scope-pill',
+          'aria-label': SCOPE_LABEL[key] + ', ' + counts[key],
+          'aria-pressed': String(listScope === key),
+          onclick: () => {
+            listScope = key;
+            renderScope();
+            renderList();
+          },
         },
-      }),
+        // На телефоне число уходит под подпись, и разделитель прячется — см. styles.css.
+        el('span', { text: SCOPE_LABEL[key] }),
+        el('span', { class: 'scope-sep', 'aria-hidden': 'true', text: ' · ' }),
+        el('span', { class: 'scope-n', text: String(counts[key]) }),
+      ),
     ),
   );
 }
@@ -2196,6 +2191,7 @@ async function init() {
   renderWho();
   $('btn-profile').addEventListener('click', switchProfile);
   bindTheme();
+  bindRail();
 
   // Первый запуск: без колоды показывать нечего, поэтому ждём её.
   // На последующих запусках пополняем в фоне, чтобы не задерживать первую карточку.

@@ -35,26 +35,14 @@
   --tabbar-h: 0px;
 }
 
-:root[data-theme="dark"]{
-  --bg:      #121312;
-  --surface: #1B1C1B;
-  --text:    #EDEDEA;
-  --muted:   #92938F;
-  --line:    #2A2B29;
-  --line-strong: #646562;
-  --fill:       rgba(235,235,228,.09);
-  --fill-hover: rgba(235,235,228,.15);
-  --accent:  #7FA88A;
-  --ok:      #7FA88A;
-  --err:     #D08B80;
-
-  --ok-soft:  rgba(127,168,138,.13);
-  --err-soft: rgba(208,139,128,.13);
-  --mark:     rgba(127,168,138,.26);
-}
+/* Тема — только системная (HIG, Dark Mode: «Avoid an app-specific appearance setting»).
+   Свой переключатель заставлял держать в голове две настройки, а «Светлая», выбранная
+   днём, вечером выглядела как сломанный тёмный режим. color-scheme перекрашивает
+   и родные элементы: флажки, списки, полосы прокрутки. */
+:root{color-scheme:light dark}
 
 @media (prefers-color-scheme: dark){
-  :root[data-theme="auto"]{
+  :root{
     --bg:      #121312;
     --surface: #1B1C1B;
     --text:    #EDEDEA;
@@ -69,7 +57,7 @@
 
     --ok-soft:  rgba(127,168,138,.13);
     --err-soft: rgba(208,139,128,.13);
-  --mark:     rgba(127,168,138,.26);
+    --mark:     rgba(127,168,138,.26);
   }
 }
 
@@ -287,7 +275,7 @@ input[type=text]:focus{outline:none;border-bottom-color:var(--accent)}
 .btn.ghost{background:var(--fill);color:var(--text);border-color:transparent}
 .btn.good{background:var(--ok);border-color:var(--ok);color:var(--bg)}
 .btn.bad{background:none;color:var(--err);border-color:var(--err)}
-.btn:focus-visible,nav button:focus-visible,.seg:focus-visible,.mini:focus-visible,
+.btn:focus-visible,nav button:focus-visible,.mini:focus-visible,
 .option:focus-visible,.chip:focus-visible,.pair:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 kbd{
   font:inherit;font-size:.647rem;font-weight:500;letter-spacing:.04em;
@@ -379,6 +367,7 @@ body.in-session .toast{bottom:auto;top:calc(12px + env(safe-area-inset-top))}
 
 /* Переключатель «Активные / Архив / Все» над списком слов. */
 .list-scope{margin-bottom:16px}
+.scope-pill{display:inline-flex;align-items:center}
 
 /* Над списком: сколько слов и «Выбрать». Панель режима выбора прилипает к низу,
    над вкладками, — действия в зоне большого пальца, как панель инструментов iOS. */
@@ -474,21 +463,17 @@ input.pick{
    элемент интерфейса, поэтому всё вокруг него должно молчать. */
 .rail-block{margin-top:32px}
 .rail-head{margin-bottom:-12px}
-.rail{display:flex;gap:2px;align-items:center}
-.seg{
-  /* content-box здесь обязателен: при глобальном border-box вертикальные отступы
-     съедают высоту, содержимое схлопывается в ноль и полоса просто не рисуется.
-     Отступы нужны, чтобы у шкалы толщиной 6px была человеческая зона нажатия. */
-  box-sizing:content-box;
-  flex-grow:0;flex-basis:0;min-width:8px;
-  height:6px;padding:19px 0; /* 6 + 2×19 = 44: минимум HIG */
-  border:0;
-  background-color:var(--muted);
-  background-clip:content-box;
+.rail{
+  display:flex;gap:2px;align-items:center;width:100%;
+  min-height:44px;padding:0;border:0;background:none; /* 44 — минимум HIG по высоте */
   cursor:pointer;touch-action:manipulation;
+}
+.rail:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--radius)}
+.seg{
+  flex-grow:0;flex-basis:0;min-width:8px;height:6px;
+  background-color:var(--muted);
   transition:background-color .25s, transform .25s;
 }
-/* Пустая коробка остаётся еле заметной чёрточкой: место под неё видно, шума нет. */
 /* Стадии от бледного к акценту: шкала читается как «сколько уже выучено» и без легенды.
    Без color-mix (старый Safari) все сегменты остаются серыми, как было. */
 .seg[data-box="new"],.rail-legend [data-box="new"] i{background-color:var(--line-strong);background-color:color-mix(in srgb,var(--muted) 35%,transparent)}
@@ -803,11 +788,12 @@ input.filter:focus{outline:none;border-bottom-color:var(--accent)}
   .end-archive .row{position:static;background:none;padding-bottom:0}
   .keys{display:none}
   .add{grid-template-columns:1fr;gap:0}
-  /* «Активные · Трудные · Архив · Все» — одной строкой с прокруткой: в два ряда
-     на iPhone SE они съедали место трёх слов списка. */
-  .list-scope{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-right:-18px;padding-right:18px}
-  .list-scope::-webkit-scrollbar{display:none}
-  .list-scope .pill{flex-shrink:0}
+  /* «Активные · Трудные · Архив · Все» — одной строкой, как сегменты: число под подписью.
+     Раньше ряд прокручивался вбок со спрятанной полосой и обрезался у края: что «Все»
+     вообще есть, было не видно. Не влезают при крупном тексте — переносятся, а не режутся. */
+  .list-scope .pill{flex:1 1 auto;flex-direction:column;justify-content:center;padding:4px 10px;line-height:1.2}
+  .list-scope .scope-sep{display:none}
+  .list-scope .scope-n{font-size:.765rem;font-weight:400;opacity:.75;font-variant-numeric:tabular-nums}
   .filter-cat{max-width:40%}
   .add .btn{margin-top:16px;width:100%;justify-content:center}
 }
