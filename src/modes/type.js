@@ -1,8 +1,8 @@
 // Режим type — ввод текста, RU→ES. Активное воспроизведение: единственный режим,
 // который поднимает карточку в коробки 4 и 5 (см. MAX_BOX в srs.js).
 
-import { el, replace } from '../dom.js';
-import { judge, accentMarks } from '../srs.js';
+import { el, replace, announce } from '../dom.js';
+import { judge, accentMarks, diffMarks, ALMOST_CAP } from '../srs.js';
 
 const DIR_LABEL = 'Русский → Испанский';
 
@@ -76,42 +76,80 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
   // ---- разбор ответа --------------------------------------------------------
   function reveal(verdict, typed) {
     const correct = verdict !== 'no';
-    const marks = verdict === 'accent' ? accentMarks(typed, word.es) : null;
+    const shown = typed.trim();
+    // Подсветка: при ударении — пропущенный знак, при опечатке и близком промахе —
+    // где именно разошлось. Набранное показываем при любом расхождении, кроме ударения:
+    // там подсвечена сама буква, а без своего ответа перед глазами не видно ошибки.
+    const diff = shown && (verdict === 'almost' || verdict === 'no') ? diffMarks(shown, word.es) : null;
+    const marks = verdict === 'accent' ? accentMarks(typed, word.es) : diff ? diff.missing : null;
     const label = {
       ok: 'Верно',
       accent: accentLabel(marks),
       almost: 'Почти — опечатка',
       no: 'Правильный ответ',
     }[verdict];
-    // Набранное показываем при любом расхождении, кроме ударения: там подсвечена сама
-    // буква, а без своего ответа перед глазами не видно, в чём именно была ошибка.
-    const shown = typed.trim();
+    // Опечатка засчитана, но пятая коробка — только за точное написание.
+    const opts = verdict === 'almost' ? { cap: ALMOST_CAP } : undefined;
+
+    const box = el(
+      'div',
+      { class: 'verdict ' + (correct ? 'ok' : 'no') },
+      el('span', { class: 'lbl', text: label }),
+      answerText(marks),
+      shown && (verdict === 'almost' || verdict === 'no') ? typedLine(shown, diff) : null,
+    );
+
+    // «Засчитать» — для синонима или формы, которой нет в колоде. Как в Anki и
+    // Clozemaster: решает пользователь, приложение честно показало расхождение.
+    // Только при непустом ответе: «Не знаю» засчитывать нечего.
+    if (verdict === 'no' && shown) {
+      box.append(
+        el(
+          'button',
+          {
+            class: 'mini accept',
+            onclick: () => onAnswer(true),
+          },
+          'Засчитать мой ответ',
+        ),
+      );
+    }
 
     replace(
       root,
       head(),
       el('div', { class: 'prompt', text: word.ru }),
-      el(
-        'div',
-        { class: 'verdict ' + (correct ? 'ok' : 'no') },
-        el('span', { class: 'lbl', text: label }),
-        answerText(marks),
-        shown && (verdict === 'almost' || verdict === 'no')
-          ? el('span', { class: 'typed' }, 'ваш ответ: ', el('span', { lang: 'es', text: shown }))
-          : null,
-      ),
+      box,
       el(
         'div',
         { class: 'row' },
         el(
           'button',
-          { class: 'btn', dataset: { key: 'enter' }, onclick: () => onAnswer(correct) },
+          { class: 'btn', dataset: { key: 'enter' }, onclick: () => onAnswer(correct, opts) },
           'Дальше',
           el('kbd', { text: 'Enter' }),
         ),
       ),
     );
+    announce(label + ': ' + word.es + (shown && !correct ? '. Ваш ответ: ' + shown : ''));
     root.querySelector('[data-key="enter"]').focus();
+  }
+
+  // Набранный ответ. Если он похож на правильный, зачёркнуты только расходящиеся буквы,
+  // иначе — весь целиком.
+  function typedLine(shown, diff) {
+    if (!diff) return el('span', { class: 'typed' }, 'ваш ответ: ', el('span', { lang: 'es', text: shown }));
+    const chars = [...shown.normalize('NFC')];
+    return el(
+      'span',
+      { class: 'typed diff' },
+      'ваш ответ: ',
+      el(
+        'span',
+        { lang: 'es' },
+        chars.map((ch, i) => (diff.typed.has(i) ? el('del', { text: ch }) : ch)),
+      ),
+    );
   }
 
   // «С ударением» про пропущенную тильду — неправда, а ñ стоит назвать отдельно:

@@ -501,6 +501,55 @@ export function accentMarks(input, target) {
   return marks;
 }
 
+// Посимвольное сравнение набранного с правильным — для «почти» и близких промахов.
+// Возвращает индексы в input.normalize('NFC') (лишние или неверные буквы) и в
+// target.normalize('NFC') (пропущенные), либо null, если ответ на правильный не похож:
+// в «perro» вместо «gato» подсветка каждой буквы ничего не объясняет.
+// Сравниваем по общей подпоследовательности: одна вставленная буква не должна
+// окрашивать весь хвост слова, как при сравнении позиция в позицию.
+export function diffMarks(input, target) {
+  const a = [...(input || '').normalize('NFC').toLowerCase()];
+  const b = [...(target || '').normalize('NFC').toLowerCase()];
+  const na = norm(input);
+  const nb = norm(target);
+  if (!na || lev(na, nb) > Math.max(2, Math.ceil(nb.length / 3))) return null;
+
+  // Артикль необязателен, так что «la» в одном из ответов — не ошибка.
+  const skip = (chars) => {
+    const m = chars.join('').match(/^\s*(el|la|los|las|un|una)\s+/);
+    return m ? [...m[0]].length : 0;
+  };
+  const sa = skip(a);
+  const sb = skip(b);
+  const x = a.slice(sa);
+  const y = b.slice(sb);
+
+  // Таблица длин LCS, затем обратный проход: что не попало в общую часть — расхождение.
+  const L = Array.from({ length: x.length + 1 }, () => new Array(y.length + 1).fill(0));
+  for (let i = x.length - 1; i >= 0; i--) {
+    for (let j = y.length - 1; j >= 0; j--) {
+      L[i][j] = x[i] === y[j] ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]);
+    }
+  }
+  const typed = new Set();
+  const missing = new Set();
+  let i = 0;
+  let j = 0;
+  while (i < x.length || j < y.length) {
+    if (i < x.length && j < y.length && x[i] === y[j]) {
+      i++;
+      j++;
+    } else if (j >= y.length || (i < x.length && L[i + 1][j] >= L[i][j + 1])) {
+      if (LETTER.test(x[i])) typed.add(sa + i);
+      i++;
+    } else {
+      if (LETTER.test(y[j])) missing.add(sb + j);
+      j++;
+    }
+  }
+  return { typed, missing };
+}
+
 // ---------------------------------------------------------------------------
 // оценка карточки
 // ---------------------------------------------------------------------------
@@ -538,8 +587,13 @@ export function archiveWords(ids, on) {
   buildQueue();
 }
 
+// Потолок для ответа с опечаткой: см. opts.cap в grade.
+export const ALMOST_CAP = 4;
+
 // Возвращает { box, arch, counted } — что показать в шкале и считать ли в дневную цель.
-export function grade(key, mode, correct) {
+// opts.cap — потолок для одного ответа ниже потолка режима: «почти — опечатка» засчитывается,
+// но пятая коробка требует точного написания.
+export function grade(key, mode, correct, opts = {}) {
   const c = state.cards[key];
   if (!c) return null;
 
@@ -558,7 +612,8 @@ export function grade(key, mode, correct) {
     return { box: c.box, arch: c.arch, counted: false, correct };
   }
 
-  const cap = MAX_BOX[mode] === undefined ? 5 : MAX_BOX[mode];
+  const modeCap = MAX_BOX[mode] === undefined ? 5 : MAX_BOX[mode];
+  const cap = Math.min(modeCap, opts.cap || 5);
   if (correct) {
     // Выше потолка режима карточка не поднимается, но и не опускается —
     // за верный ответ наказывать не за что.

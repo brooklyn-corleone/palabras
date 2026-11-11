@@ -1,8 +1,8 @@
 // Режим flip — карточка с переворотом, ES→RU. Узнавание с самооценкой.
-// Потолок режима — коробка 3: «вспомнил при виде слова» это не то же самое,
-// что вспомнить слово с нуля, и двигать выше по такому ответу нечестно.
+// Потолок режима — коробка 5: другого способа поднять es-карточку выше тройки нет
+// (почему — в CLAUDE.md, «Режимы и веса»).
 
-import { el, replace } from '../dom.js';
+import { el, replace, announce } from '../dom.js';
 
 const DIR_LABEL = 'Испанский → Русский';
 const HALF_FLIP = 120; // половина переворота, вторая половина доигрывается в CSS
@@ -76,7 +76,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
       el('div', { class: 'prompt', lang: 'es', text: word.es }),
       el(
         'div',
-        { class: 'verdict ok' },
+        { class: 'verdict neutral' },
         el('span', { class: 'lbl', text: 'Перевод' }),
         el('b', { text: word.ru }),
       ),
@@ -97,6 +97,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
         ),
       ),
     );
+    announce('Перевод: ' + word.ru);
   }
 
   ask();

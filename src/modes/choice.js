@@ -1,7 +1,7 @@
 // Режим choice — выбор из трёх вариантов. Самый лёгкий способ вспомнить слово,
 // поэтому потолок — коробка 3: узнавание среди вариантов ещё не значит знание.
 
-import { el, replace } from '../dom.js';
+import { el, replace, announce } from '../dom.js';
 import { pickDistractors } from '../srs.js';
 
 const OPTIONS = 3;
@@ -51,11 +51,14 @@ export function render({ word, card, dir, onAnswer, onArchive, onFlag, flagged: 
     answered = true;
     const correct = value === answer;
 
+    // Номер варианта меняем на ✓ / ✕: одним цветом рамки верное от неверного
+    // не отличить при дейтеранопии, а номер после ответа уже не нужен.
     for (const btn of root.querySelectorAll('.option')) {
       btn.disabled = true;
-      if (btn.dataset.value === answer) btn.classList.add('is-right');
+      if (btn.dataset.value === answer) mark(btn, 'is-right', '✓', 'верно');
     }
-    if (!correct) button.classList.add('is-wrong');
+    if (!correct) mark(button, 'is-wrong', '✕', 'ваш ответ');
+    announce(correct ? 'Верно: ' + answer : 'Неверно. Правильный ответ: ' + answer);
 
     replace(
       root.querySelector('.row'),
@@ -71,6 +74,13 @@ export function render({ word, card, dir, onAnswer, onArchive, onFlag, flagged: 
       ),
     );
     root.querySelector('[data-key="enter"]').focus();
+  }
+
+  function mark(btn, cls, sign, spoken) {
+    btn.classList.add(cls);
+    const num = btn.querySelector('.option-num');
+    num.textContent = sign;
+    num.setAttribute('aria-label', spoken);
   }
 
   replace(

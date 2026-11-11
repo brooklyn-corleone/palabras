@@ -50,6 +50,9 @@ try {
   </div>
 
   <div class="stage" id="stage"></div>
+  <!-- Сюда пишется итог ответа для VoiceOver. Регион живёт постоянно: вставленный
+       вместе с текстом читается не всеми экранными чтецами. -->
+  <div class="sr-only" id="live" aria-live="polite" aria-atomic="true"></div>
 
   <div class="rail-block">
     <div class="rail" id="boxes"></div>

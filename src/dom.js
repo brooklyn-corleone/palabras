@@ -22,3 +22,15 @@ export function el(tag, props, ...children) {
 export function replace(parent, ...children) {
   parent.replaceChildren(...children.flat(Infinity).filter(Boolean));
 }
+
+// Итог ответа для экранного чтеца: после «Проверить» экран перерисовывается целиком,
+// и без этого незрячий пользователь не слышит, верно ли ответил. Очищаем и пишем
+// в следующем кадре — иначе одинаковый текст подряд («Верно», «Верно») не озвучится.
+export function announce(text) {
+  const live = document.getElementById('live');
+  if (!live) return;
+  live.textContent = '';
+  requestAnimationFrame(() => {
+    live.textContent = text;
+  });
+}

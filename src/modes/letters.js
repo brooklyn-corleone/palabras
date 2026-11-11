@@ -2,7 +2,7 @@
 // вводом: порядок букв вспоминать приходится самому, но алфавит подсказан.
 // Поэтому потолок — коробка 4, пятая остаётся за режимом type.
 
-import { el, replace } from '../dom.js';
+import { el, replace, announce } from '../dom.js';
 import { norm } from '../srs.js';
 
 const DIR_LABEL = 'Русский → Испанский';
@@ -188,6 +188,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
         ),
       ),
     );
+    announce((correct ? 'Верно: ' : 'Правильный ответ: ') + word.es);
     root.querySelector('[data-key="enter"]').focus();
   }
 

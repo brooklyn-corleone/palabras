@@ -449,7 +449,7 @@ function renderStage() {
       word,
       card,
       dir: currentKey.slice(currentKey.lastIndexOf('|') + 1),
-      onAnswer: (ok) => answer(mode, ok),
+      onAnswer: (ok, opts) => answer(mode, ok, opts),
       onArchive: card.arch
         ? null
         : () => {
@@ -686,8 +686,8 @@ function renderEmpty() {
   );
 }
 
-function answer(mode, correct) {
-  const res = srs.grade(currentKey, mode, correct);
+function answer(mode, correct, opts) {
+  const res = srs.grade(currentKey, mode, correct, opts);
   notes.countCard();
 
   // Слово, которое уже в архиве и там же осталось, в итоги не пишем: предлагать
@@ -882,6 +882,8 @@ function renderList() {
           'button',
           {
             class: 'mini',
+            // Без имени слова VoiceOver читает «в архив, кнопка» на каждой строке подряд.
+            'aria-label': (arch ? 'Вернуть из архива: ' : 'В архив: ') + w.es,
             onclick: () => {
               srs.archiveWord(w.id, !arch);
               renderScope();
@@ -896,6 +898,7 @@ function renderList() {
               'button',
               {
                 class: 'mini',
+                'aria-label': 'Снять пометку: ' + w.es,
                 onclick: () => {
                   flagWord(w.id, false);
                   renderList();
@@ -909,6 +912,7 @@ function renderList() {
           'button',
           {
             class: 'mini danger',
+            'aria-label': 'Удалить: ' + w.es,
             onclick: () => {
               if (!confirm('Удалить «' + w.es + '»? Прогресс по слову тоже исчезнет.')) return;
               deleteWord(w.id);

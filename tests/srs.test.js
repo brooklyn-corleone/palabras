@@ -94,6 +94,34 @@ test('accentMarks показывает буквы, где разошлась д�
   assert.deepEqual([...srs.accentMarks('teléfono', 'el teléfono')], []);
 });
 
+test('diffMarks: лишние буквы в ответе и пропущенные в правильном', () => {
+  // «casa» → «cassa»: лишняя s, остальное совпало, хвост не окрашен.
+  const extra = srs.diffMarks('cassa', 'la casa');
+  assert.equal(extra.typed.size, 1);
+  assert.deepEqual([...extra.missing], []);
+  // «ventna» → «la ventana»: пропущена a, индекс в правильном ответе с артиклем.
+  const miss = srs.diffMarks('ventna', 'la ventana');
+  assert.deepEqual([...miss.typed], []);
+  assert.deepEqual([...miss.missing], [7]);
+  // Артикль, который пользователь дописал или опустил, ошибкой не считается.
+  assert.deepEqual([...srs.diffMarks('el perro', 'perro').typed], []);
+  // Совсем другое слово — подсвечивать нечего.
+  assert.equal(srs.diffMarks('gato', 'perro'), null);
+  assert.equal(srs.diffMarks('', 'perro'), null);
+});
+
+test('опечатка засчитывается, но выше четвёртой коробки не поднимает', () => {
+  resetDeck();
+  const w = makeWord();
+  const key = w.id + '|ru';
+  for (const expected of [2, 3, 4, 4]) {
+    assert.equal(srs.grade(key, 'type', true, { cap: srs.ALMOST_CAP }).box, expected);
+  }
+  // Из пятой коробки опечатка не роняет: за верный ответ наказывать не за что.
+  assert.equal(srs.grade(key, 'type', true).box, 5);
+  assert.equal(srs.grade(key, 'type', true, { cap: srs.ALMOST_CAP }).box, 5);
+});
+
 test('type поднимает карточку до коробки 5 и там останавливается', () => {
   resetDeck();
   const w = makeWord();
