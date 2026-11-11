@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 11,
   "groups": {
     "presente": "Настоящее время",
     "irregulares": "Неправильные глаголы",
@@ -166,6 +166,16 @@
           "items": [
             "Yo tengo un gato.",
             "Ellos tienen una casa grande."
+          ]
+        },
+        {
+          "kind": "list",
+          "title": "Состояние — через tener",
+          "items": [
+            "tengo frío — мне холодно, tengo calor — мне жарко",
+            "tengo hambre — я голоден, tengo sed — я хочу пить",
+            "tengo sueño — я хочу спать, tengo prisa — я спешу",
+            "tengo miedo — мне страшно, tengo razón — я прав"
           ]
         },
         {
@@ -938,6 +948,12 @@
               "amarillo",
               "amarilla",
               "amarillos / amarillas"
+            ],
+            [
+              "фиолетовый",
+              "morado",
+              "morada",
+              "morados / moradas"
             ]
           ]
         },
@@ -1316,7 +1332,7 @@
     {
       "id": "doler-pronombres",
       "group": "presente",
-      "title": "Me duele — что у меня болит",
+      "title": "Me duele, me gusta — дательный падеж",
       "blocks": [
         {
           "kind": "text",

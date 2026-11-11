@@ -181,6 +181,104 @@ test('колода: испанское слово набирается из бу
   assert.equal(bad.length, 0, `больше ${LIMIT} букв:\n       ` + report(bad, (w) => `${w.id}: ${w.es}`));
 });
 
+// Аудит колоды нашёл класс ошибок, который прошлый тест пропускал: в подсказке
+// к jamás стояло «сильнее nunca», а nunca — это ответ ДРУГОЙ карточки. Проверка выше
+// сравнивает подсказку только с ответом своей карточки, поэтому такое проходило насквозь.
+// В Квизе оба слова могут оказаться рядом, и подсказка выдаёт ответ соседа.
+//
+// Если испанское слово в подсказке действительно нужно (контраст, а не второй вариант
+// ответа) — значит нужна и запись в этом списке, с объяснением почему.
+const FOREIGN_IN_HINT_OK = new Set([]);
+
+test('колода: подсказка не содержит ответа другой карточки', () => {
+  const answers = new Map(); // слово из чьего-то es → id карточек
+  for (const w of words) {
+    for (const tok of norm(w.es).match(/[a-záéíóúñü]{4,}/g) || []) {
+      if (!answers.has(tok)) answers.set(tok, []);
+      answers.get(tok).push(w.id);
+    }
+  }
+  const bad = [];
+  for (const w of words) {
+    // conj-записи называют свой инфинитив нарочно: «я — ser» без ser бесполезно.
+    if (w.conj || FOREIGN_IN_HINT_OK.has(w.id)) continue;
+    const own = new Set(norm(w.es).match(/[a-záéíóúñü]{4,}/g) || []);
+    for (const tok of norm(w.ru).match(/[a-záéíóúñü]{4,}/g) || []) {
+      if (own.has(tok)) continue;
+      const others = (answers.get(tok) || []).filter((id) => id !== w.id);
+      if (others.length) {
+        bad.push(`${w.id} («${w.ru}»): «${tok}» — это ответ ${others.join(', ')}`);
+        break;
+      }
+    }
+  }
+  assert.equal(bad.length, 0, 'в подсказке лежит ответ другой карточки:\n       ' + bad.join('\n       '));
+});
+
+// В «Вводе» и «Из букв» подсказка — это весь вопрос. Если два слова начинаются
+// с одного русского значения, пользователь видит «часто», пишет frecuentemente,
+// ждали a menudo — и получает «неверно» за правильный испанский. Тест на полные дубли
+// ru такого не ловит: достаточно разойтись во втором значении.
+test('колода: нет двух слов с одинаковым первым значением', () => {
+  const by = new Map();
+  for (const w of words) {
+    if (w.conj) continue; // шесть форм одной таблицы и должны начинаться похоже
+    const first = w.ru.split(/[,;—(]/)[0].trim().toLowerCase();
+    if (!by.has(first)) by.set(first, []);
+    by.get(first).push(w);
+  }
+  const clash = [...by.entries()].filter(([, v]) => v.length > 1);
+  assert.equal(
+    clash.length,
+    0,
+    'по этой подсказке годятся два разных ответа:\n       ' +
+      report(clash, ([k, v]) => `«${k}»: ${v.map((w) => `${w.es} (${w.id})`).join(' | ')}`),
+  );
+});
+
+// Род существительного в испанском не выводится из слова (la mano, el día), поэтому
+// колода хранит его единственным доступным способом — артиклем в самом ответе.
+// Существительное без артикля учится без рода, то есть наполовину.
+//
+// Месяцы — исключение: они употребляются без артикля (en enero, не en el enero).
+const NO_ARTICLE_OK = new Set([
+  'cal-enero', 'cal-febrero', 'cal-marzo', 'cal-abril', 'cal-mayo', 'cal-junio',
+  'cal-julio', 'cal-agosto', 'cal-septiembre', 'cal-octubre', 'cal-noviembre', 'cal-diciembre',
+]);
+
+test('колода: существительное идёт с артиклем', () => {
+  const bad = words.filter(
+    (w) => w.pos === 'n' && !NO_ARTICLE_OK.has(w.id) && !/^(el|la|los|las) /.test(w.es),
+  );
+  assert.equal(
+    bad.length,
+    0,
+    'без артикля не виден род:\n       ' + report(bad, (w) => `${w.id}: ${w.es} — ${w.ru}`),
+  );
+});
+
+// Прилагательное — в мужском роде единственного числа, как в словаре. Женский род
+// заголовком («espaciosa») учит слово, которое не подставишь к существительному
+// мужского рода, а в подсказке RU→ES тянет за собой женское окончание в переводе.
+//
+// На -a кончаются и несколько неизменяемых прилагательных — им здесь место по праву.
+const ADJ_IN_A_OK = new Set(['naranja', 'rosa', 'violeta', 'lila', 'beige']);
+
+test('колода: прилагательное в мужском роде единственного числа', () => {
+  const bad = words.filter((w) => {
+    if (w.pos !== 'adj') return false;
+    const es = norm(w.es).split(' ').pop();
+    if (ADJ_IN_A_OK.has(es)) return false;
+    return /a$/.test(es) || /(os|as)$/.test(es);
+  });
+  assert.equal(
+    bad.length,
+    0,
+    'женский род или множественное число вместо словарной формы:\n       ' +
+      report(bad, (w) => `${w.id}: ${w.es} — ${w.ru}`),
+  );
+});
+
 test('колода: версия поднята относительно предыдущей правки', () => {
   assert.equal(typeof deck.version, 'number');
   assert.ok(deck.version > 0);
