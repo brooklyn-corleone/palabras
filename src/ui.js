@@ -1697,10 +1697,12 @@ function renderSync() {
 
 // Пришли изменения с другого устройства. Посреди занятия и на паузе очередь не трогаем,
 // как и при пополнении колоды: пересборка подменила бы оставшиеся слова другими.
+// Но стартовый экран перерисовываем и на паузе: иначе там остаются «к повторению»,
+// посчитанные до синхронизации, — телефон показывал 108, а планшет уже 103.
 function refreshAfterData() {
   renderRail();
-  if (screen === 'home' && !resume) {
-    prepareSession();
+  if (screen === 'home') {
+    if (!resume) prepareSession();
     if (view === 'learn') renderHome();
   }
   if (view === 'words') {
@@ -2186,9 +2188,9 @@ async function init() {
       renderRail();
       // На несобранном старте — пересобрать с новыми словами. Посреди занятия и на паузе
       // очередь не трогаем: пересборка подменила бы оставшиеся слова другими.
-      if (screen === 'home' && !resume) {
-        prepareSession();
-        renderHome();
+      if (screen === 'home') {
+        if (!resume) prepareSession();
+        if (view === 'learn') renderHome();
       }
       if (view === 'words') renderList();
     });
