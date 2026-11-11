@@ -69,7 +69,9 @@ try {
   <div class="sr-only" id="live" aria-live="polite" aria-atomic="true"></div>
 
   <div class="rail-block">
+    <div class="cap rail-head" id="rail-head"></div>
     <div class="rail" id="boxes"></div>
+    <ul class="rail-legend" id="rail-legend"></ul>
     <div class="rail-note" id="rail-note"></div>
   </div>
 </section>
@@ -92,13 +94,18 @@ try {
     <button class="btn" id="btn-add">Добавить</button>
   </div>
   <div class="note" id="words-note" role="status"></div>
-  <div class="picked-bar hidden" id="picked-bar">
-    <span class="cap" id="picked-count">Выбрано: 0</span>
-    <button class="mini" id="btn-learn-picked">Учить выбранные</button>
-    <button class="mini" id="btn-clear-picked">Снять всё</button>
+  <!-- Галочки не стоят на каждой строке: выбор — отдельный режим за «Выбрать», как в iOS.
+       Раньше 287 чекбоксов висели всегда, хотя нужны только для занятия «Выбранные». -->
+  <div class="list-bar">
+    <span class="cap" id="list-count"></span>
+    <button class="link-btn" id="btn-select" aria-pressed="false">Выбрать</button>
   </div>
   <p class="hint list-hint" id="list-hint">Смахни строку влево или нажми на неё — появятся «в архив» и «удалить».</p>
   <div class="list" id="list"></div>
+  <div class="picked-bar hidden" id="picked-bar">
+    <button class="btn" id="btn-learn-picked">Учить выбранные</button>
+    <button class="btn ghost" id="btn-clear-picked">Снять всё</button>
+  </div>
 </section>
 
 <!-- ============ ПРАВИЛА ============ -->

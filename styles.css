@@ -145,6 +145,9 @@ body.in-session #storage-warn{display:none!important}
 .exit:hover{color:var(--text)}
 .exit:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 body.in-session .exit{display:inline-flex}
+/* Цель — счётчик занятия, и вне занятия ей нечего показывать: на старте она всегда
+   стояла «0 / 20» штриховой полосой над шкалой колоды, вторым индикатором без подписи. */
+body:not(.in-session) .goal{display:none}
 .ticks{display:flex;gap:2px;flex:1}
 .tick{height:2px;flex:1;background:var(--line);border-radius:1px;transition:background .3s}
 .tick.on{background:var(--accent)}
@@ -274,8 +277,11 @@ kbd{
 /* Прогресс — второй ряд, мельче и сеткой два на два: серия, точность, завтра, неделя.
    Одной строкой четыре числа на iPhone SE не помещаются. */
 .home-progress{margin-top:24px;padding-top:20px;border-top:1px solid var(--line)}
-.home-stats.small{display:grid;grid-template-columns:repeat(4,auto);justify-content:start;gap:16px 28px;margin-top:0}
-.home-stats.small .stat b{font-size:20px}
+.home-stats.small{display:grid;grid-template-columns:repeat(4,auto);justify-content:start;gap:10px 28px;margin-top:0}
+/* Число и подпись в одну строку: четыре вторичных числа — две строки, а не две
+   колонки по два этажа, спорящие с главным счётчиком. */
+.home-stats.small .stat{flex-direction:row;align-items:baseline;gap:6px}
+.home-stats.small .stat b{font-size:17px;font-weight:500}
 .home-progress .hint{margin:12px 0 0;max-width:52ch}
 /* На экране итога колонка центрирована, а прогресс — таблица чисел: выравниваем влево. */
 .empty .home-progress{margin-top:32px;text-align:left}
@@ -338,8 +344,24 @@ body.in-session .toast{bottom:auto;top:calc(12px + env(safe-area-inset-top))}
 /* Переключатель «Активные / Архив / Все» над списком слов. */
 .list-scope{margin-bottom:16px}
 
-.picked-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--line)}
-.picked-bar .cap{margin-right:auto}
+/* Над списком: сколько слов и «Выбрать». Панель режима выбора прилипает к низу,
+   над вкладками, — действия в зоне большого пальца, как панель инструментов iOS. */
+.list-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;margin-top:4px}
+.link-btn{
+  font:inherit;font-size:16px;font-weight:500;
+  min-height:44px;min-width:44px;padding:0 4px;margin-right:-4px;
+  border:0;background:none;color:var(--accent);cursor:pointer;touch-action:manipulation;
+}
+.link-btn:hover{opacity:.75}
+.link-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--radius)}
+.is-selecting .list-hint{display:none}
+.picked-bar{
+  position:sticky;bottom:var(--tabbar-h,0px);z-index:2;
+  display:flex;gap:8px;padding:12px 0;
+  background:var(--bg);border-top:1px solid var(--line);
+}
+.picked-bar .btn{flex:1;justify-content:center;white-space:nowrap;padding-left:12px;padding-right:12px}
+.picked-bar .btn:first-child{flex:2}
 input.pick{
   width:20px;height:20px;margin:0;accent-color:var(--accent);
   cursor:pointer;flex-shrink:0;
@@ -411,6 +433,7 @@ input.pick{
 /* Шесть сегментов шириной пропорционально числу карточек. Единственный «фирменный»
    элемент интерфейса, поэтому всё вокруг него должно молчать. */
 .rail-block{margin-top:32px}
+.rail-head{margin-bottom:-12px}
 .rail{display:flex;gap:2px;align-items:center}
 .seg{
   /* content-box здесь обязателен: при глобальном border-box вертикальные отступы
@@ -426,11 +449,23 @@ input.pick{
   transition:background-color .25s, transform .25s;
 }
 /* Пустая коробка остаётся еле заметной чёрточкой: место под неё видно, шума нет. */
+/* Стадии от бледного к акценту: шкала читается как «сколько уже выучено» и без легенды.
+   Без color-mix (старый Safari) все сегменты остаются серыми, как было. */
+.seg[data-box="new"],.rail-legend [data-box="new"] i{background-color:var(--line-strong);background-color:color-mix(in srgb,var(--muted) 35%,transparent)}
+.seg[data-box="1"],.rail-legend [data-box="1"] i{background-color:color-mix(in srgb,var(--accent) 22%,transparent)}
+.seg[data-box="2"],.rail-legend [data-box="2"] i{background-color:color-mix(in srgb,var(--accent) 42%,transparent)}
+.seg[data-box="3"],.rail-legend [data-box="3"] i{background-color:color-mix(in srgb,var(--accent) 62%,transparent)}
+.seg[data-box="4"],.rail-legend [data-box="4"] i{background-color:color-mix(in srgb,var(--accent) 80%,transparent)}
+.seg[data-box="5"],.rail-legend [data-box="5"] i{background-color:var(--accent)}
+.seg[data-box="arch"],.rail-legend [data-box="arch"] i{background-color:var(--muted);opacity:.5}
 .seg.is-empty{background-color:var(--line)}
-.seg[data-box="5"]:not(.is-empty){background-color:var(--accent)}
-.seg.seg-arch:not(.is-empty){opacity:.5}
 .seg.pulse{transform:translateY(-3px);background-color:var(--accent)}
-.rail-note{margin-top:10px;min-height:18px}
+.rail-legend{display:flex;flex-wrap:wrap;gap:4px 16px;margin:-10px 0 0;padding:0;list-style:none;font-size:13px;color:var(--muted)}
+.rail-legend li{display:inline-flex;align-items:center;gap:6px}
+.rail-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--muted)}
+.rail-legend b{font-weight:500;color:var(--text);font-variant-numeric:tabular-nums}
+.rail-note{margin-top:6px;min-height:18px}
+.rail-note:empty{display:none}
 
 /* ---------- пусто / правило ---------- */
 .empty{margin:auto 0;padding:40px 0}
@@ -554,6 +589,7 @@ mark.irr{background:var(--mark);color:inherit;font-weight:700;border-radius:3px;
 .add input[type=text]{font-size:16px;padding:12px 0}
 .note{min-height:18px;margin-bottom:12px}
 .note:empty{margin-bottom:0}
+#words-note:empty{min-height:0}
 
 .list-filters{display:flex;gap:12px;align-items:center;margin-bottom:8px}
 input.filter{
@@ -597,6 +633,12 @@ input.filter:focus{outline:none;border-bottom-color:var(--accent)}
   background:none;border:0;cursor:pointer;touch-action:pan-y;
 }
 .item-body:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:var(--radius)}
+/* Строка режима выбора — целиком подпись галочки. */
+.item-pick{display:block;cursor:pointer}
+.item-pick .item-main{touch-action:auto}
+.item-pick .item-body{cursor:pointer}
+.item-pick:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:-2px;border-radius:var(--radius)}
+.item-pick input.pick:focus-visible{outline:none}
 .item .es{font-size:17px;font-weight:500;letter-spacing:-.01em;overflow-wrap:anywhere}
 .item .ru{color:var(--muted);font-size:15px;overflow-wrap:anywhere}
 .item.arch .es{color:var(--muted)}

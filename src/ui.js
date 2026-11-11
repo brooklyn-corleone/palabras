@@ -39,6 +39,8 @@ const $ = (id) => document.getElementById(id);
 const stage = $('stage');
 const railEl = $('boxes');
 const railNote = $('rail-note');
+const railHead = $('rail-head');
+const railLegend = $('rail-legend');
 const ticksEl = $('ticks');
 const goalNum = $('goal-num');
 const listEl = $('list');
@@ -157,6 +159,13 @@ function catLabel(code) {
 function listOf(set, label, fallback) {
   if (!set.size) return fallback;
   return [...set].map((v) => label(v).toLowerCase()).join(' + ');
+}
+
+// Сводку настройки показываем, только когда занятие собрано не по умолчанию. Обычное
+// «к повторению · все темы · 10 слов · авто» повторяло заголовок «10 слов в занятии»
+// и счётчик «к повторению» строкой выше них.
+function isCustomSession() {
+  return session.source !== 'due' || session.cats.size > 0 || session.modes.size > 0 || !sizeFromGoal;
 }
 
 function sessionSummary() {
@@ -469,7 +478,7 @@ function renderSetup() {
       ),
 
       session.source === 'picked' && picked === 0
-        ? el('p', { class: 'hint', text: 'Слова отмечаются галочками на вкладке «Слова».' })
+        ? el('p', { class: 'hint', text: 'Слова выбираются на вкладке «Слова»: кнопка «Выбрать» над списком.' })
         : null,
       session.source === 'hard'
         ? el('p', {
@@ -624,7 +633,7 @@ function renderHome() {
     el(
       'div',
       { class: 'home' },
-      el('div', { class: 'cap home-summary', text: sessionSummary() }),
+      isCustomSession() ? el('div', { class: 'cap home-summary', text: sessionSummary() }) : null,
       el('h2', { text: title }),
       text ? el('p', { text }) : null,
       stats,
@@ -653,6 +662,9 @@ function renderProgress() {
   const acc = srs.accuracy(7);
   const fc = srs.forecast();
   const done = srs.todayLog().r;
+  // У нового пользователя все четыре числа — нули и прочерк: блок только занимал
+  // пол-экрана над «Начать». Появляется, когда есть что показать.
+  if (!st.days && acc === null && !fc.tomorrow && !fc.week && !done) return null;
   const notesText = [];
   if (!st.todayDone) {
     notesText.push(
@@ -1162,19 +1174,48 @@ function renderGoal() {
   goalNum.textContent = done + ' / ' + goal;
 }
 
-// Шесть сегментов шириной пропорционально числу карточек. Подпись не висит постоянно —
-// появляется по тапу, иначе шкала превращается в таблицу и перестаёт быть тихой.
+// Сегменты шириной пропорционально числу слов. Раньше шкала считала карточки и стояла
+// без подписей: на свежей колоде это была сплошная серая полоса, и что она значит,
+// не было сказано нигде. Теперь у неё заголовок «Колода · N слов» и легенда стадий,
+// новые слова — отдельным сегментом, а стадии идут от бледного к акценту.
+// Номер коробки и срок — в подписи по тапу.
 function renderRail() {
-  const { boxes, arch } = srs.boxCounts();
-  // Имя стадии вместо «коробки N», номер и срок — в подписи по тапу.
-  const segments = boxes.map((count, i) => ({
-    key: String(i + 1),
-    count,
-    label: srs.STAGES[i][0].toUpperCase() + srs.STAGES[i].slice(1),
-    sub: 'коробка ' + (i + 1) + ', через ' + srs.BOX_LABEL[i],
-  }));
+  const words = activeWords();
+  const boxes = [0, 0, 0, 0, 0];
+  let fresh = 0;
+  let arch = 0;
+  for (const w of words) {
+    if (srs.isArchived(w.id)) arch++;
+    else if (srs.isNewWord(w.id)) fresh++;
+    else boxes[srs.wordBox(w.id) - 1]++;
+  }
+  const segments = [{ key: 'new', count: fresh, label: 'Новое', sub: 'ещё не показывалось' }];
+  boxes.forEach((count, i) =>
+    segments.push({
+      key: String(i + 1),
+      count,
+      label: srs.STAGES[i][0].toUpperCase() + srs.STAGES[i].slice(1),
+      sub: 'коробка ' + (i + 1) + ', через ' + srs.BOX_LABEL[i],
+    }),
+  );
   segments.push({ key: 'arch', count: arch, label: 'Архив', sub: 'изредка' });
 
+  railHead.textContent = 'Колода · ' + words.length + ' ' + plural(words.length, 'слово', 'слова', 'слов');
+  replace(
+    railLegend,
+    segments
+      .filter((s) => s.count)
+      .map((s) =>
+        el(
+          'li',
+          { dataset: { box: s.key } },
+          el('i', { 'aria-hidden': 'true' }),
+          s.label + ' ',
+          el('b', { text: String(s.count) }),
+        ),
+      ),
+  );
+  railNote.textContent = '';
   replace(
     railEl,
     segments.map((s) =>
@@ -1274,7 +1315,32 @@ function renderList() {
     .filter((w) => !q || (w.es + ' ' + w.ru).toLowerCase().includes(q))
     .map((w) => listRow(w, hard.has(w.id)));
 
+  shownCount = items.length;
   replace(listEl, items.length ? items : el('p', { class: 'list-empty', text: 'Ничего не нашлось.' }));
+  renderListCount();
+}
+
+// Режим выбора, как «Выбрать» в системных списках iOS (HIG, Lists and tables: «people
+// must enter edit mode to select table items»). Вне его строка — слово, перевод и стадия,
+// без галочки: выбор нужен только для занятия «Выбранные», а чекбокс висел на всех
+// 287 строках. В режиме выбора строка целиком — подпись галочки, свайп и действия выключены.
+let selecting = false;
+let shownCount = 0;
+
+function setSelecting(on) {
+  selecting = on;
+  if (on && openItem) setOpen(openItem, false);
+  $('view-words').classList.toggle('is-selecting', on);
+  renderList();
+  renderPickedBar();
+}
+
+function renderListCount() {
+  const n = session.picked.size;
+  const words = shownCount + ' ' + plural(shownCount, 'слово', 'слова', 'слов');
+  $('list-count').textContent = selecting
+    ? 'Выбрано: ' + n
+    : words + (n ? ' · выбрано ' + n : '');
 }
 
 function inScope(w, hard) {
@@ -1287,13 +1353,19 @@ function inScope(w, hard) {
 
 function listRow(w, hard) {
   const arch = srs.isArchived(w.id);
-  const check = el('input', { type: 'checkbox', class: 'pick', 'aria-label': 'Учить ' + w.es });
-  check.checked = session.picked.has(w.id);
-  check.addEventListener('change', () => {
-    if (check.checked) session.picked.add(w.id);
-    else session.picked.delete(w.id);
-    renderPickedBar();
-  });
+  const tag = arch
+    ? 'архив'
+    : hard
+      ? 'трудное'
+      : srs.isNewWord(w.id)
+        ? 'новое'
+        : srs.STAGES[srs.wordBox(w.id) - 1];
+  const cls = 'item' + (arch ? ' arch' : '') + (w.flagged ? ' flagged' : '') + (hard ? ' hard' : '');
+  const text = [
+    el('span', { class: 'es', lang: 'es', text: (w.flagged ? '⚑ ' : '') + w.es }),
+    el('span', { class: 'ru', text: w.ru }),
+  ];
+  if (selecting) return pickRow(w, cls, text, tag);
 
   const actions = el(
     'div',
@@ -1305,30 +1377,37 @@ function listRow(w, hard) {
     el('button', { class: 'act act-del', onclick: () => listDelete(w) }, 'Удалить'),
   );
 
-  const tag = arch
-    ? 'архив'
-    : hard
-      ? 'трудное'
-      : srs.isNewWord(w.id)
-        ? 'новое'
-        : srs.STAGES[srs.wordBox(w.id) - 1];
   return el(
     'div',
-    {
-      class: 'item' + (arch ? ' arch' : '') + (w.flagged ? ' flagged' : '') + (hard ? ' hard' : ''),
-      dataset: { id: w.id },
-    },
+    { class: cls, dataset: { id: w.id } },
     actions,
     el(
       'div',
       { class: 'item-main' },
-      pickHit(check),
-      el(
-        'button',
-        { class: 'item-body', 'aria-expanded': 'false' },
-        el('span', { class: 'es', lang: 'es', text: (w.flagged ? '⚑ ' : '') + w.es }),
-        el('span', { class: 'ru', text: w.ru }),
-      ),
+      el('button', { class: 'item-body', 'aria-expanded': 'false' }, text),
+      el('span', { class: 'box-tag', text: tag }),
+    ),
+  );
+}
+
+// Строка в режиме выбора — <label>: нажатие в любом месте ставит галочку, а экранный
+// чтец слышит обычный флажок с подписью «слово, перевод, стадия».
+function pickRow(w, cls, text, tag) {
+  const check = el('input', { type: 'checkbox', class: 'pick' });
+  check.checked = session.picked.has(w.id);
+  check.addEventListener('change', () => {
+    if (check.checked) session.picked.add(w.id);
+    else session.picked.delete(w.id);
+    renderPickedBar();
+  });
+  return el(
+    'label',
+    { class: cls + ' item-pick', dataset: { id: w.id } },
+    el(
+      'span',
+      { class: 'item-main' },
+      check,
+      el('span', { class: 'item-body' }, text),
       el('span', { class: 'box-tag', text: tag }),
     ),
   );
@@ -1374,7 +1453,7 @@ function bindSwipe() {
   let blockClickIn = null;
 
   listEl.addEventListener('pointerdown', (e) => {
-    if (e.pointerType === 'mouse') return;
+    if (e.pointerType === 'mouse' || selecting) return;
     const main = e.target.closest('.item-main');
     if (!main) return;
     const item = main.parentNode;
@@ -1439,6 +1518,7 @@ function bindSwipe() {
     true,
   );
   listEl.addEventListener('click', (e) => {
+    if (selecting) return;
     const body = e.target.closest('.item-body');
     if (!body) return;
     const item = body.closest('.item');
@@ -1484,17 +1564,35 @@ function afterListChange() {
   renderRail();
 }
 
+// Панель действий режима выбора — внизу, у большого пальца, как панель инструментов iOS.
 function renderPickedBar() {
-  const bar = $('picked-bar');
-  bar.classList.toggle('hidden', session.picked.size === 0);
-  $('picked-count').textContent = 'Выбрано: ' + session.picked.size;
+  const n = session.picked.size;
+  $('picked-bar').classList.toggle('hidden', !selecting);
+  const learn = $('btn-learn-picked');
+  learn.textContent = n ? 'Учить ' + n + ' ' + plural(n, 'слово', 'слова', 'слов') : 'Учить выбранные';
+  learn.disabled = n === 0;
+  $('btn-clear-picked').disabled = n === 0;
+  const toggle = $('btn-select');
+  toggle.textContent = selecting ? 'Готово' : 'Выбрать';
+  toggle.setAttribute('aria-pressed', String(selecting));
+  renderListCount();
 }
 
 function bindWordsView() {
   filterEl.addEventListener('input', renderList);
 
+  $('btn-select').addEventListener('click', () => setSelecting(!selecting));
+
+  // Esc выходит из режима выбора — так же, как «Готово».
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && view === 'words' && selecting && !document.querySelector('dialog[open]')) {
+      setSelecting(false);
+    }
+  });
+
   $('btn-learn-picked').addEventListener('click', () => {
     session.source = 'picked';
+    setSelecting(false);
     showView('learn');
     startSession();
   });
