@@ -332,6 +332,69 @@ test('правила: строки таблицы совпадают по шир
   assert.deepEqual(bad, [], 'таблица разъедется при отрисовке');
 });
 
+// Суть правила видна в списке раздела под названием, в две строки. Длиннее — обрежется
+// на телефоне, и строка списка перестанет отвечать на вопрос «что здесь».
+const GIST_MAX = 90;
+
+test('правила: у каждого есть суть одной строкой, и она короткая', () => {
+  const bad = [];
+  for (const n of notes.notes) {
+    if (!n.gist) bad.push(`${n.id}: нет gist`);
+    else if (n.gist.length > GIST_MAX) bad.push(`${n.id}: gist ${n.gist.length} знаков, больше ${GIST_MAX}`);
+  }
+  assert.deepEqual(bad, []);
+});
+
+// Местоимение и три глагола помещаются на ширине iPhone (390 pt) с закреплённой первой
+// колонкой. Четвёртый глагол уже прячется за край — такие таблицы делим на две.
+test('правила: в таблице не больше четырёх колонок', () => {
+  const bad = [];
+  for (const n of notes.notes) {
+    for (const b of n.blocks || []) {
+      const width = b.kind === 'table' ? (b.head || b.rows?.[0] || []).length : 0;
+      if (width > 4) bad.push(`${n.id}: ${width} колонок`);
+    }
+  }
+  assert.deepEqual(bad, [], 'на телефоне последняя колонка уедет за край');
+});
+
+// [..] в ячейке — выделение изменившейся части формы. Непарная скобка покажется как есть.
+test('правила: скобки выделения в таблицах парные', () => {
+  const bad = [];
+  for (const n of notes.notes) {
+    for (const b of n.blocks || []) {
+      for (const row of b.rows || []) {
+        for (const cell of row) {
+          const rest = String(cell).replace(/\[[^\[\]]+\]/g, '');
+          if (/[[\]]/.test(rest)) bad.push(`${n.id}: «${cell}»`);
+        }
+      }
+    }
+  }
+  assert.deepEqual(bad, []);
+});
+
+// Перечень, где все пункты «слева — справа», рисуется двумя колонками и делится по первому
+// тире. Две пары в одном пункте («tengo frío — мне холодно, tengo calor — мне жарко»)
+// разъезжаются: вторая пара целиком попадает в колонку перевода.
+test('правила: в пункте-паре одно тире', () => {
+  const bad = [];
+  for (const n of notes.notes) {
+    for (const b of n.blocks || []) {
+      if (b.kind !== 'list') continue;
+      const items = b.items || [];
+      if (!items.every((i) => i.includes(' — '))) continue;
+      for (const i of items) if (i.split(' — ').length > 2) bad.push(`${n.id}: «${i}»`);
+    }
+  }
+  assert.deepEqual(bad, [], 'раздели пункт на два или сделай таблицу');
+});
+
+test('правила: у каждой группы есть подпись', () => {
+  const missing = Object.keys(notes.groups || {}).filter((g) => !(notes.groupNotes || {})[g]);
+  assert.deepEqual(missing, [], 'группа без подписи в groupNotes');
+});
+
 // ---------------------------------------------------------------------------
 // связь правил со словами
 // ---------------------------------------------------------------------------

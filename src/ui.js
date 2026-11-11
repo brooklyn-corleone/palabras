@@ -1669,8 +1669,16 @@ function showView(which) {
 // раздел «Правила»
 // ---------------------------------------------------------------------------
 
-// Список групп с правилами внутри. Открывать правило прямо здесь, не уводя
-// на отдельный экран, — иначе теряется место, где ты был.
+// Раздел — оглавление, а не простыня. Раньше здесь подряд стояли 32 правила в десяти
+// группах, около четырёх экранов прокрутки, и открытое правило раздвигало список ещё
+// на экран. Теперь группы свёрнуты в карточки с подписью, правило открывается окном
+// поверх списка (место в списке не теряется), а поиск находит правило и по форме из таблицы.
+//
+// Что раскрыто и что набрано в поиске — в памяти: вернулся на вкладку — всё как было.
+// После перезагрузки раскрыта первая группа: с неё и стоит начинать.
+let rulesOpen = null;
+let rulesQuery = '';
+
 function renderRules() {
   const groups = notes.byGroup();
   if (!groups.length) {
@@ -1685,38 +1693,118 @@ function renderRules() {
     );
     return;
   }
+  if (!rulesOpen) rulesOpen = new Set([groups[0].code]);
 
-  replace(
-    $('rules'),
-    groups.map((group) =>
-      el(
-        'section',
-        { class: 'rule-group' },
-        el('h2', { class: 'rule-group-title', text: group.label }),
-        group.notes.map((note) => renderRuleRow(note)),
-      ),
-    ),
-  );
+  const results = el('div', { class: 'rules-results' });
+  const search = el('input', {
+    type: 'search',
+    class: 'filter rules-search',
+    placeholder: 'Найти правило или форму: tengo, hago',
+    'aria-label': 'Найти правило',
+    autocomplete: 'off',
+    autocapitalize: 'off',
+    spellcheck: 'false',
+    enterkeyhint: 'search',
+    value: rulesQuery,
+    oninput: (e) => {
+      rulesQuery = e.target.value;
+      renderRuleResults(results, groups);
+    },
+  });
+  replace($('rules'), el('div', { class: 'rules-top' }, search), results);
+  renderRuleResults(results, groups);
 }
 
-// Правило-гармошка: заголовок всегда виден, содержимое разворачивается по нажатию.
-function renderRuleRow(note) {
-  const body = el('div', { class: 'rule-body hidden' });
+function renderRuleResults(box, groups) {
+  const query = rulesQuery.trim();
+  if (query) {
+    const found = [];
+    for (const group of groups) {
+      for (const note of group.notes) if (notes.matches(note, query)) found.push({ note, group });
+    }
+    if (!found.length) {
+      replace(
+        box,
+        el('p', { class: 'hint rules-empty', text: 'Ничего не нашлось. Попробуй форму глагола или слово по-испански без ударений.' }),
+      );
+      return;
+    }
+    // Найденное — одним списком, у каждой строки подпись группы: искали поперёк разделов.
+    const list = found.map((f) => f.note);
+    replace(
+      box,
+      el('p', { class: 'cap rules-count', text: plural(found.length, 'правило', 'правила', 'правил') }),
+      el(
+        'ul',
+        { class: 'rule-rows is-flat' },
+        found.map(({ note, group }) => renderRuleRow(note, list, group.label)),
+      ),
+    );
+    return;
+  }
+  replace(box, groups.map((group) => renderRuleGroup(group)));
+}
+
+// Группа — карточка-гармошка: название, подпись и число правил видны всегда.
+function renderRuleGroup(group) {
+  const id = 'rg-' + (group.code || 'misc');
+  const open = rulesOpen.has(group.code);
+  const body = el(
+    'ul',
+    { class: 'rule-rows', id, hidden: !open },
+    group.notes.map((note) => renderRuleRow(note, group.notes)),
+  );
   const head = el(
     'button',
     {
-      class: 'rule-head',
-      'aria-expanded': 'false',
+      class: 'rule-group-head',
+      type: 'button',
+      'aria-expanded': String(open),
+      'aria-controls': id,
       onclick: () => {
-        const open = body.classList.toggle('hidden');
-        head.setAttribute('aria-expanded', String(!open));
-        if (!open && !body.childElementCount) replace(body, notes.renderBlocks(note));
+        const now = !rulesOpen.has(group.code);
+        if (now) rulesOpen.add(group.code);
+        else rulesOpen.delete(group.code);
+        body.hidden = !now;
+        head.setAttribute('aria-expanded', String(now));
       },
     },
-    el('span', { text: note.title || note.id }),
-    el('span', { class: 'rule-chevron', text: '▾' }),
+    el(
+      'span',
+      { class: 'rule-group-text' },
+      el('span', { class: 'rule-group-title', text: group.label }),
+      group.about ? el('span', { class: 'rule-group-about', text: group.about }) : null,
+    ),
+    el('span', { class: 'rule-group-count', 'aria-label': plural(group.notes.length, 'правило', 'правила', 'правил'), text: String(group.notes.length) }),
+    el('span', { class: 'rule-chevron', 'aria-hidden': 'true' }),
   );
-  return el('div', { class: 'rule' }, head, body);
+  return el('section', { class: 'rule-group' + (open ? ' is-open' : '') }, head, body);
+}
+
+// Строка правила: название и суть одной строкой. Само правило — в окне поверх списка:
+// раскрытое на месте, оно сдвигало всё остальное на экран-другой вниз.
+function renderRuleRow(note, siblings, groupLabel = '') {
+  return el(
+    'li',
+    null,
+    el(
+      'button',
+      {
+        class: 'rule-row-btn',
+        type: 'button',
+        'aria-haspopup': 'dialog',
+        onclick: (e) => notes.openRule(note, e.currentTarget, siblings),
+      },
+      el(
+        'span',
+        { class: 'rule-row-text' },
+        groupLabel ? el('span', { class: 'cap', text: groupLabel }) : null,
+        el('span', { class: 'rule-row-title', text: note.title || note.id }),
+        note.gist ? el('span', { class: 'rule-row-gist', text: note.gist }) : null,
+      ),
+      el('span', { class: 'rule-row-chevron', 'aria-hidden': 'true' }),
+    ),
+  );
 }
 
 // Клавиши не разбираются в режимах: каждый режим просто помечает свою кнопку
