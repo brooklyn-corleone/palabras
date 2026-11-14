@@ -48,6 +48,21 @@ test('колода: id пригоден как ключ карточки', () =>
   assert.equal(bad.length, 0, 'id с «|» или пробелом ломает ключ карточки:\n       ' + report(bad, (w) => w.id));
 });
 
+test('списки к уроку: поля на месте, id уникальны, слова есть в колоде', () => {
+  const ids = new Set(words.map((w) => w.id));
+  const seen = new Set();
+  const bad = [];
+  for (const l of deck.lists || []) {
+    if (!l.id || !l.title || !/^\d{4}-\d{2}-\d{2}$/.test(l.date || '')) bad.push(`${l.id}: нужны id, title и date ГГГГ-ММ-ДД`);
+    if (seen.has(l.id)) bad.push(`${l.id}: id повторяется`);
+    seen.add(l.id);
+    if (!Array.isArray(l.words) || !l.words.length) bad.push(`${l.id}: пустой список`);
+    for (const id of l.words || []) if (!ids.has(id)) bad.push(`${l.id} → нет слова ${id}`);
+    if (new Set(l.words).size !== (l.words || []).length) bad.push(`${l.id}: слово повторяется`);
+  }
+  assert.deepEqual(bad, [], 'список ссылается на несуществующее — занятие по нему соберётся неполным');
+});
+
 test('колода: тема слова есть в словаре тем', () => {
   const known = new Set(Object.keys(deck.categories || {}));
   const bad = words.filter((w) => !known.has(w.cat));

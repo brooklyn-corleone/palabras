@@ -349,11 +349,12 @@ function archivedKeys() {
 }
 
 // Настройки текущего занятия. Пустые — обычный режим «что созрело к повторению».
-//   source: 'due' | 'random' | 'picked'
+//   source: 'due' | 'random' | 'picked' | 'hard' | 'list'
 //   cats:   Set с кодами тем (пустой — все темы)
 //   size:   сколько слов взять (0 — сколько есть)
 //   modes:  Set с режимами (пустой — авто, по лестнице коробок)
 //   picked: Set с id слов для source: 'picked'
+//   list:   массив id слов для source: 'list' — список к уроку
 let session = {};
 
 export function setSession(options) {
@@ -390,6 +391,12 @@ export function buildQueue(options) {
     // Просил именно его, прятать нечего.
     const picked = session.picked;
     out = out.filter((key) => picked && picked.has(parseKey(key).wordId));
+  } else if (source === 'list') {
+    // Список к уроку — все его слова независимо от срока, но без выученных:
+    // архивные в цель не идут (counted: false), и занятие из них цель не набирало бы.
+    // Выученное слово из списка всегда можно отметить руками и прогнать «Выбранными».
+    const list = new Set(session.list || []);
+    out = out.filter((key) => list.has(parseKey(key).wordId) && !state.cards[key].arch);
   } else if (source === 'hard') {
     // Трудные — независимо от срока: их и выбирают, чтобы прогнать вне очереди.
     const hard = hardWordIds();
@@ -412,6 +419,14 @@ export function buildQueue(options) {
   }
 
   shuffle(out);
+  // В списке к уроку слов обычно больше, чем в одном занятии, и занятий по нему будет
+  // несколько. Сначала берём то, что дольше не спрашивалось: отвеченное сегодня уезжает
+  // по сроку вперёд, и следующее занятие достаёт остальные, а не тот же случайный десяток.
+  if (source === 'list') {
+    // due — строка «ГГГГ-ММ-ДД», сравнивается как строка. Сортировка устойчивая,
+    // так что при равных сроках остаётся порядок после перемешивания.
+    out.sort((a, b) => (state.cards[a].due < state.cards[b].due ? -1 : state.cards[a].due > state.cards[b].due ? 1 : 0));
+  }
   // Дневной лимит новых — только для обычного повторения. Случайные, выбранные
   // и трудные заказаны руками, и урезать заказ было бы самоуправством.
   if (source === 'due') out = limitNew(out, newLeftToday());

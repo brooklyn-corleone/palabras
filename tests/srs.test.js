@@ -562,6 +562,41 @@ test('занятие из выбранных слов берёт только и
   srs.setSession({});
 });
 
+test('занятие по списку к уроку: без выученных, сначала давно не спрошенные', () => {
+  resetDeck();
+  const ws = ['uno', 'dos', 'tres', 'cuatro'].map((es, i) => makeWord(es, 'число' + i));
+  makeWord('fuera', 'вне списка');
+  const list = ws.map((w) => w.id);
+
+  // tres выучено — в занятие по списку не идёт; uno отвечено сегодня и уехало на неделю.
+  for (const d of ['es', 'ru']) {
+    state.cards[ws[2].id + '|' + d].arch = true;
+    state.cards[ws[0].id + '|' + d].due = addDays(7);
+  }
+
+  srs.buildQueue({ source: 'list', size: 2, modes: new Set(), list });
+  const got = new Set(drain().map((k) => k.split('|')[0]));
+  assert.deepEqual([...got].sort(), [ws[1].id, ws[3].id].sort(), 'два давно не спрошенных, без выученного и без чужих');
+  assert.equal(srs.nextKey(), null, 'занятие по списку конечно');
+  srs.setSession({});
+});
+
+test('списки к уроку приезжают из колоды и теряют удалённые слова', async () => {
+  resetDeck();
+  const a = makeWord('uno', 'один');
+  const b = makeWord('dos', 'два');
+  const seed = { version: 99, words: [], lists: [
+    { id: 'old', title: 'Старый', date: '2026-01-01', words: [a.id] },
+    { id: 'new', title: 'Новый', date: '2026-02-01', words: [a.id, b.id] },
+  ] };
+  globalThis.fetch = async () => ({ ok: true, json: async () => seed });
+  await mergeSeed();
+  const { wordLists } = await import('../src/state.js');
+  assert.deepEqual(wordLists().map((l) => l.id), ['new', 'old'], 'свежий список сверху');
+  deleteWord(a.id);
+  assert.deepEqual(wordLists().map((l) => [l.id, l.words]), [['new', [b.id]]], 'пустой список не показывается');
+});
+
 test('выбранный руками режим задаёт направление карточек', () => {
   resetDeck();
   for (let i = 0; i < 4; i++) makeWord('palabra' + i, 'слово' + i);
