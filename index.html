@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" data-theme="auto">
+<html lang="ru">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -12,13 +12,12 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Palabras">
 <script>
-// Тему ставим до первой отрисовки, иначе тёмная тема моргнёт светлой.
-// Настройки живут в IndexedDB, а её синхронно не прочитать — поэтому здесь зеркало
-// в localStorage. Единственное место, где приложение читает данные до запуска модулей.
+// Цвет шапки браузера ставим до первой отрисовки, иначе в тёмной теме она моргнёт светлой.
+// Своей темы больше нет — только системная. Ключ palabras.theme остался от переключателя,
+// убираем, чтобы не лежал мусором.
 try {
-  var t = localStorage.getItem('palabras.theme') || 'auto';
-  document.documentElement.dataset.theme = t;
-  var dark = t === 'dark' || (t === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
+  localStorage.removeItem('palabras.theme');
+  var dark = matchMedia('(prefers-color-scheme: dark)').matches;
   document.querySelector('meta[name=theme-color]').content = dark ? '#121312' : '#F7F7F6';
 } catch (e) {}
 </script>
@@ -72,7 +71,9 @@ try {
 
   <div class="rail-block">
     <div class="cap rail-head" id="rail-head"></div>
-    <div class="rail" id="boxes"></div>
+    <!-- Вся шкала — одна кнопка: отрезки по 8px были зонами нажатия меньше минимума HIG
+         (28×28 pt), а пустые ещё и ловили фокус. Нажатие раскрывает сроки стадий. -->
+    <button class="rail" id="boxes" type="button" aria-expanded="false" aria-controls="rail-note"></button>
     <ul class="rail-legend" id="rail-legend"></ul>
     <div class="rail-note" id="rail-note"></div>
   </div>
@@ -99,14 +100,19 @@ try {
   <!-- Галочки не стоят на каждой строке: выбор — отдельный режим за «Выбрать», как в iOS.
        Раньше 287 чекбоксов висели всегда, хотя нужны только для занятия «Выбранные». -->
   <div class="list-bar">
-    <span class="cap" id="list-count"></span>
+    <span class="list-bar-lead">
+      <span class="cap" id="list-count"></span>
+      <!-- «Снять всё» наверху, как «Выбрать все» в Почте: нижняя панель — для действий
+           над выбранным, а три кнопки в ряд на iPhone SE не помещаются. -->
+      <button class="link-btn hidden" id="btn-clear-picked">Снять всё</button>
+    </span>
     <button class="link-btn" id="btn-select" aria-pressed="false">Выбрать</button>
   </div>
   <p class="hint list-hint" id="list-hint">Смахни строку влево или нажми на неё — появятся «в архив» и «удалить».</p>
   <div class="list" id="list"></div>
   <div class="picked-bar hidden" id="picked-bar">
     <button class="btn" id="btn-learn-picked">Учить выбранные</button>
-    <button class="btn ghost" id="btn-clear-picked">Снять всё</button>
+    <button class="btn ghost" id="btn-archive-picked">В архив</button>
   </div>
 </section>
 
@@ -143,13 +149,6 @@ try {
     <button class="pill" data-speak-choice="on">Сразу</button>
   </div>
   <p class="hint" id="voice-note"></p>
-
-  <h2 class="settings-title">Оформление</h2>
-  <div class="chooser-row" role="group" aria-label="Тема оформления">
-    <button class="pill" data-theme-choice="auto">Как в системе</button>
-    <button class="pill" data-theme-choice="light">Светлая</button>
-    <button class="pill" data-theme-choice="dark">Тёмная</button>
-  </div>
 
   <h2 class="settings-title">Синхронизация</h2>
   <p class="sync-status" id="sync-status" role="status">Только на этом устройстве</p>

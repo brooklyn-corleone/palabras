@@ -1,5 +1,5 @@
 {
-  "version": 24,
+  "version": 25,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
@@ -866,7 +866,7 @@
     {
       "id": "tiempo-antes",
       "es": "antes",
-      "ru": "раньше, перед",
+      "ru": "раньше, прежде",
       "pos": "adv",
       "cat": "tiempo"
     },
@@ -2045,6 +2045,118 @@
       "ru": "а ты?",
       "pos": "phrase",
       "cat": "saludos"
+    },
+    {
+      "id": "rutina-lavarse",
+      "es": "lavarse",
+      "ru": "мыться, умываться",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-lavarse-manos",
+      "es": "lavarse las manos",
+      "ru": "мыть руки",
+      "pos": "phrase",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-cepillarse-dientes",
+      "es": "cepillarse los dientes",
+      "ru": "чистить зубы",
+      "pos": "phrase",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-afeitarse",
+      "es": "afeitarse",
+      "ru": "бриться",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-maquillarse",
+      "es": "maquillarse",
+      "ru": "краситься, наносить макияж",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-peinarse",
+      "es": "peinarse",
+      "ru": "причёсываться",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-vestirse",
+      "es": "vestirse",
+      "ru": "одеваться",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-volver",
+      "es": "volver",
+      "ru": "возвращаться",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-lavar",
+      "es": "lavar",
+      "ru": "мыть",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-vestir",
+      "es": "vestir",
+      "ru": "одевать кого-то",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-despertar",
+      "es": "despertar",
+      "ru": "будить кого-то",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "verb-llamar",
+      "es": "llamar",
+      "ru": "звонить, звать",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "tiempo-todos-dias",
+      "es": "todos los días",
+      "ru": "каждый день",
+      "pos": "phrase",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-antes-de",
+      "es": "antes de",
+      "ru": "перед тем как, до",
+      "pos": "phrase",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-finalmente",
+      "es": "finalmente",
+      "ru": "наконец, в конце",
+      "pos": "adv",
+      "cat": "tiempo"
+    },
+    {
+      "id": "conec-rapidamente",
+      "es": "rápidamente",
+      "ru": "быстро",
+      "pos": "adv",
+      "cat": "conectores"
     }
   ]
 }

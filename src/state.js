@@ -111,7 +111,7 @@ function freshState() {
     deviceId: uuid(),
     words: [],
     cards: {},
-    settings: { theme: 'auto', goal: 20, newPerDay: 20, autoSpeak: false },
+    settings: { goal: 20, newPerDay: 20, autoSpeak: false },
     stats: { day: today(), done: 0 },
     log: {},
     peerLogs: {},
@@ -148,7 +148,6 @@ function migrate(raw) {
   if (!Array.isArray(s.words)) s.words = [];
   if (!s.cards || typeof s.cards !== 'object') s.cards = {};
   if (!s.settings) s.settings = {};
-  if (!s.settings.theme) s.settings.theme = 'auto';
   if (typeof s.settings.goal !== 'number') s.settings.goal = 20;
   if (typeof s.settings.newPerDay !== 'number') s.settings.newPerDay = 20;
   if (typeof s.settings.autoSpeak !== 'boolean') s.settings.autoSpeak = false;

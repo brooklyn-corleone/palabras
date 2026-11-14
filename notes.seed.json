@@ -444,7 +444,18 @@
         "rutina-ducharse",
         "rutina-acostarse",
         "verb-se-queda",
-        "verb-encuentras"
+        "verb-encuentras",
+        "rutina-lavarse",
+        "rutina-vestirse",
+        "rutina-peinarse",
+        "rutina-afeitarse",
+        "rutina-maquillarse",
+        "rutina-cepillarse-dientes",
+        "rutina-lavarse-manos",
+        "rutina-lavar",
+        "rutina-vestir",
+        "rutina-despertar",
+        "verb-llamar"
       ]
     },
     {

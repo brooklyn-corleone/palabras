@@ -41,8 +41,12 @@ export function render({ word, card, dir, onAnswer, onArchive, onFlag, flagged: 
       'div',
       { class: 'dir' },
       el('span', { text: label + ' · ' + stageLabel(card) }),
-      onArchive ? el('button', { class: 'mini', onclick: onArchive }, 'в архив') : null,
-      flagBtn,
+      el(
+        'span',
+        { class: 'dir-tools' },
+        onArchive ? el('button', { class: 'mini', onclick: onArchive }, 'в архив') : null,
+        flagBtn,
+      ),
     );
   }
 
