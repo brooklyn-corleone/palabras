@@ -1,14 +1,24 @@
 // Режим type — ввод текста, RU→ES. Активное воспроизведение: единственный режим,
 // который поднимает карточку в коробки 4 и 5 (см. MAX_BOX в srs.js).
+//
+// Здесь же диктант (listen): слово звучит, его записывают по-испански. Разбор ответа
+// у них общий — ударения, опечатки, «Засчитать мой ответ» (для омофонов вроде
+// hola / ola) работают одинаково, — а отличается только вопрос.
 
 import { el, replace, announce } from '../dom.js';
-import { sayable, autoSpeak } from '../speech.js';
+import { sayable, autoSpeak, speak, ICON } from '../speech.js';
 import { judge, accentMarks, diffMarks, ALMOST_CAP, stageLabel } from '../srs.js';
 import { ruleLink } from '../notes.js';
 
 const DIR_LABEL = 'Русский → Испанский';
+const LISTEN_LABEL = 'Диктант';
+const SLOW_RATE = 0.6;
 
-export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initFlagged, rule }) {
+export function renderListen(ctx) {
+  return render({ ...ctx, listen: true });
+}
+
+export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initFlagged, rule, listen }) {
   const root = el('div', { class: 'mode' });
   let flagged = !!initFlagged;
 
@@ -28,7 +38,7 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
     return el(
       'div',
       { class: 'dir' },
-      el('span', { text: DIR_LABEL + ' · ' + stageLabel(card) }),
+      el('span', { text: (listen ? LISTEN_LABEL : DIR_LABEL) + ' · ' + stageLabel(card) }),
       el(
         'span',
         { class: 'dir-tools' },
@@ -57,9 +67,14 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
     replace(
       root,
       head(),
-      el('div', { class: 'prompt', text: word.ru }),
+      listen ? listenPrompt(input) : el('div', { class: 'prompt', text: word.ru }),
       input,
-      el('div', { class: 'hint', text: 'Артикль не обязателен. Без ударения засчитаем, но покажем, где оно' }),
+      el('div', {
+        class: 'hint',
+        text: listen
+          ? 'Запишите, что услышали. Артикль не обязателен, без ударения засчитаем'
+          : 'Артикль не обязателен. Без ударения засчитаем, но покажем, где оно',
+      }),
       el(
         'div',
         { class: 'row' },
@@ -77,6 +92,34 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
       ),
     );
     input.focus();
+    // Звучит сразу: карточку рисует нажатие «Дальше» или «Начать», и iOS считает
+    // озвучку ответом на жест. Не прозвучало — есть кнопка.
+    if (listen) speak(word.es);
+  }
+
+  // Вопрос диктанта — две кнопки вместо слова. Перевод не показываем: с ним это был бы
+  // обычный «Ввод», а диктант проверяет слух.
+  function listenPrompt(input) {
+    const play = (rate, label, cls) => {
+      const btn = el('button', {
+        class: 'listen-btn' + (cls ? ' ' + cls : ''),
+        type: 'button',
+        'aria-label': label,
+        onclick: () => {
+          speak(word.es, rate);
+          input.focus();
+        },
+      });
+      btn.innerHTML = ICON;
+      btn.append(el('span', { text: label }));
+      return btn;
+    };
+    return el(
+      'div',
+      { class: 'prompt listen' },
+      play(undefined, 'Ещё раз', 'primary'),
+      play(SLOW_RATE, 'Медленно'),
+    );
   }
 
   // ---- разбор ответа --------------------------------------------------------
@@ -123,6 +166,8 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
     // Ошибка → правило: спряжение ser/estar/tener и прочее, что не угадывается по слову.
     if (!correct && rule) box.append(ruleLink(rule));
 
+    // В диктанте перевод появляется только в разборе: теперь он не подсказка, а смысл
+    // слова, которое только что записали.
     replace(
       root,
       head(),

@@ -41,7 +41,10 @@ export function stageLabel(card) {
 // направлений) никогда не показывала больше тройки. Оценка у flip своя, зато честная —
 // как во всех SRS, где пользователь сам говорит «помнил», — а RU→ES от этого не страдает:
 // туда flip не попадает ни при каких настройках.
-export const MAX_BOX = { type: 5, letters: 4, flip: 5, choice: 3, match: 0 };
+//
+// listen (диктант) — 3, как у choice: записать услышанное — проверка слуха и написания,
+// а не того, что слово значит. Пятую коробку es-карточке по-прежнему даёт flip.
+export const MAX_BOX = { type: 5, letters: 4, flip: 5, choice: 3, listen: 3, match: 0 };
 
 // ---------------------------------------------------------------------------
 // выбор режима
@@ -59,12 +62,14 @@ function pickOne(list) {
 // Какое направление карточки требует режим, если его выбрали руками.
 // null — режим работает в обе стороны. type и letters всегда RU→ES (воспроизведение),
 // flip всегда ES→RU (узнавание), иначе задание теряет смысл.
-export const MODE_DIR = { type: 'ru', letters: 'ru', flip: 'es', choice: null, match: null };
+// listen — ES: стимул испанский (звучит слово), значит и карточка «узнавание».
+export const MODE_DIR = { type: 'ru', letters: 'ru', flip: 'es', choice: null, listen: 'es', match: null };
 
 export const MODE_LABEL = {
   choice: 'Квиз',
   type: 'Ввод',
   letters: 'Из букв',
+  listen: 'Диктант',
   flip: 'Карточки',
   match: 'Пары',
 };
@@ -89,12 +94,16 @@ export function allowedDirs(modes) {
   return dirs;
 }
 
-export function pickMode(key, modes) {
+// opts.listen — есть ли испанский голос. Движок о синтезе речи не знает, а без голоса
+// диктант невозможен: тогда его нет ни среди выбранных руками, ни в лестнице.
+export function pickMode(key, modes, opts = {}) {
   const { dir } = parseKey(key);
 
   // Режимы, выбранные руками, важнее лестницы коробок: пользователь знает, что хочет
   // потренировать. Веса MAX_BOX при этом остаются в силе, так что схитрить не выйдет.
-  const chosen = cardModes(modes).filter((m) => !MODE_DIR[m] || MODE_DIR[m] === dir);
+  const chosen = cardModes(modes).filter(
+    (m) => (!MODE_DIR[m] || MODE_DIR[m] === dir) && (m !== 'listen' || opts.listen),
+  );
   if (chosen.length) return pickOne(chosen);
 
   const card = state.cards[key];
@@ -105,8 +114,10 @@ export function pickMode(key, modes) {
   // Лестница симметрична в обе стороны: сначала вариант подсказан, дальше подсказок нет.
   // Без второй ветки es-карточка в четвёртой коробке могла снова получить choice
   // с его потолком 3 и застрять там же, откуда только что вышла.
+  // Диктант — третьим вариантом там, где es-карточке ещё подсказывают: на слух и в
+  // написании слово закрепляется, пока его учат, а не после пятой коробки.
   if (dir === 'es') {
-    if (box <= 3) return pickOne(['flip', 'choice']);
+    if (box <= 3) return pickOne(opts.listen ? ['flip', 'choice', 'listen'] : ['flip', 'choice']);
     return 'flip';
   }
 
