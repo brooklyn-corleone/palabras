@@ -26,6 +26,7 @@ import {
   undeleteWord,
   flagWord,
   categories,
+  wordLists,
   DIRS,
 } from './state.js';
 
@@ -84,10 +85,12 @@ const session = {
   size: 20,
   modes: new Set(), // режимы; пусто — авто, по лестнице коробок
   picked: new Set(),
+  list: '', // id списка к уроку для source: 'list'
 };
 
 const SOURCE_LABEL = { due: 'к повторению', random: 'случайные', picked: 'выбранные', hard: 'трудные' };
 const SIZES = [0, 10, 20, 30, 40];
+const MAX_LISTS = 3;
 
 // Длина урока — сколько верных ответов он занимает (state.settings.goal). У слова два
 // направления, то есть две карточки, и каждая верная даёт один шаг: урок на двадцать
@@ -170,9 +173,26 @@ function isCustomSession() {
   return session.source !== 'due' || session.cats.size > 0 || session.modes.size > 0 || !sizeFromGoal;
 }
 
+// Выбранный список к уроку, если он ещё есть в колоде.
+function currentList() {
+  return session.source === 'list' ? wordLists().find((l) => l.id === session.list) || null : null;
+}
+
+// «14.11» — дата урока короче названия, и на кнопке её хватает.
+function shortDate(iso) {
+  const [, m, d] = String(iso || '').split('-');
+  return d && m ? d + '.' + m : '';
+}
+
+function listLabel(l) {
+  const date = shortDate(l.date);
+  return (date ? date + ' · ' : '') + l.title;
+}
+
 function sessionSummary() {
+  const list = currentList();
   return [
-    SOURCE_LABEL[session.source],
+    list ? 'список ' + listLabel(list) : SOURCE_LABEL[session.source],
     listOf(session.cats, catLabel, 'все темы'),
     session.size ? session.size + ' слов' : 'все слова',
     listOf(session.modes, (m) => srs.MODE_LABEL[m], 'авто'),
@@ -413,6 +433,7 @@ function renderSetup() {
   const picked = session.picked.size;
   const hard = srs.hardWordIds().size;
   const cats = categories();
+  const lists = wordLists();
   replace(
     stage,
     el(
@@ -433,6 +454,40 @@ function renderSetup() {
           session.source = v;
         },
       ),
+
+      // Списки — отдельной строкой, а не пятой кнопкой «Какие слова»: их бывает
+      // несколько, и выбирают конкретный урок, а не вид занятия. Три свежих хватает:
+      // учат к ближайшему уроку, старые списки к этому времени уже в колоде.
+      lists.length
+        ? chooser(
+            'Список к уроку',
+            lists.slice(0, MAX_LISTS).map((l) => [l.id, listLabel(l) + ' · ' + l.words.length]),
+            session.source === 'list' ? session.list : null,
+            (v) => {
+              // Повторное нажатие снимает список — как у тем, иначе выйти можно было бы
+              // только через «Какие слова», а это не очевидно.
+              if (session.source === 'list' && session.list === v) {
+                session.source = 'due';
+                session.list = '';
+              } else {
+                session.source = 'list';
+                session.list = v;
+              }
+            },
+          )
+        : null,
+
+      // Пояснение — сразу под списком, а не внизу экрана: там его не видно без прокрутки.
+      currentList()
+        ? el('p', {
+            class: 'hint list-hint',
+            text:
+              'Все слова списка, кроме выученных, — сначала те, что дольше не спрашивались.' +
+              (session.size && currentList().words.length > session.size
+                ? ' В занятие войдут ' + session.size + ' из ' + currentList().words.length + ', следующее возьмёт остальные.'
+                : ''),
+          })
+        : null,
 
       cats.length ? multiChooser('Тема', 'Все темы', cats, session.cats) : null,
 
@@ -489,12 +544,15 @@ function startSession() {
 // При запуске приложения занятие готовится, а показывается стартовый экран.
 function prepareSession() {
   resume = null;
+  // Список могли убрать из колоды пушем, пока приложение было открыто.
+  if (session.source === 'list' && !currentList()) session.source = 'due';
   srs.setSession({
     source: session.source,
     cats: session.cats,
     size: session.size,
     modes: session.modes,
     picked: session.picked,
+    list: currentList() ? currentList().words : [],
   });
   matchPacks = [];
   resetSessionResults();

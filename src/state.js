@@ -390,13 +390,30 @@ export async function mergeSeed() {
   const catsChanged = JSON.stringify(state.categories || {}) !== cats;
   if (catsChanged) state.categories = seed.categories || {};
 
-  if (added || refreshed || catsChanged) {
+  // Списки к урокам приезжают целиком, как темы: это не данные пользователя,
+  // а ссылки на слова колоды, и править их можно только пушем.
+  const lists = JSON.stringify(seed.lists || []);
+  const listsChanged = JSON.stringify(state.lists || []) !== lists;
+  if (listsChanged) state.lists = seed.lists || [];
+
+  if (added || refreshed || catsChanged || listsChanged) {
     state.seedVersion = seed.version;
     // Пополнение меняет тексты слов — кэш ответов в srs.js обязан это заметить.
     bumpDeck();
     save();
   }
   return added;
+}
+
+// Списки к урокам, свежие сверху. Связь со словами живёт в списке, а не в словах:
+// в список преподавателя попадают и новые слова, и давно лежащие в колоде.
+// Удалённые слова из списка выпадают; список, в котором не осталось слов, не показывается.
+export function wordLists() {
+  const live = new Set(state.words.filter((w) => !w.deleted).map((w) => w.id));
+  return (state.lists || [])
+    .map((l) => ({ ...l, words: (l.words || []).filter((id) => live.has(id)) }))
+    .filter((l) => l.words.length)
+    .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
 }
 
 // Темы колоды: код → название. Приезжают из deck.seed.json, поэтому переименовать

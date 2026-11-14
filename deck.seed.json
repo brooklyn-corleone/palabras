@@ -1,5 +1,5 @@
 {
-  "version": 25,
+  "version": 26,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
@@ -18,6 +18,42 @@
     "lugar": "Место",
     "conectores": "Наречия и связки"
   },
+  "lists": [
+    {
+      "id": "2026-11-14-rutina",
+      "title": "La rutina diaria",
+      "date": "2026-11-14",
+      "words": [
+        "rutina-despertarse",
+        "rutina-levantarse",
+        "rutina-ducharse",
+        "rutina-lavarse",
+        "rutina-vestirse",
+        "rutina-peinarse",
+        "rutina-acostarse",
+        "rutina-cepillarse-dientes",
+        "rutina-maquillarse",
+        "rutina-afeitarse",
+        "rutina-lavarse-manos",
+        "rutina-lavar",
+        "rutina-vestir",
+        "rutina-despertar",
+        "verb-llamar",
+        "rutina-desayunar",
+        "verb-ir",
+        "rutina-volver",
+        "rutina-sales",
+        "tiempo-todos-dias",
+        "rutina-despues",
+        "tiempo-luego",
+        "tiempo-antes-de",
+        "tiempo-finalmente",
+        "adje-rapido",
+        "conec-rapidamente",
+        "tiempo-tarde"
+      ]
+    }
+  ],
   "words": [
     {
       "id": "ser-yo",
