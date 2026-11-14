@@ -425,6 +425,8 @@ body.in-session .toast{bottom:auto;top:calc(12px + env(safe-area-inset-top))}
 .stepper-input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .stepper-unit{color:var(--muted);margin-left:4px}
 .setup .source-hint{margin:8px 0 22px}
+.setup .source-hint .hint{margin:0}
+.setup .source-hint .link-btn{margin-top:2px}
 
 /* Переключатель «Активные / Архив / Все» над списком слов. */
 .list-scope{margin-bottom:16px}
