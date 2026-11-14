@@ -364,7 +364,55 @@ body.in-session .toast{bottom:auto;top:calc(12px + env(safe-area-inset-top))}
 .pill:disabled{opacity:.4;cursor:default}
 .pill:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .setup .hint{margin:-10px 0 0}
-.setup .list-hint{margin-bottom:22px}
+
+/* «Какие слова» — сгруппированный список в духе iOS: название, под ним пояснение
+   с числом, галочка у выбранного. Пояснение видно и у выключенного варианта —
+   иначе было непонятно, почему он серый. */
+.choice-list{border-radius:var(--radius);background:var(--fill);overflow:hidden}
+.choice-row{
+  display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:10px 16px;
+  font:inherit;text-align:left;color:var(--text);background:none;border:0;cursor:pointer;
+  touch-action:manipulation;
+}
+.choice-row + .choice-row{border-top:1px solid var(--line)}
+.choice-text{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.choice-title{font-weight:500}
+.choice-sub{font-size:.765rem;color:var(--muted)}
+.choice-mark{flex-shrink:0;min-width:1em;font-weight:600;color:var(--accent);text-align:center}
+.choice-row.is-link .choice-mark{color:var(--muted);font-size:1.2rem}
+.choice-row:disabled{cursor:default}
+.choice-row:disabled .choice-title{opacity:.45}
+.choice-row:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:var(--radius)}
+
+/* Темы под раскрывающейся строкой: подпись слева, выбранное и шеврон справа. */
+.disclosure summary{
+  display:flex;align-items:center;gap:12px;min-height:44px;margin-bottom:8px;
+  list-style:none;cursor:pointer;touch-action:manipulation;
+}
+.disclosure summary::-webkit-details-marker{display:none}
+.setup .disclosure summary .cap{margin-bottom:0}
+.disclosure-value{flex:1;min-width:0;text-align:right;color:var(--text);font-size:.882rem;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.disclosure summary::after{
+  content:'';flex-shrink:0;width:8px;height:8px;margin:0 4px 4px 0;
+  border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);
+  transform:rotate(45deg);transition:transform .2s;
+}
+.disclosure[open] summary::after{transform:rotate(-135deg);margin-bottom:-4px}
+.disclosure summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+@media (prefers-reduced-motion: reduce){.disclosure summary::after{transition:none}}
+
+/* «Своё» число слов: − поле + */
+.stepper{display:flex;align-items:center;gap:6px;margin-top:8px}
+.stepper .pill{min-width:44px;padding:0;font-size:1.1rem}
+.stepper-input{
+  width:5.5em;min-height:44px;padding:0 10px;text-align:center;
+  font:inherit;color:var(--text);background:var(--bg);
+  border:1px solid var(--line-strong);border-radius:var(--radius);
+}
+.stepper-input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.stepper-unit{color:var(--muted);margin-left:4px}
+.setup .source-hint{margin:8px 0 22px}
 
 /* Переключатель «Активные / Архив / Все» над списком слов. */
 .list-scope{margin-bottom:16px}

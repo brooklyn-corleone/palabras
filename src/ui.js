@@ -73,7 +73,7 @@ const MISSES_KEPT = 10;
 // Настройки живут только в памяти: занятие — это «что учу прямо сейчас»,
 // после перезагрузки логично начинать с обычного повторения.
 const session = {
-  source: 'due', // 'due' — что созрело, 'random' — случайные, 'picked' — выбранные руками
+  source: 'due', // 'due' — что созрело, 'random' — вся колода, 'picked' — выбранные, 'hard', 'list'
   cats: new Set(), // коды тем; пусто — все темы
   // Потолок занятия по словам. Не «сколько наберётся»: на свежей колоде созревают разом
   // все карточки — на двухстах сорока словах это четыреста восемьдесят штук в одном
@@ -88,7 +88,7 @@ const session = {
   list: '', // id списка к уроку для source: 'list'
 };
 
-const SOURCE_LABEL = { due: 'к повторению', random: 'случайные', picked: 'выбранные', hard: 'трудные' };
+const SOURCE_LABEL = { due: 'к повторению', random: 'вся колода вперемешку', picked: 'выбранные', hard: 'трудные' };
 const SIZES = [0, 10, 20, 30, 40];
 const MAX_LISTS = 3;
 
@@ -193,10 +193,12 @@ function sessionSummary() {
   const list = currentList();
   return [
     list ? 'список ' + listLabel(list) : SOURCE_LABEL[session.source],
-    listOf(session.cats, catLabel, 'все темы'),
+    topicsApply() ? listOf(session.cats, catLabel, 'все темы') : null,
     session.size ? session.size + ' слов' : 'все слова',
     listOf(session.modes, (m) => srs.MODE_LABEL[m], 'авто'),
-  ].join(' · ');
+  ]
+    .filter(Boolean)
+    .join(' · ');
 }
 
 
@@ -368,6 +370,8 @@ function nextCard() {
 // ---------------------------------------------------------------------------
 
 function chooserBox(label, buttons) {
+  // Без подписи — ряд внутри раскрывающейся строки, подпись у которой своя.
+  if (!label) return el('div', { class: 'chooser-row' }, buttons);
   return el(
     'div',
     { class: 'chooser' },
@@ -427,13 +431,231 @@ function multiChooser(label, allText, options, selected) {
   return chooserBox(label, buttons);
 }
 
+// Темы и «своё число» живут между перерисовками экрана: он рисуется заново на каждое
+// нажатие, и без этого раскрытые темы схлопывались бы после выбора первой же.
+let topicsOpen = false;
+let customSizeOpen = false;
+const CUSTOM_SIZE_DEFAULT = 15;
+const CUSTOM_SIZE_MAX = 500;
+
+// Темы сужают только то, что набирается из всей колоды. Список к уроку, выбранные
+// и трудные — уже готовый набор слов: тема поверх него молча выкидывала бы часть
+// заказанного, и «Учить 12 слов» превращалось бы в занятие на пять.
+function topicsApply() {
+  return session.source === 'due' || session.source === 'random';
+}
+
+function sourceValue() {
+  return session.source === 'list' ? 'list:' + session.list : session.source;
+}
+
+// «Какие слова» — один список вариантов с пояснением под каждым, а не две строки кнопок.
+// Раньше «К повторению» и «Список к уроку» были в разных строках, но выбирали одно
+// и то же: нажатие в одной строке молча снимало выбор в другой. Неактивные «Выбранные»
+// и «Трудные» не объясняли, почему они серые: объяснение появлялось только после
+// нажатия, а нажать серую кнопку нельзя.
+function sourceOptions() {
+  const { review, fresh } = srs.todayCounts();
+  const picked = session.picked.size;
+  const hard = srs.hardWordIds().size;
+  const options = [
+    {
+      value: 'due',
+      title: 'К повторению',
+      sub:
+        [review ? review + ' к повторению' : '', fresh ? fresh + ' ' + plural(fresh, 'новое', 'новых', 'новых') : '']
+          .filter(Boolean)
+          .join(' · ') || 'На сегодня всё повторено',
+    },
+  ];
+  for (const l of wordLists().slice(0, MAX_LISTS)) {
+    options.push({
+      value: 'list:' + l.id,
+      title: l.title,
+      sub: 'Список к уроку ' + shortDate(l.date) + ' · ' + l.words.length + ' ' + plural(l.words.length, 'слово', 'слова', 'слов'),
+    });
+  }
+  options.push(
+    picked
+      ? { value: 'picked', title: 'Выбранные', sub: picked + ' ' + plural(picked, 'слово', 'слова', 'слов') + ', отмеченных в «Словах»' }
+      : {
+          // Пустые «Выбранные» не выключены, а ведут туда, где слова выбирают:
+          // объяснять словами, куда идти, хуже, чем отвести.
+          value: 'picked',
+          title: 'Выбранные',
+          sub: 'Отметить слова в «Словах»',
+          go: () => {
+            showView('words');
+            setSelecting(true);
+          },
+        },
+    {
+      value: 'hard',
+      title: 'Трудные',
+      sub: hard
+        ? hard + ' ' + plural(hard, 'слово', 'слова', 'слов') + ' с ошибками в ' + srs.LEECH + ' разных днях'
+        : 'Пока нет — сюда попадут слова с ошибками в ' + srs.LEECH + ' разных днях',
+      disabled: !hard,
+    },
+    { value: 'random', title: 'Вся колода вперемешку', sub: 'Любые слова, без оглядки на сроки повторения' },
+  );
+  return options;
+}
+
+function pickSource(value) {
+  if (value.startsWith('list:')) {
+    session.source = 'list';
+    session.list = value.slice(5);
+  } else {
+    session.source = value;
+    session.list = '';
+  }
+}
+
+function sourceChooser() {
+  const current = sourceValue();
+  const rows = sourceOptions().map((o) => {
+    const selected = o.value === current;
+    return el(
+      'button',
+      {
+        class: 'choice-row' + (o.go ? ' is-link' : ''),
+        type: 'button',
+        'aria-pressed': o.go ? undefined : String(selected),
+        disabled: o.disabled || undefined,
+        onclick: () => {
+          if (o.go) return o.go();
+          pickSource(o.value);
+          renderSetup();
+        },
+      },
+      el('span', { class: 'choice-text' }, el('span', { class: 'choice-title', text: o.title }), el('span', { class: 'choice-sub', text: o.sub })),
+      el('span', { class: 'choice-mark', 'aria-hidden': 'true', text: o.go ? '›' : selected ? '✓' : '' }),
+    );
+  });
+  return el(
+    'div',
+    { class: 'chooser' },
+    el('span', { class: 'cap', text: 'Какие слова' }),
+    el('div', { class: 'choice-list' }, rows),
+  );
+}
+
+// Темы — за раскрывающейся строкой (HIG, Disclosure controls: «Hide details until
+// relevant»). Их уже шестнадцать, на iPhone это пять рядов кнопок, а нужны они
+// не в каждом занятии. В свёрнутой строке видно, что выбрано, — раскрывать, чтобы
+// проверить, не нужно.
+function topicsChooser(cats) {
+  const summary = session.cats.size ? [...session.cats].map(catLabel).join(', ') : 'Все темы';
+  const box = el(
+    'details',
+    {
+      class: 'chooser disclosure',
+      open: topicsOpen || undefined,
+      ontoggle: (e) => {
+        topicsOpen = e.currentTarget.open;
+      },
+    },
+    el(
+      'summary',
+      {},
+      el('span', { class: 'cap', text: 'Тема' }),
+      el('span', { class: 'disclosure-value', text: summary }),
+    ),
+    multiChooser(null, 'Все темы', cats, session.cats),
+  );
+  return box;
+}
+
+function clampSize(n) {
+  if (!Number.isFinite(n)) return CUSTOM_SIZE_DEFAULT;
+  return Math.min(CUSTOM_SIZE_MAX, Math.max(1, Math.round(n)));
+}
+
+// «Своё» — кнопка рядом с готовыми размерами и поле с − / + под ними (HIG, Steppers:
+// для больших изменений пару степперу даёт текстовое поле). Шаг кнопок — пять:
+// по одному до сорока не дощёлкаешь.
+function sizeChooser() {
+  const custom = customSizeOpen || !SIZES.includes(session.size);
+  const setSize = (n) => {
+    sizeFromGoal = false;
+    session.size = n;
+  };
+  const buttons = SIZES.map((n) =>
+    el('button', {
+      class: 'pill',
+      type: 'button',
+      text: n === 0 ? 'Все' : String(n),
+      'aria-pressed': String(!custom && session.size === n),
+      onclick: () => {
+        customSizeOpen = false;
+        setSize(n);
+        renderSetup();
+      },
+    }),
+  );
+  buttons.push(
+    el('button', {
+      class: 'pill',
+      type: 'button',
+      text: custom && session.size ? 'Своё · ' + session.size : 'Своё',
+      'aria-pressed': String(custom),
+      onclick: () => {
+        customSizeOpen = true;
+        if (SIZES.includes(session.size)) setSize(CUSTOM_SIZE_DEFAULT);
+        renderSetup();
+        const input = $('custom-size');
+        if (input) input.focus();
+      },
+    }),
+  );
+  const step = (d) => () => {
+    setSize(clampSize((session.size || CUSTOM_SIZE_DEFAULT) + d));
+    renderSetup();
+  };
+  return el(
+    'div',
+    { class: 'chooser' },
+    el('span', { class: 'cap', text: 'Сколько слов' }),
+    el('div', { class: 'chooser-row' }, buttons),
+    custom
+      ? el(
+          'div',
+          { class: 'stepper' },
+          el('button', { class: 'pill', type: 'button', 'aria-label': 'Меньше на 5', text: '−', onclick: step(-5) }),
+          el('input', {
+            id: 'custom-size',
+            class: 'stepper-input',
+            type: 'number',
+            inputmode: 'numeric',
+            min: '1',
+            max: String(CUSTOM_SIZE_MAX),
+            value: String(session.size || CUSTOM_SIZE_DEFAULT),
+            'aria-label': 'Сколько слов в занятии',
+            // Перерисовываем на change, а не на каждый символ: иначе поле теряло бы фокус
+            // посреди набора «25».
+            // Размер обновляем и на каждом символе, без перерисовки: Enter в поле
+            // сразу нажимает «Начать», и change до этого может не успеть.
+            oninput: (e) => {
+              if (e.currentTarget.value) setSize(clampSize(Number(e.currentTarget.value)));
+            },
+            onchange: (e) => {
+              setSize(clampSize(Number(e.currentTarget.value)));
+              renderSetup();
+            },
+          }),
+          el('button', { class: 'pill', type: 'button', 'aria-label': 'Больше на 5', text: '+', onclick: step(5) }),
+          el('span', { class: 'stepper-unit', text: plural(session.size, 'слово', 'слова', 'слов') }),
+        )
+      : null,
+  );
+}
+
 function renderSetup() {
   screen = 'setup';
   setFocus(false);
-  const picked = session.picked.size;
-  const hard = srs.hardWordIds().size;
   const cats = categories();
-  const lists = wordLists();
+  const list = currentList();
   replace(
     stage,
     el(
@@ -441,66 +663,23 @@ function renderSetup() {
       { class: 'mode setup' },
       el('div', { class: 'dir' }, el('span', { text: 'Настройка занятия' })),
 
-      chooser(
-        'Какие слова',
-        [
-          ['due', 'К повторению'],
-          ['random', 'Случайные'],
-          ['picked', picked ? 'Выбранные · ' + picked : 'Выбранные', picked === 0],
-          ['hard', hard ? 'Трудные · ' + hard : 'Трудные', hard === 0],
-        ],
-        session.source,
-        (v) => {
-          session.source = v;
-        },
-      ),
+      sourceChooser(),
 
-      // Списки — отдельной строкой, а не пятой кнопкой «Какие слова»: их бывает
-      // несколько, и выбирают конкретный урок, а не вид занятия. Три свежих хватает:
-      // учат к ближайшему уроку, старые списки к этому времени уже в колоде.
-      lists.length
-        ? chooser(
-            'Список к уроку',
-            lists.slice(0, MAX_LISTS).map((l) => [l.id, listLabel(l) + ' · ' + l.words.length]),
-            session.source === 'list' ? session.list : null,
-            (v) => {
-              // Повторное нажатие снимает список — как у тем, иначе выйти можно было бы
-              // только через «Какие слова», а это не очевидно.
-              if (session.source === 'list' && session.list === v) {
-                session.source = 'due';
-                session.list = '';
-              } else {
-                session.source = 'list';
-                session.list = v;
-              }
-            },
-          )
-        : null,
-
-      // Пояснение — сразу под списком, а не внизу экрана: там его не видно без прокрутки.
-      currentList()
+      // Пояснение — сразу под вариантами, а не внизу экрана: там его не видно без прокрутки.
+      list
         ? el('p', {
-            class: 'hint list-hint',
+            class: 'hint source-hint',
             text:
               'Все слова списка, кроме выученных, — сначала те, что дольше не спрашивались.' +
-              (session.size && currentList().words.length > session.size
-                ? ' В занятие войдут ' + session.size + ' из ' + currentList().words.length + ', следующее возьмёт остальные.'
+              (session.size && list.words.length > session.size
+                ? ' В занятие войдут ' + session.size + ' из ' + list.words.length + ', следующее возьмёт остальные.'
                 : ''),
           })
         : null,
 
-      cats.length ? multiChooser('Тема', 'Все темы', cats, session.cats) : null,
+      cats.length && topicsApply() ? topicsChooser(cats) : null,
 
-      chooser(
-        'Сколько слов',
-        SIZES.map((n) => [n, n === 0 ? 'Все' : String(n)]),
-        session.size,
-        (v) => {
-          // Выбрал руками — дальше размер живёт сам по себе и за длиной урока не ходит.
-          sizeFromGoal = false;
-          session.size = v;
-        },
-      ),
+      sizeChooser(),
 
       multiChooser(
         'Формат',
@@ -508,16 +687,6 @@ function renderSetup() {
         Object.keys(srs.MODE_LABEL).map((m) => [m, srs.MODE_LABEL[m]]),
         session.modes,
       ),
-
-      session.source === 'picked' && picked === 0
-        ? el('p', { class: 'hint', text: 'Слова выбираются на вкладке «Слова»: кнопка «Выбрать» над списком.' })
-        : null,
-      session.source === 'hard'
-        ? el('p', {
-            class: 'hint',
-            text: 'Трудное — слово, забытое в ' + srs.LEECH + ' разных днях. Уходит из списка, когда дойдёт до архива.',
-          })
-        : null,
 
       el(
         'div',
@@ -548,7 +717,7 @@ function prepareSession() {
   if (session.source === 'list' && !currentList()) session.source = 'due';
   srs.setSession({
     source: session.source,
-    cats: session.cats,
+    cats: topicsApply() ? session.cats : new Set(),
     size: session.size,
     modes: session.modes,
     picked: session.picked,
