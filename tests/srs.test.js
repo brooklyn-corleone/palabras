@@ -457,6 +457,37 @@ test('удалённое слово исчезает из очереди и не
   assert.ok(!keys.some((k) => k.startsWith('seed-test-1')), 'удалённое не попадает в очередь');
 });
 
+test('диктант: только с голосом, только es-карточки и не выше третьей коробки', () => {
+  resetDeck();
+  const w = makeWord('la playa', 'пляж');
+  const es = w.id + '|es';
+  const ru = w.id + '|ru';
+  const listen = new Set(['listen']);
+
+  // Выбран руками, голос есть — es-карточка идёт диктантом, ru-карточку он не обслуживает.
+  assert.equal(srs.pickMode(es, listen, { listen: true }), 'listen');
+  assert.notEqual(srs.pickMode(ru, listen, { listen: true }), 'listen');
+  assert.deepEqual([...srs.allowedDirs(listen)], ['es']);
+
+  // Без голоса диктанта нет нигде: ни выбранного руками, ни в лестнице.
+  for (let i = 0; i < 30; i++) {
+    assert.notEqual(srs.pickMode(es, listen, { listen: false }), 'listen');
+    assert.notEqual(srs.pickMode(es), 'listen');
+  }
+
+  // С голосом он появляется в лестнице es-карточки, пока ей подсказывают (коробки 1–3).
+  const seen = new Set();
+  for (let i = 0; i < 200; i++) seen.add(srs.pickMode(es, null, { listen: true }));
+  assert.ok(seen.has('listen'));
+  state.cards[es].box = 4;
+  assert.equal(srs.pickMode(es, null, { listen: true }), 'flip');
+
+  // Потолок 3: верный диктант в третьей коробке не поднимает дальше.
+  state.cards[es].box = 3;
+  srs.grade(es, 'listen', true);
+  assert.equal(state.cards[es].box, 3);
+});
+
 test('pickMode: чем выше коробка, тем меньше подсказок', () => {
   resetDeck();
   const w = makeWord('la casa', 'дім');

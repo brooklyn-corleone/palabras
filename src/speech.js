@@ -44,7 +44,8 @@ export function voiceName() {
   return voice ? voice.name + ' · ' + voice.lang : '';
 }
 
-export function speak(text) {
+// rate — для «медленно» в диктанте: на обычной скорости ll/y и b/v на слух сливаются.
+export function speak(text, rate = 0.9) {
   if (!voice || !text) return;
   const synth = window.speechSynthesis;
   // Новое слово обрывает недоговорённое: иначе быстрые ответы копят очередь фраз.
@@ -52,7 +53,7 @@ export function speak(text) {
   const u = new SpeechSynthesisUtterance(text);
   u.voice = voice;
   u.lang = voice.lang;
-  u.rate = 0.9; // чуть медленнее обычного: слушают, чтобы разобрать звуки
+  u.rate = rate; // по умолчанию чуть медленнее обычного: слушают, чтобы разобрать звуки
   synth.speak(u);
 }
 
@@ -62,7 +63,7 @@ export function autoSpeak(text) {
   if (state.settings.autoSpeak) speak(text);
 }
 
-const ICON =
+export const ICON =
   '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/>' +
   '<path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>';
 

@@ -323,6 +323,18 @@ kbd{
 .speak svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .speak:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
+/* Диктант: вместо слова — «Ещё раз» и «Медленно». Главная кнопка крупная, по центру
+   внимания, как слово в обычном вопросе. */
+.prompt.listen{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.listen-btn{
+  display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 18px;
+  font:inherit;font-size:.882rem;font-weight:500;color:var(--text);
+  background:var(--fill);border:0;border-radius:var(--radius);cursor:pointer;touch-action:manipulation;
+}
+.listen-btn.primary{min-height:64px;padding:0 24px;font-size:1rem;color:var(--bg);background:var(--accent)}
+.listen-btn svg{width:24px;height:24px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.listen-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
 /* Тост «Отменить». Снизу над вкладками; во время занятия — сверху, иначе закрыл бы
    кнопки ответа. */
 .toast{

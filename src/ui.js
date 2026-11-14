@@ -8,7 +8,7 @@ import * as speech from './speech.js';
 import * as sync from './sync.js';
 import * as profiles from './profiles.js';
 import { el, replace, announce } from './dom.js';
-import { render as renderType } from './modes/type.js';
+import { render as renderType, renderListen } from './modes/type.js';
 import { render as renderFlip } from './modes/flip.js';
 import { render as renderChoice } from './modes/choice.js';
 import { render as renderLetters } from './modes/letters.js';
@@ -35,6 +35,7 @@ const MODES = {
   flip: renderFlip,
   choice: renderChoice,
   letters: renderLetters,
+  listen: renderListen,
 };
 
 const $ = (id) => document.getElementById(id);
@@ -684,7 +685,10 @@ function renderSetup() {
       multiChooser(
         'Формат',
         'Авто',
-        Object.keys(srs.MODE_LABEL).map((m) => [m, srs.MODE_LABEL[m]]),
+        // Без испанского голоса диктанта нет: кнопка, которая молчит, хуже отсутствующей.
+        Object.keys(srs.MODE_LABEL)
+          .filter((m) => m !== 'listen' || speech.canSpeak())
+          .map((m) => [m, srs.MODE_LABEL[m]]),
         session.modes,
       ),
 
@@ -940,7 +944,7 @@ function renderStage() {
     renderIntro(word);
     return;
   }
-  const mode = srs.pickMode(currentKey, session.modes);
+  const mode = srs.pickMode(currentKey, session.modes, { listen: speech.canSpeak() });
   screen = 'card';
   setFocus(true);
   replace(
