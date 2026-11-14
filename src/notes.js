@@ -440,6 +440,21 @@ export function openRule(note, from, siblings = null) {
   markSeen(note.id);
 }
 
+// То же окно для другого содержимого — выбора «Какие слова» в настройке занятия.
+// Второе окно рядом не заводим: лист снизу в приложении один, и ведёт он себя одинаково.
+export function openPanel(title, ...nodes) {
+  const sheet = document.getElementById('sheet');
+  if (!sheet) return;
+  if (!sheet.hasAttribute('open')) opener = document.activeElement;
+  document.getElementById('sheet-title').textContent = title;
+  replace(document.getElementById('sheet-body'), ...nodes);
+  if (!sheet.hasAttribute('open')) {
+    if (typeof sheet.showModal === 'function') sheet.showModal();
+    else sheet.setAttribute('open', '');
+  }
+  sheet.scrollTop = 0;
+}
+
 export function closeRule() {
   const sheet = document.getElementById('sheet');
   if (!sheet || !sheet.hasAttribute('open')) return;

@@ -513,33 +513,70 @@ function pickSource(value) {
   }
 }
 
+function sourceRow(o, selected, onPick) {
+  return el(
+    'button',
+    {
+      class: 'choice-row' + (o.go ? ' is-link' : ''),
+      type: 'button',
+      'aria-pressed': o.go ? undefined : String(selected),
+      disabled: o.disabled || undefined,
+      onclick: () => onPick(o),
+    },
+    el('span', { class: 'choice-text' }, el('span', { class: 'choice-title', text: o.title }), el('span', { class: 'choice-sub', text: o.sub })),
+    el('span', { class: 'choice-mark', 'aria-hidden': 'true', text: o.go ? '›' : selected ? '✓' : '' }),
+  );
+}
+
+// «Какие слова» на экране — одна строка с текущим выбором, варианты — в листе снизу,
+// как выбор значения в настройках iOS. Пять строк с пояснениями занимали около трёхсот
+// пикселей, и всё остальное уезжало под «Начать», хотя меняют это далеко не каждый раз.
 function sourceChooser() {
   const current = sourceValue();
-  const rows = sourceOptions().map((o) => {
-    const selected = o.value === current;
-    return el(
-      'button',
-      {
-        class: 'choice-row' + (o.go ? ' is-link' : ''),
-        type: 'button',
-        'aria-pressed': o.go ? undefined : String(selected),
-        disabled: o.disabled || undefined,
-        onclick: () => {
-          if (o.go) return o.go();
-          pickSource(o.value);
-          renderSetup();
-        },
-      },
-      el('span', { class: 'choice-text' }, el('span', { class: 'choice-title', text: o.title }), el('span', { class: 'choice-sub', text: o.sub })),
-      el('span', { class: 'choice-mark', 'aria-hidden': 'true', text: o.go ? '›' : selected ? '✓' : '' }),
+  const options = sourceOptions();
+  const chosen = options.find((o) => o.value === current) || options[0];
+  const pick = (o) => {
+    notes.closeRule();
+    if (o.go) return o.go();
+    pickSource(o.value);
+    renderSetup();
+  };
+  const open = () =>
+    notes.openPanel(
+      'Какие слова',
+      el('div', { class: 'choice-list' }, options.map((o) => sourceRow(o, o.value === current, pick))),
     );
-  });
   return el(
     'div',
     { class: 'chooser' },
     el('span', { class: 'cap', text: 'Какие слова' }),
-    el('div', { class: 'choice-list' }, rows),
+    el(
+      'div',
+      { class: 'choice-list' },
+      el(
+        'button',
+        { class: 'choice-row is-link', type: 'button', 'aria-haspopup': 'dialog', onclick: open },
+        el(
+          'span',
+          { class: 'choice-text' },
+          el('span', { class: 'choice-title', text: chosen.title }),
+          el('span', { class: 'choice-sub', text: chosen.sub }),
+        ),
+        el('span', { class: 'choice-mark', 'aria-hidden': 'true', text: '›' }),
+      ),
+    ),
   );
+}
+
+// Слова списка — во вкладке «Слова», фильтром «Тема или список»: там видны и стадии,
+// и действия над словами. Отдельный экран просмотра повторял бы этот список.
+function showListWords(id) {
+  showView('words');
+  $('filter-cat').value = 'list:' + id;
+  // Список смотрят целиком: выученные слова из него тоже часть урока.
+  listScope = 'all';
+  renderScope();
+  renderList();
 }
 
 // Темы — за раскрывающейся строкой (HIG, Disclosure controls: «Hide details until
@@ -668,14 +705,19 @@ function renderSetup() {
 
       // Пояснение — сразу под вариантами, а не внизу экрана: там его не видно без прокрутки.
       list
-        ? el('p', {
-            class: 'hint source-hint',
-            text:
-              'Все слова списка, кроме выученных, — сначала те, что дольше не спрашивались.' +
-              (session.size && list.words.length > session.size
-                ? ' В занятие войдут ' + session.size + ' из ' + list.words.length + ', следующее возьмёт остальные.'
-                : ''),
-          })
+        ? el(
+            'div',
+            { class: 'source-hint' },
+            el('p', {
+              class: 'hint',
+              text:
+                'Все слова списка, кроме выученных, — сначала те, что дольше не спрашивались.' +
+                (session.size && list.words.length > session.size
+                  ? ' В занятие войдут ' + session.size + ' из ' + list.words.length + ', следующее возьмёт остальные.'
+                  : ''),
+            }),
+            el('button', { class: 'link-btn', type: 'button', onclick: () => showListWords(list.id) }, 'Слова списка ›'),
+          )
         : null,
 
       cats.length && topicsApply() ? topicsChooser(cats) : null,
@@ -1513,16 +1555,31 @@ function renderScope() {
 function syncCatFilter() {
   const select = $('filter-cat');
   const cats = categories();
-  const signature = cats.map(([c]) => c).join(',');
+  const lists = wordLists();
+  const signature = cats.map(([c]) => c).join(',') + '|' + lists.map((l) => l.id).join(',');
   if (select.dataset.signature === signature) return;
   select.dataset.signature = signature;
   const current = select.value;
+  // Списки к уроку — тем же выпадающим списком, отдельной группой: смотреть слова урока
+  // приходят сюда же, куда за словами темы, и второй фильтр рядом был бы лишним.
   replace(
     select,
     el('option', { value: '', text: 'Все темы' }),
-    cats.map(([code, label]) => el('option', { value: code, text: label })),
+    lists.length
+      ? el(
+          'optgroup',
+          { label: 'Списки к уроку' },
+          lists.map((l) => el('option', { value: 'list:' + l.id, text: listLabel(l) })),
+        )
+      : null,
+    el(
+      'optgroup',
+      { label: 'Темы' },
+      cats.map(([code, label]) => el('option', { value: code, text: label })),
+    ),
   );
   select.value = current;
+  if (select.value !== current) select.value = '';
 }
 
 // Строка в стиле iOS: слово и перевод слева, коробка справа, действия — за свайпом влево.
@@ -1537,10 +1594,12 @@ function renderList() {
   openItem = null;
   const q = (filterEl.value || '').toLowerCase().trim();
   const cat = $('filter-cat').value;
+  const listId = cat.startsWith('list:') ? cat.slice(5) : '';
+  const inList = listId ? new Set((wordLists().find((l) => l.id === listId) || { words: [] }).words) : null;
   const hard = srs.hardWordIds();
   const items = activeWords()
     .filter((w) => inScope(w, hard))
-    .filter((w) => !cat || w.cat === cat)
+    .filter((w) => (inList ? inList.has(w.id) : !cat || w.cat === cat))
     .filter((w) => !q || (w.es + ' ' + w.ru).toLowerCase().includes(q))
     .map((w) => listRow(w, hard.has(w.id)));
 
