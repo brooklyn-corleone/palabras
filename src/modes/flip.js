@@ -47,12 +47,15 @@ export function render({ word, card, onAnswer, onArchive, onFlag, flagged: initF
       build();
       return;
     }
+    // Классы меняются местами в одном такте и flip-in не снимается по окончании:
+    // иначе на миг возвращалась бы общая анимация карточки (.stage > * в styles.css),
+    // и перевёрнутая карточка мигала бы ещё раз.
+    root.classList.remove('flip-in');
     root.classList.add('flip-out');
     setTimeout(() => {
       build();
       root.classList.remove('flip-out');
       root.classList.add('flip-in');
-      setTimeout(() => root.classList.remove('flip-in'), HALF_FLIP * 2);
     }, HALF_FLIP);
   }
 

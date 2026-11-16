@@ -32,6 +32,8 @@ try {
   <!-- На телефоне это нижняя панель вкладок (HIG: навигация в зоне большого пальца),
        на широком экране — строка в шапке. Значки нарисованы здесь же: без зависимостей. -->
   <nav class="tabs" aria-label="Разделы">
+    <!-- «Линза» под выбранной вкладкой: одна на всю панель и переезжает, а не мигает. -->
+    <span class="tab-lens" aria-hidden="true"></span>
     <button id="tab-learn" aria-current="true">
       <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="7" width="13" height="13" rx="2.5"/><path d="M7.5 4h10A2.5 2.5 0 0 1 20 6.5v10"/></svg>
       <span>Учить</span>
