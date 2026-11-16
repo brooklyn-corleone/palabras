@@ -43,6 +43,15 @@
   --glass-rim:    rgba(0,0,0,.08);
   --glass-shadow: 0 8px 28px rgba(0,0,0,.12), 0 1px 3px rgba(0,0,0,.08);
   --glass-sel:    rgba(118,118,110,.16);
+
+  /* Движение. Кривые — с быстрым стартом и долгим мягким торможением, как системные
+     переходы iOS: элемент сразу откликается на нажатие и плавно встаёт на место.
+     Длительности короткие: анимация не должна заставлять ждать (HIG, Motion). */
+  --ease-out: cubic-bezier(.22,1,.36,1);
+  --ease-spring: cubic-bezier(.32,.72,0,1);
+  --dur-fast: .16s;
+  --dur: .26s;
+  --dur-slow: .4s;
 }
 
 /* Тема — только системная (HIG, Dark Mode: «Avoid an app-specific appearance setting»).
@@ -145,6 +154,7 @@ header{
 .profile-list{display:flex;flex-direction:column;gap:8px;margin-top:16px}
 .profile-list .btn{width:100%;justify-content:center;min-height:56px;font-size:1rem}
 nav{display:flex;gap:2px}
+.tab-lens{display:none}
 nav button{
   font:inherit;font-size:.882rem;font-weight:500;
   background:none;border:0;color:var(--muted);
@@ -874,7 +884,16 @@ input.filter:focus{outline:none;border-bottom-color:var(--accent)}
   }
   /* Выбранная вкладка — акцентом и подложкой-«линзой» под ней, как в iOS 26.
      Значок жирнее: HIG советует в панели вкладок заполненные символы, а наши — контурные. */
-  nav.tabs button[aria-current="true"]{color:var(--accent);background:var(--glass-sel)}
+  nav.tabs button{position:relative;z-index:1}
+  nav.tabs button[aria-current="true"]{color:var(--accent)}
+  .tab-lens{
+    display:block;position:absolute;z-index:0;top:4px;bottom:4px;left:4px;
+    width:calc((100% - 8px) / 4);
+    border-radius:calc((var(--tabbar-pill) - 8px) / 2);
+    background:var(--glass-sel);
+    transform:translateX(calc(var(--tab-i, 0) * 100%));
+    transition:transform var(--dur-slow) var(--ease-spring);
+  }
   nav.tabs button[aria-current="true"] svg{stroke-width:2.2}
   nav.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
   /* Край прокрутки (HIG, Layout: «Prefer scroll-edge effects to solid/semi-opaque
@@ -946,8 +965,55 @@ input.filter:focus{outline:none;border-bottom-color:var(--accent)}
   .wrap{padding-top:40px}
 }
 
+/* ---------- плавность переключений ----------
+   Всё на CSS-анимациях появления: они срабатывают, когда элемент вставлен заново
+   или перестал быть display:none, — без кода закрытия и без ожидания: нажатия
+   во время анимации проходят (HIG, Motion: «let people cancel animations rather
+   than wait for completion»). Закрытие — мгновенное по той же причине.
+   Карточки занятия только проявляются, без сдвига: смена карточки повторяется сотни
+   раз за неделю, а HIG советует «generally avoid animation on frequently repeated
+   custom interactions» — короткое проявление снимает рывок и не мешает. */
+@keyframes fadeIn{from{opacity:0}}
+@keyframes riseIn{from{opacity:0;transform:translateY(8px)}}
+@keyframes dropIn{from{opacity:0;transform:translateY(-6px)}}
+@keyframes sheetIn{from{opacity:0;transform:translateY(32px)}}
+@keyframes popIn{from{opacity:0;transform:scale(.96)}}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%, 12px)}}
+@keyframes barIn{from{opacity:0;transform:translateY(100%)}}
+
+/* Вкладки: новый раздел проявляется и чуть поднимается. */
+.wrap > section:not(.hidden){animation:riseIn var(--dur) var(--ease-out) both}
+/* Карточка и её разбор. */
+.stage > *{animation:fadeIn var(--dur-fast) ease-out both}
+/* Окно правила и лист «Какие слова»: снизу, как лист в iOS; на широком экране —
+   из-под центра. Фон затемняется плавно. */
+.sheet[open]{animation:sheetIn var(--dur-slow) var(--ease-spring) both}
+.sheet[open]::backdrop{animation:fadeIn var(--dur) ease-out both}
+/* Раскрытие: темы, группы правил, форма добавления — содержимое выпадает сверху. */
+.disclosure[open] > :not(summary),
+.rule-rows:not([hidden]),
+.add:not(.hidden){animation:dropIn var(--dur) var(--ease-out) both}
+/* Тост и панель выбора слов — выезжают снизу. */
+.toast:not(.hidden){animation:toastIn var(--dur) var(--ease-spring) both}
+.picked-bar:not(.hidden){animation:barIn var(--dur) var(--ease-spring) both}
+/* Окно «Кто занимается?», итог проверки звука, подсказки под шкалой — проявление. */
+.voice-test-result:not(:empty),#rail-note:not(:empty){animation:fadeIn var(--dur) ease-out both}
+/* Выбор вариантов: заливка и цвет перетекают, а не щёлкают. */
+.btn,.choice-row,.chip,.option{transition:background-color var(--dur-fast) ease, color var(--dur-fast) ease, border-color var(--dur-fast) ease, transform var(--dur-fast) ease}
+/* Отклик на нажатие — лёгкое «вдавливание», как у системных кнопок. */
+.btn:active,.pill:active,.pair:active,.option:active,.chip:active,.choice-row:active{transform:scale(.97)}
+.pill{transition:border-color var(--dur-fast), color var(--dur-fast), background-color var(--dur-fast), transform var(--dur-fast) ease}
+.pair{transition:opacity .2s, border-color var(--dur-fast), background-color var(--dur-fast), transform var(--dur-fast) ease}
+
+/* «Уменьшение движения»: сдвиги, масштаб и пружины убираются, проявление остаётся
+   (HIG, Accessibility: «replacing axis transitions with fades»). */
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
+  .wrap > section:not(.hidden),
+  .sheet[open],.disclosure[open] > :not(summary),.rule-rows:not([hidden]),.add:not(.hidden),
+  .picked-bar:not(.hidden){animation:fadeIn var(--dur) ease-out both!important}
+  .toast:not(.hidden){animation:fadeIn var(--dur) ease-out both!important}
+  .btn:active,.pill:active,.pair:active,.option:active,.chip:active,.choice-row:active{transform:none}
 }
 
 .sr-only{
@@ -1001,7 +1067,7 @@ input.filter:focus{outline:none;border-bottom-color:var(--accent)}
 }
 @media (max-width:768px) and (prefers-contrast: more){
   nav.tabs{background:var(--glass-solid) !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important;border:1px solid var(--line-strong)}
-  nav.tabs button[aria-current="true"]{background:var(--fill-hover)}
+  .tab-lens{background:var(--fill-hover)}
 }
 @media (prefers-reduced-motion: reduce){
   nav.tabs button{transition:none}

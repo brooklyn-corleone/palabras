@@ -2191,6 +2191,8 @@ const VIEWS = ['learn', 'words', 'rules', 'settings'];
 
 function showView(which) {
   view = which;
+  // Линза под вкладками едет к выбранной (styles.css, .tab-lens).
+  document.querySelector('nav.tabs').style.setProperty('--tab-i', String(VIEWS.indexOf(which)));
   for (const name of VIEWS) {
     $('view-' + name).classList.toggle('hidden', name !== which);
     $('tab-' + name).setAttribute('aria-current', String(name === which));
