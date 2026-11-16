@@ -1,6 +1,6 @@
 # Palabras
 
-Spanish vocabulary trainer for Russian speakers. Static PWA, no backend, works offline.
+Spanish vocabulary trainer. Static PWA, no backend, works offline.
 Spanish of Spain, not Latin America: `vosotros`, `el coche`, `el piso`.
 
 ## → [brooklyn-corleone.github.io/palabras](https://brooklyn-corleone.github.io/palabras/)
