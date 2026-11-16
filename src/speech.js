@@ -123,8 +123,26 @@ function utter(text, rate) {
 
 // rate — для «медленно» в диктанте: на обычной скорости ll/y и b/v на слух сливаются.
 // По умолчанию чуть медленнее обычного: слушают, чтобы разобрать звуки.
+// Беззвучный режим iPhone. Звук сайта по умолчанию — «фоновый» (ambient): переключатель
+// на боку его глушит, а нативные приложения вроде Duolingo играют как плеер и звучат.
+// С iOS 17 Safari даёт сайту попросить то же самое — тип сессии playback. Слово
+// произносят по нажатию, то есть человек явно хочет его услышать, — как в плеере.
+// Глушит ли переключатель именно синтез речи после этого, WebKit не документирует:
+// на устройстве это проверяется «Проверить звук» при включённом беззвучном.
+function playbackSession() {
+  const session = navigator.audioSession;
+  if (session && session.type !== 'playback') {
+    try {
+      session.type = 'playback';
+    } catch {
+      // Старый Safari или другой браузер: остаётся как было.
+    }
+  }
+}
+
 export function speak(text, rate = 0.9) {
   if (!voice || !text) return;
+  playbackSession();
   const synth = window.speechSynthesis;
   clearTimeout(pendingTimer);
   current = utter(text, rate);
@@ -171,7 +189,7 @@ export function testSpeech(done) {
     const verdict = failed
       ? 'фраза не прозвучала: ' + (ERRORS[failed.replace(/^.* error: /, '')] || failed)
       : started
-        ? 'фраза прозвучала — если звука не было, дело в беззвучном режиме или громкости'
+        ? 'фраза прозвучала — если звука не было, проверьте беззвучный режим и громкость'
         : 'браузер проглотил фразу: ни начала, ни ошибки';
     done({
       verdict,
@@ -180,6 +198,7 @@ export function testSpeech(done) {
         'голосов ' + voices.length + ', испанских ' + voices.filter((v) => /^es([-_]|$)/i.test(v.lang)).length,
         'выбран: ' + voiceName(),
         'Apple: ' + (isApple() ? 'да' : 'нет') + ', ' + (standalone ? 'с экрана «Домой»' : 'в браузере'),
+        'звуковая сессия: ' + (navigator.audioSession ? navigator.audioSession.type : 'нет (Safari до 17)'),
         'speaking ' + synth.speaking + ', pending ' + synth.pending + ', paused ' + synth.paused,
         ua.replace(/^Mozilla\/5\.0 /, ''),
       ].join(' · '),
