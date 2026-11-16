@@ -14,7 +14,6 @@ const listeners = new Set();
 // сборщиком мусора фраза обрывается или не начинается вовсе — отсюда «работает через раз».
 let current = null;
 let pendingTimer = 0;
-let unlocked = false;
 
 function supported() {
   return typeof window !== 'undefined' && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
@@ -26,7 +25,11 @@ function supported() {
 function isApple() {
   const ua = navigator.userAgent || '';
   if (/iPhone|iPad|iPod/.test(ua)) return true; // любой браузер на iOS — это WebKit
-  return /Macintosh/.test(ua) && !/Chrome|Chromium|Firefox|Edg/.test(ua);
+  if (!/Macintosh/.test(ua)) return false;
+  // iPad в режиме «как на компьютере» называет себя Маком, и Chrome на нём — тоже WebKit.
+  // Отличает его тачскрин: у Мака его нет.
+  if (navigator.maxTouchPoints > 1) return true;
+  return !/Chrome|Chromium|Firefox|Edg/.test(ua);
 }
 
 // Голоса-игрушки Apple (Eloquence и «новинки»): работают, но учат не тому произношению.
@@ -63,32 +66,10 @@ export function initSpeech(onChange) {
   update();
   window.speechSynthesis.addEventListener('voiceschanged', update);
   for (const ms of [250, 1000, 3000]) setTimeout(update, ms);
-  unlockOnFirstTouch();
 }
 
 function notify() {
   for (const fn of listeners) fn();
-}
-
-// iOS пускает звук синтеза, только если первая фраза сказана прямо в обработчике нажатия.
-// Диктант и автоозвучка говорят при показе карточки — не всегда внутри жеста. Поэтому
-// первое нажатие где угодно произносит беззвучную фразу: дальше iOS разрешает говорить
-// без жеста. Слушаем click во всплытии, а не pointerdown: если нажали 🔊, speak() уже
-// сработал внутри жеста и сам отметил unlocked — лишняя фраза его бы оборвала.
-function unlockOnFirstTouch() {
-  const unlock = () => {
-    document.removeEventListener('click', unlock);
-    document.removeEventListener('keydown', unlock);
-    if (unlocked || !voice) return;
-    unlocked = true;
-    const u = new SpeechSynthesisUtterance(' ');
-    u.volume = 0;
-    u.lang = 'es-ES';
-    current = u;
-    window.speechSynthesis.speak(u);
-  };
-  document.addEventListener('click', unlock);
-  document.addEventListener('keydown', unlock);
 }
 
 export function canSpeak() {
@@ -122,13 +103,16 @@ function utter(text, rate) {
   if (voice && !voice.system && !isApple()) u.voice = voice;
   u.lang = voice.lang.replace('_', '-');
   u.rate = rate;
+  u.onend = () => trace('end');
   u.onerror = (e) => {
+    trace('error: ' + e.error);
     // interrupted и canceled — это мы сами оборвали прошлую фразу, не ошибка.
     if (e.error === 'interrupted' || e.error === 'canceled') return;
     lastError = ERRORS[e.error] || 'ошибка синтеза: ' + e.error;
     notify();
   };
   u.onstart = () => {
+    trace('start');
     if (lastError) {
       lastError = '';
       notify();
@@ -142,24 +126,65 @@ function utter(text, rate) {
 export function speak(text, rate = 0.9) {
   if (!voice || !text) return;
   const synth = window.speechSynthesis;
-  unlocked = true;
   clearTimeout(pendingTimer);
   current = utter(text, rate);
   const u = current;
   // Chrome после ухода со вкладки и долгого простоя застревает на паузе и молчит.
   if (synth.paused) synth.resume();
-  if (synth.speaking || synth.pending) {
-    // Новое слово обрывает недоговорённое, иначе быстрые ответы копят очередь фраз.
-    // Но speak() сразу после cancel() Chrome и Safari теряют — нужен зазор.
-    // Сюда попадаем, только когда уже что-то звучало, то есть iOS звук уже разрешил.
-    synth.cancel();
-    pendingTimer = setTimeout(() => {
-      if (current === u) synth.speak(u);
-    }, 120);
+  const busy = synth.speaking || synth.pending;
+  trace('speak' + (busy ? ' (занят)' : ''));
+  if (busy) synth.cancel();
+  // iOS пускает звук только из обработчика нажатия: отложенная фраза выпадает из жеста
+  // и молчит. Поэтому на Apple — сразу, даже после cancel(): Safari после него теряет
+  // только события фразы, а не звук.
+  if (!busy || isApple()) {
+    synth.speak(u);
     return;
   }
-  // Ничего не звучит — говорим сразу, внутри нажатия: так iOS пускает первую фразу.
-  synth.speak(u);
+  // Chrome и Firefox теряют speak() сразу после cancel() — нужен зазор.
+  // Без жеста им можно: им хватает того, что на странице уже нажимали.
+  pendingTimer = setTimeout(() => {
+    if (current === u) synth.speak(u);
+  }, 120);
+}
+
+// Журнал последних событий синтеза — для «Проверить звук». Отличает «фраза прозвучала,
+// а звука нет» (началась и кончилась — значит, беззвучный режим или громкость)
+// от «браузер проглотил фразу» (ни начала, ни ошибки).
+let log = [];
+let logStart = 0;
+function trace(what) {
+  log.push(((performance.now() - logStart) / 1000).toFixed(1) + ' с ' + what);
+}
+
+export function testSpeech(done) {
+  log = [];
+  logStart = performance.now();
+  speak('Hola, ¿qué tal?');
+  setTimeout(() => {
+    const synth = window.speechSynthesis;
+    const voices = synth.getVoices();
+    const ua = navigator.userAgent || '';
+    const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+    const started = log.some((l) => l.endsWith('start'));
+    const failed = log.find((l) => l.includes('error'));
+    const verdict = failed
+      ? 'фраза не прозвучала: ' + (ERRORS[failed.replace(/^.* error: /, '')] || failed)
+      : started
+        ? 'фраза прозвучала — если звука не было, дело в беззвучном режиме или громкости'
+        : 'браузер проглотил фразу: ни начала, ни ошибки';
+    done({
+      verdict,
+      details: [
+        'события: ' + (log.join(', ') || 'нет'),
+        'голосов ' + voices.length + ', испанских ' + voices.filter((v) => /^es([-_]|$)/i.test(v.lang)).length,
+        'выбран: ' + voiceName(),
+        'Apple: ' + (isApple() ? 'да' : 'нет') + ', ' + (standalone ? 'с экрана «Домой»' : 'в браузере'),
+        'speaking ' + synth.speaking + ', pending ' + synth.pending + ', paused ' + synth.paused,
+        ua.replace(/^Mozilla\/5\.0 /, ''),
+      ].join(' · '),
+    });
+  }, 3000);
 }
 
 // Сам по себе, без нажатия, — только если включено в настройках. По умолчанию выключено:

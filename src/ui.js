@@ -288,7 +288,16 @@ function bindSpeech() {
       applySpeakChoice();
     });
   }
-  $('btn-voice-test').addEventListener('click', () => speech.speak('Hola, ¿qué tal?'));
+  // Итог проверки — текстом, который можно прислать скриншотом: без устройства в руках
+  // иначе не понять, где пропал звук.
+  $('btn-voice-test').addEventListener('click', () => {
+    const out = $('voice-test-result');
+    out.textContent = 'Проверяю…';
+    speech.testSpeech(({ verdict, details }) => {
+      out.textContent = '';
+      out.append(el('strong', { text: verdict[0].toUpperCase() + verdict.slice(1) + '.' }), el('br'), details);
+    });
+  });
   speech.initSpeech(applySpeakChoice);
   applySpeakChoice();
 }
