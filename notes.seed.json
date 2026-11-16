@@ -1,5 +1,5 @@
 {
-  "version": 15,
+  "version": 16,
   "groups": {
     "start": "Первые шаги",
     "ser": "Быть и иметь",
@@ -17,10 +17,10 @@
     "presente": "Правильные, возвратные и «прямо сейчас»",
     "irregulares": "По типу: -go, e → ie, o → ue, e → i, -zco",
     "futuro": "ir a + инфинитив и простое будущее",
-    "genero": "Существительные, прилагательные, цвета, семья",
+    "genero": "Существительные, артикли, прилагательные, сравнение, muy и mucho",
     "trato": "tú и usted, me gusta, просьбы, lo и la",
     "numeros": "Счёт до ста, часы, дни, месяцы",
-    "frases": "Конструкции с de, самочувствие, если, погода, дорога"
+    "frases": "Предлоги, магазин, ресторан, самочувствие, если, погода, дорога"
   },
   "notes": [
     {
@@ -630,7 +630,12 @@
         "verb-practicar",
         "verb-preguntar",
         "verb-leer",
-        "verb-correr"
+        "verb-correr",
+        "verb-usar",
+        "verb-visitar",
+        "verb-nadar",
+        "verb-alquilar",
+        "rutina-pasear"
       ]
     },
     {
@@ -708,6 +713,36 @@
             "vestirse — одеваться",
             "acostarse — ложиться спать"
           ]
+        },
+        {
+          "kind": "table",
+          "head": [
+            "без se",
+            "с se"
+          ],
+          "rows": [
+            [
+              "ir — идти",
+              "irse — уходить"
+            ],
+            [
+              "despedir — увольнять",
+              "despedirse — прощаться"
+            ],
+            [
+              "quedar — договориться",
+              "quedarse — оставаться"
+            ],
+            [
+              "llamar — звать",
+              "llamarse — зваться"
+            ]
+          ]
+        },
+        {
+          "kind": "text",
+          "title": "Осторожно",
+          "body": "Иногда se не просто «себя», а меняет смысл глагола — такие пары учат как два слова."
         }
       ],
       "words": [
@@ -728,7 +763,12 @@
         "rutina-vestir",
         "rutina-despertar",
         "verb-llamar",
-        "verb-banarse"
+        "verb-banarse",
+        "verb-irse",
+        "verb-despedirse",
+        "verb-despedir",
+        "ropa-probarse",
+        "rutina-lavarse-cara"
       ]
     },
     {
@@ -1030,7 +1070,8 @@
       "words": [
         "verb-hacer",
         "rutina-sales",
-        "verb-poner"
+        "verb-poner",
+        "verb-traer"
       ]
     },
     {
@@ -1093,7 +1134,8 @@
       ],
       "words": [
         "verb-oir",
-        "verb-venir"
+        "verb-venir",
+        "verb-decir"
       ]
     },
     {
@@ -1198,7 +1240,7 @@
         },
         {
           "kind": "text",
-          "body": "querer — хотеть, empezar — начинать, poder — мочь, dormir — спать, mover — двигать, jugar — играть (u → ue, единственный такой)."
+          "body": "querer — хотеть, empezar — начинать, poder — мочь, dormir — спать, mover — двигать, jugar — играть (u → ue, единственный такой). Так же: preferir — prefiero, pensar — pienso, entender — entiendo, costar — cuesta, almorzar — almuerzo."
         },
         {
           "kind": "text",
@@ -1214,7 +1256,10 @@
         "verb-dormir",
         "verb-pensar",
         "verb-entender",
-        "verb-sentarse"
+        "verb-sentarse",
+        "verb-preferir",
+        "verb-mover",
+        "rutina-almorzar"
       ]
     },
     {
@@ -1276,7 +1321,8 @@
         }
       ],
       "words": [
-        "verb-pedir"
+        "verb-pedir",
+        "verb-elegir"
       ]
     },
     {
@@ -1333,6 +1379,77 @@
       "words": [
         "transp-conducir",
         "verb-conocer"
+      ]
+    },
+    {
+      "id": "irr-uir-oler",
+      "group": "irregulares",
+      "title": "-uir, oler, cocer: y, h и смена корня",
+      "gist": "huir — huyo, oler — huelo, cocer — cuezo. nosotros и vosotros — как обычно",
+      "blocks": [
+        {
+          "kind": "table",
+          "head": [
+            "",
+            "huir",
+            "oler",
+            "cocer"
+          ],
+          "rows": [
+            [
+              "yo",
+              "hu[y]o",
+              "[hue]lo",
+              "c[ue]zo"
+            ],
+            [
+              "tú",
+              "hu[y]es",
+              "[hue]les",
+              "c[ue]ces"
+            ],
+            [
+              "él, ella, usted",
+              "hu[y]e",
+              "[hue]le",
+              "c[ue]ce"
+            ],
+            [
+              "nosotros/as",
+              "huimos",
+              "olemos",
+              "cocemos"
+            ],
+            [
+              "vosotros/as",
+              "huís",
+              "oléis",
+              "cocéis"
+            ],
+            [
+              "ellos/as, ustedes",
+              "hu[y]en",
+              "[hue]len",
+              "c[ue]cen"
+            ]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "huir — убегать, oler — нюхать, пахнуть, cocer — варить. Все глаголы на -uir вставляют y: construir — construyo, destruir — destruyo."
+        },
+        {
+          "kind": "text",
+          "title": "Почему huele",
+          "body": "oler меняет o на ue, как poder, но слово не может начинаться с ue — поэтому пишется h: huele, huelen. Отсюда ¡Qué bien huele! — как вкусно пахнет!"
+        }
+      ],
+      "words": [
+        "verb-huir",
+        "verb-construir",
+        "verb-destruir",
+        "verb-oler",
+        "verb-cocer"
       ]
     },
     {
@@ -1735,7 +1852,8 @@
       ],
       "cats": [
         "colores"
-      ]
+      ],
+      "words": []
     },
     {
       "id": "plural-familia",
@@ -1771,6 +1889,158 @@
       ],
       "cats": [
         "familia"
+      ]
+    },
+    {
+      "id": "articulos",
+      "group": "genero",
+      "title": "Артикли: el или un",
+      "gist": "el — тот самый, известный; un — какой-то, один из многих. unos — несколько",
+      "blocks": [
+        {
+          "kind": "table",
+          "head": [
+            "",
+            "определённый",
+            "неопределённый"
+          ],
+          "rows": [
+            [
+              "м. р. ед.",
+              "el",
+              "un"
+            ],
+            [
+              "ж. р. ед.",
+              "la",
+              "una"
+            ],
+            [
+              "м. р. мн.",
+              "los",
+              "unos"
+            ],
+            [
+              "ж. р. мн.",
+              "las",
+              "unas"
+            ]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "un — когда предмет упоминается впервые или неважно, какой именно: quiero comprar un coche nuevo. el — когда понятно, о каком речь: el coche está en el garaje."
+        },
+        {
+          "kind": "text",
+          "body": "unos, unas — «несколько», «какие-то»: veo unos perros en el parque, tengo unas ideas."
+        },
+        {
+          "kind": "text",
+          "title": "Профессия",
+          "body": "Soy médico — без артикля. Но с прилагательным он возвращается: mi hermana es una doctora muy buena."
+        },
+        {
+          "kind": "text",
+          "title": "Слияние",
+          "body": "a + el = al, de + el = del: voy al mercado, vengo del trabajo. С la, los, las не сливаются: a la tienda."
+        }
+      ]
+    },
+    {
+      "id": "comparacion",
+      "group": "genero",
+      "title": "Сравнение: más … que, tan … como",
+      "gist": "más grande que — больше, чем; menos caro que — дешевле; tan bueno como — такой же",
+      "blocks": [
+        {
+          "kind": "table",
+          "head": [
+            "",
+            "схема",
+            "пример"
+          ],
+          "rows": [
+            [
+              "больше",
+              "más … que",
+              "más grande que"
+            ],
+            [
+              "меньше",
+              "menos … que",
+              "menos caro que"
+            ],
+            [
+              "так же",
+              "tan … como",
+              "tan bueno como"
+            ]
+          ]
+        },
+        {
+          "kind": "list",
+          "title": "Примеры",
+          "items": [
+            "Esta tienda es más grande que aquella — этот магазин больше того",
+            "Este vestido es menos caro que aquel — это платье дешевле того",
+            "Este pan es tan sabroso como el otro — этот хлеб такой же вкусный, как тот"
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Прилагательное согласуется с тем, что сравнивают: las peras son más caras que las manzanas."
+        },
+        {
+          "kind": "text",
+          "title": "Стоит столько же",
+          "body": "С глаголом — tanto como: las zanahorias cuestan tanto como las cebollas."
+        },
+        {
+          "kind": "text",
+          "title": "Неправильные",
+          "body": "bueno → mejor, malo → peor: este queso es mejor que el otro. «Más bueno» не говорят."
+        }
+      ],
+      "words": [
+        "conec-mas",
+        "conec-menos",
+        "conec-tan-como"
+      ]
+    },
+    {
+      "id": "muy-mucho",
+      "group": "genero",
+      "title": "muy или mucho",
+      "gist": "muy — перед прилагательным: muy caro. mucho — с существительным и глаголом",
+      "blocks": [
+        {
+          "kind": "list",
+          "items": [
+            "muy + прилагательное — muy caro, muy fresco",
+            "muy + наречие — muy bien, muy temprano",
+            "mucho + существительное — mucho trabajo, muchas frutas",
+            "глагол + mucho — trabajo mucho, me gusta mucho"
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Перед существительным mucho согласуется с ним, как прилагательное: mucho pan, mucha leche, muchos huevos, muchas verduras. После глагола не меняется: ella estudia mucho."
+        },
+        {
+          "kind": "text",
+          "title": "Ловушка",
+          "body": "«Muy» с существительным и глаголом не бывает: hay mucho azúcar, а не muy azúcar; el arroz es muy barato, а не mucho barato."
+        },
+        {
+          "kind": "text",
+          "body": "Усилить — muchísimo, тоже по роду и числу: muchísimas gracias, te quiero muchísimo."
+        }
+      ],
+      "words": [
+        "desc-muy",
+        "conec-mucho",
+        "conec-muchisimo"
       ]
     },
     {
@@ -1847,7 +2117,7 @@
     {
       "id": "doler-pronombres",
       "group": "trato",
-      "title": "me gusta, me duele",
+      "title": "me gusta, me duele, me queda",
       "gist": "Подлежащее — то, что нравится или болит: me gustan los libros",
       "blocks": [
         {
@@ -1894,11 +2164,18 @@
         {
           "kind": "text",
           "body": "Так же устроен gustar: me gusta el café, me gustan los libros."
+        },
+        {
+          "kind": "text",
+          "title": "quedar и parecer",
+          "body": "Так же устроены quedar (сидеть об одежде) и parecer (казаться): este vestido me queda bien, estos pantalones me quedan grandes, ¿qué te parece esta blusa? — me parece bonita."
         }
       ],
       "words": [
         "salud-duele",
-        "verb-gustar"
+        "verb-gustar",
+        "ropa-quedar-bien",
+        "verb-parecer"
       ]
     },
     {
@@ -2173,6 +2450,7 @@
           "kind": "list",
           "title": "Часть суток после времени",
           "items": [
+            "de la madrugada — с полуночи до рассвета",
             "de la mañana — до полудня",
             "de la tarde — с полудня до темноты",
             "de la noche — когда уже стемнело"
@@ -2181,6 +2459,11 @@
         {
           "kind": "text",
           "body": "Son las nueve de la mañana. Son las nueve de la noche. Часовой пояс тут ни при чём: испанцы делят сутки по свету, а не по цифрам."
+        },
+        {
+          "kind": "text",
+          "title": "Во сколько",
+          "body": "Во сколько — через a: ¿A qué hora te levantas? — A las siete. ¿A qué hora cenas? — A las nueve y media de la noche."
         }
       ]
     },
@@ -2475,6 +2758,161 @@
         "lugar-calle",
         "verb-girar",
         "verb-seguir"
+      ]
+    },
+    {
+      "id": "preposiciones",
+      "group": "frases",
+      "title": "Предлоги a, de, en, con",
+      "gist": "a — куда и во сколько, de — откуда и чей, en — где и на чём, con — с кем",
+      "blocks": [
+        {
+          "kind": "list",
+          "title": "a",
+          "items": [
+            "куда — voy a la universidad",
+            "во сколько — a las ocho",
+            "кого (о человеке) — veo a María"
+          ]
+        },
+        {
+          "kind": "list",
+          "title": "de",
+          "items": [
+            "откуда — soy de España",
+            "чей — el libro de Juan",
+            "из чего — una mesa de madera"
+          ]
+        },
+        {
+          "kind": "list",
+          "title": "en",
+          "items": [
+            "где — estoy en casa",
+            "на чём ехать — voy en autobús",
+            "когда (месяц, год) — en mayo, en 1990"
+          ]
+        },
+        {
+          "kind": "list",
+          "title": "con",
+          "items": [
+            "с кем — con mis amigos",
+            "чем — con un cuchillo",
+            "с чем (о еде) — café con leche"
+          ]
+        },
+        {
+          "kind": "text",
+          "title": "Личное a",
+          "body": "Перед человеком-дополнением ставится a, которого нет в русском: veo a María, но veo la casa. Visito a mis abuelos."
+        },
+        {
+          "kind": "text",
+          "title": "Исключение",
+          "body": "a pie — пешком, хотя транспорт идёт с en: voy en coche, voy en metro, но voy a pie."
+        }
+      ]
+    },
+    {
+      "id": "en-la-tienda",
+      "group": "frases",
+      "title": "В магазине: quería, ¿cuánto cuesta?",
+      "gist": "Quería un kilo de tomates. ¿Cuánto es? — вежливо просить и спросить цену",
+      "blocks": [
+        {
+          "kind": "list",
+          "title": "Диалог",
+          "items": [
+            "¿Qué quería? — что вы хотели?",
+            "Quería un kilo de tomates — мне килограмм помидоров",
+            "¿Tiene naranjas? — у вас есть апельсины?",
+            "¿Algo más? — что-нибудь ещё?",
+            "Nada más, gracias — больше ничего, спасибо",
+            "¿Cuánto cuesta? — сколько стоит?",
+            "¿Cuánto es todo? — сколько с меня?",
+            "Aquí tiene — вот, пожалуйста",
+            "Me lo llevo — беру"
+          ]
+        },
+        {
+          "kind": "text",
+          "title": "Почему quería",
+          "body": "Quería — форма прошедшего от querer, но в магазине это вежливое «я бы хотел», а не «я хотел». Quiero звучит резче."
+        },
+        {
+          "kind": "list",
+          "title": "Сколько: всегда через de",
+          "items": [
+            "un kilo de patatas — килограмм картошки",
+            "medio kilo de queso — полкило сыра",
+            "una docena de huevos — дюжина яиц",
+            "una botella de leche — бутылка молока",
+            "una barra de pan — батон хлеба",
+            "una lata de atún — банка тунца",
+            "un paquete de arroz — пачка риса",
+            "cien gramos de jamón — сто граммов хамона"
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "¿Cuánto cuesta? — про одну вещь, ¿cuánto cuestan? — про несколько: costar меняет o на ue, как poder."
+        }
+      ],
+      "words": [
+        "compr-costar",
+        "compr-cuanto-cuesta",
+        "compr-cuanto-es",
+        "compr-queria",
+        "compr-algo-mas",
+        "compr-nada-mas",
+        "compr-aqui-tiene",
+        "compr-me-lo-llevo"
+      ],
+      "cats": [
+        "compras"
+      ]
+    },
+    {
+      "id": "en-el-restaurante",
+      "group": "frases",
+      "title": "В ресторане: de primero, de segundo",
+      "gist": "De primero — ensalada, de segundo — pescado, de postre — flan. ¿Nos trae la cuenta?",
+      "blocks": [
+        {
+          "kind": "list",
+          "title": "Диалог",
+          "items": [
+            "¿Qué van a tomar? — что будете заказывать?",
+            "De primero, quiero una ensalada — на первое салат",
+            "De segundo, pescado frito — на второе жареную рыбу",
+            "¿Y para beber? — а что будете пить?",
+            "¿Qué quieren de postre? — что на десерт?",
+            "¿Nos trae la cuenta, por favor? — принесите счёт, пожалуйста",
+            "¡Que aproveche! — приятного аппетита!"
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Испанский обед — три части: primer plato (суп, салат, овощи), segundo plato (мясо или рыба) и postre. Menú del día — такой обед по фиксированной цене, в будни почти в любом баре."
+        },
+        {
+          "kind": "text",
+          "body": "tomar в ресторане — «есть» и «пить»: ¿Qué vas a tomar? Tomar un café, tomar una tapa."
+        }
+      ],
+      "words": [
+        "rest-de-primero",
+        "rest-de-segundo",
+        "rest-de-postre",
+        "rest-para-beber",
+        "rest-que-van-tomar",
+        "rest-que-aproveche",
+        "rest-cuenta",
+        "rest-primer-plato"
+      ],
+      "cats": [
+        "restaurante"
       ]
     }
   ]

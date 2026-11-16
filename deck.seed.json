@@ -1,5 +1,5 @@
 {
-  "version": 27,
+  "version": 28,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
@@ -21,7 +21,10 @@
     "animales": "Животные",
     "trabajo": "Учёба и работа",
     "comida": "Еда и напитки",
-    "clima": "Погода"
+    "clima": "Погода",
+    "compras": "Покупки",
+    "ropa": "Одежда",
+    "restaurante": "Кафе и ресторан"
   },
   "lists": [
     {
@@ -237,6 +240,346 @@
         "adje-divertido",
         "verb-llegar",
         "comida-comida"
+      ]
+    },
+    {
+      "id": "2026-11-08-leccion-8",
+      "title": "Lección 8. Servicio",
+      "date": "2026-11-08",
+      "words": [
+        "rest-restaurante",
+        "rest-cafeteria",
+        "rest-bar",
+        "rest-taberna",
+        "rest-camarero",
+        "rest-cuenta",
+        "rest-menu-del-dia",
+        "rest-primer-plato",
+        "rest-postre",
+        "rest-de-primero",
+        "rest-de-segundo",
+        "rest-de-postre",
+        "rest-para-beber",
+        "rest-que-van-tomar",
+        "rest-tapa",
+        "rest-que-aproveche",
+        "rest-a-la-plancha",
+        "rest-frito",
+        "rest-cuchara",
+        "rest-cuchillo",
+        "rest-vaso",
+        "ropa-vestido",
+        "ropa-camisa",
+        "ropa-camiseta",
+        "ropa-blusa",
+        "ropa-falda",
+        "ropa-pantalones",
+        "ropa-jersey",
+        "ropa-traje",
+        "ropa-corbata",
+        "ropa-sombrero",
+        "ropa-bolso",
+        "ropa-zapatos",
+        "ropa-zapatillas",
+        "ropa-medias",
+        "ropa-chaqueton",
+        "ropa-talla",
+        "ropa-de-rayas",
+        "ropa-de-cuadros",
+        "ropa-cuero",
+        "ropa-pana",
+        "ropa-elegante",
+        "ropa-clasico",
+        "ropa-deportivo",
+        "ropa-quedar-bien",
+        "ropa-probarse",
+        "comida-ensalada",
+        "comida-verdura",
+        "comida-patata",
+        "comida-carne",
+        "comida-filete",
+        "comida-ternera",
+        "comida-pescado",
+        "comida-flan",
+        "comida-natillas",
+        "comida-fruta",
+        "comida-refresco",
+        "comida-agua",
+        "comida-limon",
+        "comida-zumo",
+        "comida-harina",
+        "comida-arroz",
+        "comida-ciruela",
+        "comida-fresa",
+        "comida-tomate",
+        "comida-pera",
+        "comida-aguacate",
+        "comida-huevo",
+        "comida-leche",
+        "comida-nuez",
+        "comida-cafe",
+        "comida-aceite",
+        "comida-maiz",
+        "comida-marisco",
+        "comida-queso",
+        "comida-mantequilla",
+        "colo-rojo",
+        "colo-azul",
+        "colo-verde",
+        "colo-amarillo",
+        "colo-negro",
+        "colo-blanco",
+        "colo-gris",
+        "colo-naranja",
+        "colo-rosa",
+        "colo-marron",
+        "colo-morado",
+        "verb-preferir",
+        "verb-saber",
+        "compr-costar",
+        "compr-cuanto-cuesta",
+        "compr-precio",
+        "compr-zapateria",
+        "verb-parecer",
+        "verb-alquilar",
+        "verb-gustar",
+        "verb-tomar",
+        "casa-horno",
+        "familia-hermano",
+        "preg-quien",
+        "dorm-almohada",
+        "verb-hacer",
+        "verb-querer"
+      ]
+    },
+    {
+      "id": "2026-11-07-leccion-7",
+      "title": "Lección 7. Vamos de compras",
+      "date": "2026-11-07",
+      "words": [
+        "comida-aceite",
+        "comida-agua",
+        "comida-arroz",
+        "comida-azucar",
+        "comida-cafe",
+        "comida-pan",
+        "comida-leche",
+        "comida-huevo",
+        "comida-queso",
+        "comida-platano",
+        "comida-pera",
+        "comida-tomate",
+        "comida-lechuga",
+        "comida-patata",
+        "comida-cebolla",
+        "comida-zanahoria",
+        "comida-chorizo",
+        "comida-jamon",
+        "comida-pescado",
+        "comida-pollo",
+        "comida-vinagre",
+        "comida-vino",
+        "comida-yogur",
+        "comida-carne",
+        "comida-mantequilla",
+        "comida-mermelada",
+        "comida-galleta",
+        "comida-patatas-fritas",
+        "comida-sardina",
+        "comida-atun",
+        "comida-manzana",
+        "comida-uva",
+        "comida-fresa",
+        "comida-zumo",
+        "comida-pasta",
+        "comida-ensalada",
+        "comida-fruta",
+        "comida-verdura",
+        "comida-te",
+        "adje-barato",
+        "adje-caro",
+        "adje-fresco",
+        "adje-sabroso",
+        "adje-conocido",
+        "desc-grande",
+        "adje-bueno",
+        "compr-supermercado",
+        "compr-mercado",
+        "compr-fruteria",
+        "compr-panaderia",
+        "compr-carniceria",
+        "compr-pescaderia",
+        "compr-zapateria",
+        "compr-kilo",
+        "compr-medio-kilo",
+        "compr-gramo",
+        "compr-litro",
+        "compr-docena",
+        "compr-botella",
+        "compr-lata",
+        "compr-paquete",
+        "compr-bolsa",
+        "compr-barra-pan",
+        "compr-precio",
+        "compr-euro",
+        "compr-centimo",
+        "compr-marca",
+        "compr-costar",
+        "compr-cuanto-cuesta",
+        "compr-cuanto-es",
+        "compr-queria",
+        "compr-algo-mas",
+        "compr-nada-mas",
+        "compr-aqui-tiene",
+        "compr-me-lo-llevo",
+        "compr-en-efectivo",
+        "salu-por-favor",
+        "salu-gracias",
+        "salu-de-nada",
+        "verb-comprar",
+        "verb-pagar",
+        "verb-preferir",
+        "casa-nevera",
+        "lugar-gimnasio",
+        "lugar-banco",
+        "lugar-tienda",
+        "rest-cafeteria",
+        "rest-cuchillo",
+        "trab-libro",
+        "desc-muy",
+        "conec-mucho",
+        "conec-muchisimo",
+        "conec-un-poco",
+        "conec-mas",
+        "conec-menos",
+        "conec-tan-como"
+      ]
+    },
+    {
+      "id": "2026-11-06-leccion-6",
+      "title": "Lección 6. Rutina diaria",
+      "date": "2026-11-06",
+      "words": [
+        "rutina-despertarse",
+        "rutina-levantarse",
+        "rutina-ducharse",
+        "rutina-desayunar",
+        "rutina-comer",
+        "rutina-cenar",
+        "rutina-acostarse",
+        "rutina-lavarse",
+        "rutina-cepillarse-dientes",
+        "rutina-vestirse",
+        "rutina-compras",
+        "rutina-barrer",
+        "rutina-trapear",
+        "rutina-lavar-ropa",
+        "rutina-fregar",
+        "rutina-aspirar",
+        "rutina-paseo",
+        "rutina-dar-paseo",
+        "rutina-sales",
+        "rutina-volver",
+        "rutina-despues",
+        "rutina-almorzar",
+        "rutina-madrugar",
+        "rutina-lavarse-cara",
+        "rutina-pasear",
+        "rutina-hacer-cama",
+        "rutina-desayuno",
+        "rutina-almuerzo",
+        "rutina-musica",
+        "rutina-deporte",
+        "tiempo-manana",
+        "tiempo-mediodia",
+        "tiempo-tarde-dia",
+        "tiempo-noche",
+        "tiempo-temprano",
+        "tiempo-tarde",
+        "tiempo-siempre",
+        "tiempo-casi-siempre",
+        "tiempo-a-menudo",
+        "tiempo-frecuentemente",
+        "tiempo-normalmente",
+        "tiempo-de-vez",
+        "tiempo-a-veces",
+        "tiempo-pocas-veces",
+        "tiempo-nunca",
+        "tiempo-casi-nunca",
+        "tiempo-jamas",
+        "tiempo-antes-de",
+        "tiempo-luego",
+        "tiempo-finalmente",
+        "tiempo-todos-dias",
+        "tiempo-madrugada",
+        "tiempo-vacaciones",
+        "transp-moto",
+        "transp-metro",
+        "transp-bicicleta",
+        "transp-coche",
+        "transp-autobus",
+        "transp-andando",
+        "transp-medios",
+        "transp-tren",
+        "transp-avion",
+        "transp-taxi",
+        "transp-barco",
+        "transp-tranvia",
+        "transp-conducir",
+        "verb-querer",
+        "verb-pedir",
+        "verb-dormir",
+        "verb-mover",
+        "verb-jugar",
+        "verb-venir",
+        "verb-decir",
+        "verb-elegir",
+        "verb-seguir",
+        "verb-dar",
+        "verb-traer",
+        "verb-hacer",
+        "verb-saber",
+        "verb-poner",
+        "verb-conocer",
+        "verb-oir",
+        "verb-huir",
+        "verb-construir",
+        "verb-destruir",
+        "verb-cocer",
+        "verb-oler",
+        "verb-gustar",
+        "verb-irse",
+        "verb-despedir",
+        "verb-despedirse",
+        "verb-nadar",
+        "verb-usar",
+        "verb-visitar",
+        "verb-tocar",
+        "verb-decide",
+        "verb-caminar",
+        "verb-llegar",
+        "verb-banarse",
+        "lugar-playa",
+        "lugar-parque",
+        "lugar-tienda",
+        "lugar-biblioteca",
+        "familia-vecino",
+        "familia-persona",
+        "casa-ruido",
+        "trab-escuela",
+        "trab-clase",
+        "anim-animal",
+        "comida-fruta",
+        "comida-verdura",
+        "comida-hamburguesa",
+        "comida-cafe",
+        "comida-tostada",
+        "rest-cafeteria",
+        "rest-restaurante",
+        "rest-cuenta",
+        "adje-interesante",
+        "adje-importante",
+        "adje-divertido"
       ]
     },
     {
@@ -4270,6 +4613,1196 @@
       "ru": "прогуляться",
       "pos": "phrase",
       "cat": "rutina"
+    },
+    {
+      "id": "rutina-almorzar",
+      "es": "almorzar",
+      "ru": "перекусывать в полдень; обедать",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-madrugar",
+      "es": "madrugar",
+      "ru": "вставать ни свет ни заря",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-lavarse-cara",
+      "es": "lavarse la cara",
+      "ru": "умываться",
+      "pos": "phrase",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-pasear",
+      "es": "pasear",
+      "ru": "гулять",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-hacer-cama",
+      "es": "hacer la cama",
+      "ru": "заправлять кровать",
+      "pos": "phrase",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-desayuno",
+      "es": "el desayuno",
+      "ru": "завтрак",
+      "pos": "n",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-almuerzo",
+      "es": "el almuerzo",
+      "ru": "обед, ланч",
+      "pos": "n",
+      "cat": "rutina"
+    },
+    {
+      "id": "tiempo-madrugada",
+      "es": "la madrugada",
+      "ru": "раннее утро, предрассветные часы",
+      "pos": "n",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-vacaciones",
+      "es": "las vacaciones",
+      "ru": "отпуск, каникулы",
+      "pos": "n",
+      "cat": "tiempo"
+    },
+    {
+      "id": "verb-decir",
+      "es": "decir",
+      "ru": "сказать, говорить что-то",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-elegir",
+      "es": "elegir",
+      "ru": "выбирать",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-traer",
+      "es": "traer",
+      "ru": "приносить",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-mover",
+      "es": "mover",
+      "ru": "двигать, передвигать",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-preferir",
+      "es": "preferir",
+      "ru": "предпочитать",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-irse",
+      "es": "irse",
+      "ru": "уходить, уезжать",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-despedirse",
+      "es": "despedirse",
+      "ru": "прощаться",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-despedir",
+      "es": "despedir",
+      "ru": "увольнять",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-usar",
+      "es": "usar",
+      "ru": "использовать, пользоваться",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-visitar",
+      "es": "visitar",
+      "ru": "навещать, посещать",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-nadar",
+      "es": "nadar",
+      "ru": "плавать",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-huir",
+      "es": "huir",
+      "ru": "убегать, сбегать",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-construir",
+      "es": "construir",
+      "ru": "строить",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-destruir",
+      "es": "destruir",
+      "ru": "разрушать",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-cocer",
+      "es": "cocer",
+      "ru": "варить",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-parecer",
+      "es": "parecer",
+      "ru": "казаться",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-alquilar",
+      "es": "alquilar",
+      "ru": "снимать, арендовать",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "lugar-tienda",
+      "es": "la tienda",
+      "ru": "магазин",
+      "pos": "n",
+      "cat": "lugar"
+    },
+    {
+      "id": "lugar-playa",
+      "es": "la playa",
+      "ru": "пляж",
+      "pos": "n",
+      "cat": "lugar"
+    },
+    {
+      "id": "lugar-parque",
+      "es": "el parque",
+      "ru": "парк",
+      "pos": "n",
+      "cat": "lugar"
+    },
+    {
+      "id": "lugar-gimnasio",
+      "es": "el gimnasio",
+      "ru": "спортзал",
+      "pos": "n",
+      "cat": "lugar"
+    },
+    {
+      "id": "lugar-biblioteca",
+      "es": "la biblioteca",
+      "ru": "библиотека",
+      "pos": "n",
+      "cat": "lugar"
+    },
+    {
+      "id": "lugar-banco",
+      "es": "el banco",
+      "ru": "банк; скамейка",
+      "pos": "n",
+      "cat": "lugar"
+    },
+    {
+      "id": "familia-vecino",
+      "es": "el vecino",
+      "ru": "сосед",
+      "pos": "n",
+      "cat": "familia"
+    },
+    {
+      "id": "familia-persona",
+      "es": "la persona",
+      "ru": "человек",
+      "pos": "n",
+      "cat": "familia"
+    },
+    {
+      "id": "casa-nevera",
+      "es": "la nevera",
+      "ru": "холодильник",
+      "pos": "n",
+      "cat": "casa"
+    },
+    {
+      "id": "casa-horno",
+      "es": "el horno",
+      "ru": "духовка",
+      "pos": "n",
+      "cat": "casa"
+    },
+    {
+      "id": "casa-ruido",
+      "es": "el ruido",
+      "ru": "шум",
+      "pos": "n",
+      "cat": "casa"
+    },
+    {
+      "id": "transp-tranvia",
+      "es": "el tranvía",
+      "ru": "трамвай",
+      "pos": "n",
+      "cat": "transporte"
+    },
+    {
+      "id": "trab-escuela",
+      "es": "la escuela",
+      "ru": "учебное заведение, школа",
+      "pos": "n",
+      "cat": "trabajo"
+    },
+    {
+      "id": "trab-clase",
+      "es": "la clase",
+      "ru": "урок, занятие",
+      "pos": "n",
+      "cat": "trabajo"
+    },
+    {
+      "id": "rutina-musica",
+      "es": "la música",
+      "ru": "музыка",
+      "pos": "n",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-deporte",
+      "es": "el deporte",
+      "ru": "спорт",
+      "pos": "n",
+      "cat": "rutina"
+    },
+    {
+      "id": "anim-animal",
+      "es": "el animal",
+      "ru": "животное",
+      "pos": "n",
+      "cat": "animales"
+    },
+    {
+      "id": "adje-fresco",
+      "es": "fresco",
+      "ru": "свежий",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-sabroso",
+      "es": "sabroso",
+      "ru": "вкусный",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-conocido",
+      "es": "conocido",
+      "ru": "известный",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-interesante",
+      "es": "interesante",
+      "ru": "интересный",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-importante",
+      "es": "importante",
+      "ru": "важный",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "conec-mas",
+      "es": "más",
+      "ru": "больше, более",
+      "pos": "adv",
+      "cat": "conectores"
+    },
+    {
+      "id": "conec-menos",
+      "es": "menos",
+      "ru": "меньше, менее",
+      "pos": "adv",
+      "cat": "conectores"
+    },
+    {
+      "id": "conec-tan-como",
+      "es": "tan… como",
+      "ru": "так же… как",
+      "pos": "phrase",
+      "cat": "conectores"
+    },
+    {
+      "id": "conec-muchisimo",
+      "es": "muchísimo",
+      "ru": "очень много, очень сильно",
+      "pos": "adv",
+      "cat": "conectores"
+    },
+    {
+      "id": "comida-aceite",
+      "es": "el aceite",
+      "ru": "растительное масло",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-mantequilla",
+      "es": "la mantequilla",
+      "ru": "сливочное масло",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-arroz",
+      "es": "el arroz",
+      "ru": "рис",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-azucar",
+      "es": "el azúcar",
+      "ru": "сахар",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-cafe",
+      "es": "el café",
+      "ru": "кофе",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-te",
+      "es": "el té",
+      "ru": "чай",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-zumo",
+      "es": "el zumo",
+      "ru": "сок",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-pan",
+      "es": "el pan",
+      "ru": "хлеб",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-tostada",
+      "es": "la tostada",
+      "ru": "тост, гренка",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-carne",
+      "es": "la carne",
+      "ru": "мясо",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-pollo",
+      "es": "el pollo",
+      "ru": "курица — мясо",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-ternera",
+      "es": "la ternera",
+      "ru": "телятина",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-filete",
+      "es": "el filete",
+      "ru": "филе, стейк",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-chorizo",
+      "es": "el chorizo",
+      "ru": "чорисо — острая колбаса",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-pescado",
+      "es": "el pescado",
+      "ru": "рыба — как еда",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-sardina",
+      "es": "la sardina",
+      "ru": "сардина",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-atun",
+      "es": "el atún",
+      "ru": "тунец",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-marisco",
+      "es": "el marisco",
+      "ru": "морепродукты",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-mermelada",
+      "es": "la mermelada",
+      "ru": "джем, варенье",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-galleta",
+      "es": "la galleta",
+      "ru": "печенье",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-patatas-fritas",
+      "es": "las patatas fritas",
+      "ru": "картофель фри; чипсы",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-hamburguesa",
+      "es": "la hamburguesa",
+      "ru": "гамбургер",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-vinagre",
+      "es": "el vinagre",
+      "ru": "уксус",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-harina",
+      "es": "la harina",
+      "ru": "мука",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-pasta",
+      "es": "la pasta",
+      "ru": "макароны, паста",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-ensalada",
+      "es": "la ensalada",
+      "ru": "салат — блюдо",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-flan",
+      "es": "el flan",
+      "ru": "флан, крем-карамель",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-natillas",
+      "es": "las natillas",
+      "ru": "заварной крем",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-manzana",
+      "es": "la manzana",
+      "ru": "яблоко",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-platano",
+      "es": "el plátano",
+      "ru": "банан",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-uva",
+      "es": "la uva",
+      "ru": "виноград",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-fresa",
+      "es": "la fresa",
+      "ru": "клубника",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-limon",
+      "es": "el limón",
+      "ru": "лимон",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-ciruela",
+      "es": "la ciruela",
+      "ru": "слива",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-aguacate",
+      "es": "el aguacate",
+      "ru": "авокадо",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-nuez",
+      "es": "la nuez",
+      "ru": "грецкий орех",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-patata",
+      "es": "la patata",
+      "ru": "картофель",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-tomate",
+      "es": "el tomate",
+      "ru": "помидор",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-lechuga",
+      "es": "la lechuga",
+      "ru": "салат-латук",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-cebolla",
+      "es": "la cebolla",
+      "ru": "лук",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-zanahoria",
+      "es": "la zanahoria",
+      "ru": "морковь",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-maiz",
+      "es": "el maíz",
+      "ru": "кукуруза",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "compr-supermercado",
+      "es": "el supermercado",
+      "ru": "супермаркет",
+      "pos": "n",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-mercado",
+      "es": "el mercado",
+      "ru": "рынок",
+      "pos": "n",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-fruteria",
+      "es": "la frutería",
+      "ru": "фруктовая лавка",
+      "pos": "n",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-panaderia",
+      "es": "la panadería",
+      "ru": "булочная, пекарня",
+      "pos": "n",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-carniceria",
+      "es": "la carnicería",
+      "ru": "мясная лавка",
+      "pos": "n",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-pescaderia",
+      "es": "la pescadería",
+      "ru": "рыбный магазин",
+      "pos": "n",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-zapateria",
+      "es": "la zapatería",
+      "ru": "обувной магазин",
+      "pos": "n",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-kilo",
+      "es": "el kilo",
+      "ru": "килограмм",
+      "pos": "n",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-medio-kilo",
+      "es": "medio kilo",
+      "ru": "полкило",
+      "pos": "phrase",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-gramo",
+      "es": "el gramo",
+      "ru": "грамм",
+      "pos": "n",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-litro",
+      "es": "el litro",
+      "ru": "литр",
+      "pos": "n",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-docena",
+      "es": "la docena",
+      "ru": "дюжина",
+      "pos": "n",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-botella",
+      "es": "la botella",
+      "ru": "бутылка",
+      "pos": "n",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-lata",
+      "es": "la lata",
+      "ru": "консервная банка",
+      "pos": "n",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-paquete",
+      "es": "el paquete",
+      "ru": "пачка, упаковка",
+      "pos": "n",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-bolsa",
+      "es": "la bolsa",
+      "ru": "пакет",
+      "pos": "n",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-barra-pan",
+      "es": "la barra de pan",
+      "ru": "батон, багет",
+      "pos": "n",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-precio",
+      "es": "el precio",
+      "ru": "цена",
+      "pos": "n",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-euro",
+      "es": "el euro",
+      "ru": "евро",
+      "pos": "n",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-centimo",
+      "es": "el céntimo",
+      "ru": "цент",
+      "pos": "n",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-marca",
+      "es": "la marca",
+      "ru": "марка, бренд",
+      "pos": "n",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-costar",
+      "es": "costar",
+      "ru": "стоить",
+      "pos": "v",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-cuanto-cuesta",
+      "es": "¿cuánto cuesta?",
+      "ru": "сколько стоит?",
+      "pos": "phrase",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-cuanto-es",
+      "es": "¿cuánto es?",
+      "ru": "сколько с меня?",
+      "pos": "phrase",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-queria",
+      "es": "quería",
+      "ru": "я бы хотел — вежливо",
+      "pos": "phrase",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-algo-mas",
+      "es": "¿algo más?",
+      "ru": "что-нибудь ещё?",
+      "pos": "phrase",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-nada-mas",
+      "es": "nada más",
+      "ru": "больше ничего",
+      "pos": "phrase",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-aqui-tiene",
+      "es": "aquí tiene",
+      "ru": "вот, пожалуйста — подавая",
+      "pos": "phrase",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-me-lo-llevo",
+      "es": "me lo llevo",
+      "ru": "беру — о покупке",
+      "pos": "phrase",
+      "cat": "compras"
+    },
+    {
+      "id": "compr-en-efectivo",
+      "es": "en efectivo",
+      "ru": "наличными",
+      "pos": "phrase",
+      "cat": "compras"
+    },
+    {
+      "id": "ropa-vestido",
+      "es": "el vestido",
+      "ru": "платье",
+      "pos": "n",
+      "cat": "ropa"
+    },
+    {
+      "id": "ropa-camisa",
+      "es": "la camisa",
+      "ru": "рубашка",
+      "pos": "n",
+      "cat": "ropa"
+    },
+    {
+      "id": "ropa-camiseta",
+      "es": "la camiseta",
+      "ru": "футболка",
+      "pos": "n",
+      "cat": "ropa"
+    },
+    {
+      "id": "ropa-blusa",
+      "es": "la blusa",
+      "ru": "блузка",
+      "pos": "n",
+      "cat": "ropa"
+    },
+    {
+      "id": "ropa-falda",
+      "es": "la falda",
+      "ru": "юбка",
+      "pos": "n",
+      "cat": "ropa"
+    },
+    {
+      "id": "ropa-pantalones",
+      "es": "los pantalones",
+      "ru": "брюки",
+      "pos": "n",
+      "cat": "ropa"
+    },
+    {
+      "id": "ropa-jersey",
+      "es": "el jersey",
+      "ru": "свитер",
+      "pos": "n",
+      "cat": "ropa"
+    },
+    {
+      "id": "ropa-traje",
+      "es": "el traje",
+      "ru": "костюм",
+      "pos": "n",
+      "cat": "ropa"
+    },
+    {
+      "id": "ropa-corbata",
+      "es": "la corbata",
+      "ru": "галстук",
+      "pos": "n",
+      "cat": "ropa"
+    },
+    {
+      "id": "ropa-sombrero",
+      "es": "el sombrero",
+      "ru": "шляпа",
+      "pos": "n",
+      "cat": "ropa"
+    },
+    {
+      "id": "ropa-bolso",
+      "es": "el bolso",
+      "ru": "сумка",
+      "pos": "n",
+      "cat": "ropa"
+    },
+    {
+      "id": "ropa-zapatos",
+      "es": "los zapatos",
+      "ru": "туфли, обувь",
+      "pos": "n",
+      "cat": "ropa"
+    },
+    {
+      "id": "ropa-zapatillas",
+      "es": "las zapatillas",
+      "ru": "кроссовки; тапочки",
+      "pos": "n",
+      "cat": "ropa"
+    },
+    {
+      "id": "ropa-medias",
+      "es": "las medias",
+      "ru": "колготки, чулки",
+      "pos": "n",
+      "cat": "ropa"
+    },
+    {
+      "id": "ropa-chaqueton",
+      "es": "el chaquetón",
+      "ru": "куртка, полупальто",
+      "pos": "n",
+      "cat": "ropa"
+    },
+    {
+      "id": "ropa-talla",
+      "es": "la talla",
+      "ru": "размер одежды",
+      "pos": "n",
+      "cat": "ropa"
+    },
+    {
+      "id": "ropa-de-rayas",
+      "es": "de rayas",
+      "ru": "в полоску",
+      "pos": "phrase",
+      "cat": "ropa"
+    },
+    {
+      "id": "ropa-de-cuadros",
+      "es": "de cuadros",
+      "ru": "в клетку",
+      "pos": "phrase",
+      "cat": "ropa"
+    },
+    {
+      "id": "ropa-cuero",
+      "es": "el cuero",
+      "ru": "кожа — материал",
+      "pos": "n",
+      "cat": "ropa"
+    },
+    {
+      "id": "ropa-pana",
+      "es": "la pana",
+      "ru": "вельвет",
+      "pos": "n",
+      "cat": "ropa"
+    },
+    {
+      "id": "ropa-elegante",
+      "es": "elegante",
+      "ru": "элегантный",
+      "pos": "adj",
+      "cat": "ropa"
+    },
+    {
+      "id": "ropa-clasico",
+      "es": "clásico",
+      "ru": "классический",
+      "pos": "adj",
+      "cat": "ropa"
+    },
+    {
+      "id": "ropa-deportivo",
+      "es": "deportivo",
+      "ru": "спортивный",
+      "pos": "adj",
+      "cat": "ropa"
+    },
+    {
+      "id": "ropa-quedar-bien",
+      "es": "quedar bien",
+      "ru": "хорошо сидеть — об одежде",
+      "pos": "phrase",
+      "cat": "ropa"
+    },
+    {
+      "id": "ropa-probarse",
+      "es": "probarse",
+      "ru": "примерять",
+      "pos": "v",
+      "cat": "ropa"
+    },
+    {
+      "id": "rest-restaurante",
+      "es": "el restaurante",
+      "ru": "ресторан",
+      "pos": "n",
+      "cat": "restaurante"
+    },
+    {
+      "id": "rest-cafeteria",
+      "es": "la cafetería",
+      "ru": "кафе",
+      "pos": "n",
+      "cat": "restaurante"
+    },
+    {
+      "id": "rest-bar",
+      "es": "el bar",
+      "ru": "бар",
+      "pos": "n",
+      "cat": "restaurante"
+    },
+    {
+      "id": "rest-taberna",
+      "es": "la taberna",
+      "ru": "таверна",
+      "pos": "n",
+      "cat": "restaurante"
+    },
+    {
+      "id": "rest-camarero",
+      "es": "el camarero",
+      "ru": "официант",
+      "pos": "n",
+      "cat": "restaurante"
+    },
+    {
+      "id": "rest-cuenta",
+      "es": "la cuenta",
+      "ru": "счёт",
+      "pos": "n",
+      "cat": "restaurante"
+    },
+    {
+      "id": "rest-menu-del-dia",
+      "es": "el menú del día",
+      "ru": "комплексный обед",
+      "pos": "n",
+      "cat": "restaurante"
+    },
+    {
+      "id": "rest-primer-plato",
+      "es": "el primer plato",
+      "ru": "первое блюдо",
+      "pos": "n",
+      "cat": "restaurante"
+    },
+    {
+      "id": "rest-postre",
+      "es": "el postre",
+      "ru": "десерт",
+      "pos": "n",
+      "cat": "restaurante"
+    },
+    {
+      "id": "rest-de-primero",
+      "es": "de primero",
+      "ru": "на первое",
+      "pos": "phrase",
+      "cat": "restaurante"
+    },
+    {
+      "id": "rest-de-segundo",
+      "es": "de segundo",
+      "ru": "на второе",
+      "pos": "phrase",
+      "cat": "restaurante"
+    },
+    {
+      "id": "rest-de-postre",
+      "es": "de postre",
+      "ru": "на десерт",
+      "pos": "phrase",
+      "cat": "restaurante"
+    },
+    {
+      "id": "rest-para-beber",
+      "es": "para beber",
+      "ru": "из напитков",
+      "pos": "phrase",
+      "cat": "restaurante"
+    },
+    {
+      "id": "rest-que-van-tomar",
+      "es": "¿qué van a tomar?",
+      "ru": "что будете заказывать?",
+      "pos": "phrase",
+      "cat": "restaurante"
+    },
+    {
+      "id": "rest-tapa",
+      "es": "la tapa",
+      "ru": "тапа — закуска к напитку",
+      "pos": "n",
+      "cat": "restaurante"
+    },
+    {
+      "id": "rest-que-aproveche",
+      "es": "¡que aproveche!",
+      "ru": "приятного аппетита!",
+      "pos": "phrase",
+      "cat": "restaurante"
+    },
+    {
+      "id": "rest-a-la-plancha",
+      "es": "a la plancha",
+      "ru": "на гриле",
+      "pos": "phrase",
+      "cat": "restaurante"
+    },
+    {
+      "id": "rest-frito",
+      "es": "frito",
+      "ru": "жареный",
+      "pos": "adj",
+      "cat": "restaurante"
+    },
+    {
+      "id": "rest-cuchara",
+      "es": "la cuchara",
+      "ru": "ложка",
+      "pos": "n",
+      "cat": "restaurante"
+    },
+    {
+      "id": "rest-cuchillo",
+      "es": "el cuchillo",
+      "ru": "нож",
+      "pos": "n",
+      "cat": "restaurante"
+    },
+    {
+      "id": "rest-vaso",
+      "es": "el vaso",
+      "ru": "стакан",
+      "pos": "n",
+      "cat": "restaurante"
     }
   ]
 }
