@@ -1,24 +1,26 @@
 {
-  "version": 14,
+  "version": 15,
   "groups": {
     "start": "Первые шаги",
     "ser": "Быть и иметь",
     "presente": "Настоящее время",
     "irregulares": "Неправильные глаголы",
+    "futuro": "Будущее время",
     "genero": "Род и число",
     "trato": "Обращение и местоимения",
     "numeros": "Числа и время",
     "frases": "Предлоги и фразы"
   },
   "groupNotes": {
-    "start": "Алфавит, чтение, написание",
+    "start": "Алфавит, чтение, ударение, приветствие и знакомство",
     "ser": "ser, estar, tener и «должен»",
-    "presente": "Правильные и возвратные глаголы",
+    "presente": "Правильные, возвратные и «прямо сейчас»",
     "irregulares": "По типу: -go, e → ie, o → ue, e → i, -zco",
-    "genero": "Существительные, прилагательные, цвета",
-    "trato": "tú и usted, me gusta, просьбы",
+    "futuro": "ir a + инфинитив и простое будущее",
+    "genero": "Существительные, прилагательные, цвета, семья",
+    "trato": "tú и usted, me gusta, просьбы, lo и la",
     "numeros": "Счёт до ста, часы, дни, месяцы",
-    "frases": "Конструкции с de, самочувствие"
+    "frases": "Конструкции с de, самочувствие, если, погода, дорога"
   },
   "notes": [
     {
@@ -114,6 +116,247 @@
       ]
     },
     {
+      "id": "acentuacion",
+      "group": "start",
+      "title": "Ударение и знак над гласной",
+      "gist": "На гласную, n или s — ударный предпоследний слог, на другую согласную — последний",
+      "blocks": [
+        {
+          "kind": "text",
+          "body": "Где ударение, видно по написанию. Знак ´ ставят только там, где слово нарушает два правила ниже, — поэтому знак нельзя пропускать: он и есть ударение."
+        },
+        {
+          "kind": "table",
+          "head": [
+            "конец слова",
+            "ударный слог",
+            "пример"
+          ],
+          "rows": [
+            [
+              "гласная, n, s",
+              "предпоследний",
+              "di-ne-ro"
+            ],
+            [
+              "другая согласная",
+              "последний",
+              "co-lor"
+            ],
+            [
+              "не по правилу",
+              "со знаком",
+              "ja-món"
+            ]
+          ]
+        },
+        {
+          "kind": "list",
+          "title": "Ещё примеры",
+          "items": [
+            "rana, mano, comen — на гласную, n, s",
+            "español, yogur, disfraz — на согласную",
+            "jamón, lápiz, iré — со знаком"
+          ]
+        },
+        {
+          "kind": "text",
+          "title": "Запомни",
+          "body": "Иногда знак различает два слова: sí — да, si — если; él — он, el — артикль; tú — ты, tu — твой. Без знака это другое слово, и «Ввод» такой ответ не засчитает."
+        }
+      ]
+    },
+    {
+      "id": "lectura-c-g",
+      "group": "start",
+      "title": "Как читать c, g, qu, gu, gü",
+      "gist": "Перед e и i буквы c и g меняют звук: casa «к» — cena «θ», gato «г» — gente «х»",
+      "blocks": [
+        {
+          "kind": "table",
+          "head": [
+            "",
+            "перед a, o, u",
+            "перед e, i"
+          ],
+          "rows": [
+            [
+              "c",
+              "«к»: casa",
+              "«θ»: cena"
+            ],
+            [
+              "g",
+              "«г»: gato",
+              "«х»: gente"
+            ],
+            [
+              "qu",
+              "—",
+              "«к»: queso"
+            ],
+            [
+              "gu",
+              "—",
+              "«г»: guitarra"
+            ],
+            [
+              "gü",
+              "—",
+              "«гу»: pingüino"
+            ]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "В que, qui, gue, gui буква u не читается: она только сохраняет твёрдые «к» и «г» перед e и i. Чтобы u прозвучала, над ней ставят две точки — gü: vergüenza, pingüino."
+        },
+        {
+          "kind": "text",
+          "body": "«θ» — как английское th в think: так в Испании читаются c перед e, i и буква z — cereza, zorro. В Латинской Америке это обычное «с»."
+        },
+        {
+          "kind": "list",
+          "title": "Ещё",
+          "items": [
+            "j — всегда «х»: jamón, jota",
+            "h — не читается: hola, huevo",
+            "x между гласными — «кс»: taxi, próximo",
+            "x перед согласной — часто «с»: extraño, excelente"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "saludos-respuestas",
+      "group": "start",
+      "title": "Приветствие, ответ и прощание",
+      "gist": "Buenos días — до обеда, buenas tardes — до 20:00, потом buenas noches",
+      "blocks": [
+        {
+          "kind": "list",
+          "title": "Когда что говорят",
+          "items": [
+            "buenos días — до 13–14 часов",
+            "buenas tardes — с 14 до 20 часов",
+            "buenas noches — после 20 часов"
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "В Испании обедают в два-три часа дня, поэтому «утро» длится до обеда, а не до полудня. В ответ повторяют то же приветствие или говорят «muy buenas»."
+        },
+        {
+          "kind": "list",
+          "title": "Как спросить",
+          "items": [
+            "¿Qué tal? — как дела?",
+            "¿Qué tal te va? — как у тебя дела?",
+            "¿Qué hay de nuevo? — что нового?",
+            "¿Qué te cuentas? — что расскажешь?"
+          ]
+        },
+        {
+          "kind": "list",
+          "title": "Как ответить",
+          "items": [
+            "Bien, ¿y tú? — хорошо, а ты?",
+            "Así, así — так себе",
+            "Más o menos — более-менее",
+            "Voy tirando — потихоньку",
+            "Como siempre — как всегда",
+            "Ya ves… — да вот так…"
+          ]
+        },
+        {
+          "kind": "list",
+          "title": "Как попрощаться",
+          "items": [
+            "Adiós — до свидания, пока",
+            "Hasta luego — пока, до встречи",
+            "Hasta pronto — до скорого",
+            "Hasta mañana — до завтра",
+            "Nos vemos — увидимся"
+          ]
+        },
+        {
+          "kind": "text",
+          "title": "Обращение",
+          "body": "Señor, señora — перед фамилией: Sra. Martín. Don, doña — уважительно перед именем: don Carlos. Cariño, querido — ласково, близким."
+        }
+      ],
+      "words": [
+        "salu-hola",
+        "salu-adios",
+        "salu-buenos-dias",
+        "salu-buenas-tardes",
+        "salu-buenas-noches",
+        "salu-hasta-luego",
+        "salu-hasta-manana",
+        "salu-que-tal",
+        "salu-y-tu",
+        "salu-hasta-pronto",
+        "salu-nos-vemos",
+        "salu-que-hay-nuevo",
+        "salu-asi-asi",
+        "salu-mas-o-menos",
+        "salu-voy-tirando",
+        "salu-como-siempre"
+      ]
+    },
+    {
+      "id": "presentarse",
+      "group": "start",
+      "title": "Знакомство: рассказать о себе",
+      "gist": "Me llamo…, soy de…, vivo en…, tengo … años, soy profesor",
+      "blocks": [
+        {
+          "kind": "list",
+          "title": "Вопрос и ответ",
+          "items": [
+            "¿Cómo te llamas? — Me llamo Ana",
+            "¿De dónde eres? — Soy de Ucrania",
+            "¿Dónde vives? — Vivo en Madrid",
+            "¿Cuántos años tienes? — Tengo treinta años",
+            "¿A qué te dedicas? — Soy profesora",
+            "¿Qué idiomas hablas? — Hablo inglés",
+            "¿Cuándo es tu cumpleaños? — El 25 de mayo"
+          ]
+        },
+        {
+          "kind": "text",
+          "title": "Профессия — без артикля",
+          "body": "Soy profesor, soy estudiante — без un. Так же национальность: soy ucraniano, soy brasileña."
+        },
+        {
+          "kind": "text",
+          "title": "Ловушка",
+          "body": "Soy soltero, но estoy casado: «холост» — через ser, «женат» — через estar. Encantado говорит мужчина, encantada — женщина: слово согласуется с тем, кто говорит."
+        },
+        {
+          "kind": "text",
+          "body": "К незнакомому взрослому — через usted, глагол в форме «он»: ¿Cómo se llama (usted)? ¿Cuál es su nombre?"
+        }
+      ],
+      "words": [
+        "pres-como-te-llamas",
+        "pres-me-llamo",
+        "pres-de-donde-eres",
+        "pres-soy-de",
+        "pres-donde-vives",
+        "pres-vivo-en",
+        "pres-a-que-te-dedicas",
+        "pres-cuantos-anos",
+        "pres-que-idiomas",
+        "pres-encantado",
+        "pres-soltero",
+        "pres-casado"
+      ],
+      "cats": [
+        "presentarse"
+      ]
+    },
+    {
       "id": "ser-estar-presente",
       "group": "ser",
       "title": "ser и estar",
@@ -162,6 +405,11 @@
         {
           "kind": "text",
           "body": "Оба переводятся как «быть». ser — кто или что это по сути: профессия, происхождение, характер. estar — где находится и в каком состоянии сейчас."
+        },
+        {
+          "kind": "text",
+          "title": "hay или está",
+          "body": "hay — «есть, имеется», когда предмет назван впервые: en el salón hay una tele. Когда он уже известен — estar: la tele está en el salón. После hay — un, una или число; после está — el, la."
         }
       ],
       "words": [
@@ -176,7 +424,8 @@
         "estar-el",
         "estar-nosotros",
         "estar-vosotros",
-        "estar-ellos"
+        "estar-ellos",
+        "verb-hay"
       ]
     },
     {
@@ -258,8 +507,8 @@
     {
       "id": "con-obligacion",
       "group": "ser",
-      "title": "Должен: tener que и deber",
-      "gist": "Спрягается первый глагол, второй остаётся инфинитивом: tengo que trabajar",
+      "title": "Должен: tener que, deber, hay que",
+      "gist": "tengo que trabajar — мне надо, hay que estudiar — надо всем. Дальше — инфинитив",
       "blocks": [
         {
           "kind": "text",
@@ -277,6 +526,11 @@
         },
         {
           "kind": "text",
+          "title": "hay que — надо всем",
+          "body": "hay que + инфинитив — «надо» без указания кому: для всех и всегда. Para aprender español hay que estudiar. En el hospital hay que hablar en voz baja. hay не спрягается."
+        },
+        {
+          "kind": "text",
           "body": "Разница в оттенке: tener que — надо, обстоятельства требуют. deber — следует, так правильно. «Si te encuentras muy mal, debes ir al médico» — это совет, а не приказ."
         },
         {
@@ -284,6 +538,11 @@
           "body": "А вот в отрицании смыслы расходятся, и это ловушка. No debes fumar — тебе нельзя курить. No tienes que fumar — тебе не обязательно курить, никто не заставляет.",
           "title": "Ловушка в отрицании"
         }
+      ],
+      "words": [
+        "verb-tener-que",
+        "verb-hay-que",
+        "verb-deber"
       ]
     },
     {
@@ -358,7 +617,20 @@
         "verbos-ensenar",
         "rutina-desayunar",
         "rutina-comer",
-        "rutina-cenar"
+        "rutina-cenar",
+        "verb-escuchar",
+        "verb-mirar",
+        "verb-comprar",
+        "verb-escribir",
+        "verb-aprender",
+        "verb-cantar",
+        "verb-bailar",
+        "verb-limpiar",
+        "verb-cocinar",
+        "verb-practicar",
+        "verb-preguntar",
+        "verb-leer",
+        "verb-correr"
       ]
     },
     {
@@ -455,7 +727,101 @@
         "rutina-lavar",
         "rutina-vestir",
         "rutina-despertar",
-        "verb-llamar"
+        "verb-llamar",
+        "verb-banarse"
+      ]
+    },
+    {
+      "id": "estar-gerundio",
+      "group": "presente",
+      "title": "Прямо сейчас: estar + герундий",
+      "gist": "estoy + -ando / -iendo: estoy estudiando — я сейчас занимаюсь",
+      "blocks": [
+        {
+          "kind": "text",
+          "body": "Испанский различает «вообще» и «прямо сейчас». Trabajo en casa — работаю дома (обычно). Estoy trabajando — работаю (в эту минуту). Спрягается estar, герундий не меняется."
+        },
+        {
+          "kind": "table",
+          "head": [
+            "",
+            "estar",
+            "+ герундий"
+          ],
+          "rows": [
+            [
+              "yo",
+              "estoy",
+              "estudiando"
+            ],
+            [
+              "tú",
+              "estás",
+              "comiendo"
+            ],
+            [
+              "él, ella, usted",
+              "está",
+              "escribiendo"
+            ],
+            [
+              "nosotros/as",
+              "estamos",
+              "leyendo"
+            ],
+            [
+              "vosotros/as",
+              "estáis",
+              "durmiendo"
+            ],
+            [
+              "ellos/as, ustedes",
+              "están",
+              "jugando"
+            ]
+          ]
+        },
+        {
+          "kind": "table",
+          "head": [
+            "глагол",
+            "окончание",
+            "пример"
+          ],
+          "rows": [
+            [
+              "-ar",
+              "-ando",
+              "cantando"
+            ],
+            [
+              "-er, -ir",
+              "-iendo",
+              "bebiendo"
+            ]
+          ]
+        },
+        {
+          "kind": "list",
+          "title": "Неправильные",
+          "items": [
+            "leer — leyendo",
+            "oír — oyendo",
+            "ir — yendo",
+            "dormir — durmiendo",
+            "pedir — pidiendo",
+            "decir — diciendo"
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Между гласными i превращается в y: le-yendo, o-yendo. У глаголов на -ir с изменчивым корнем меняется и герундий: o → u, e → i."
+        },
+        {
+          "kind": "text",
+          "title": "Где местоимение",
+          "body": "Местоимение ставят перед estar или приклеивают к герундию — оба варианта верны: me estoy duchando = estoy duchándome. Приклеенное требует знака ударения."
+        }
       ]
     },
     {
@@ -559,7 +925,8 @@
       "words": [
         "verb-ir",
         "verb-ver",
-        "verb-saber"
+        "verb-saber",
+        "verb-dar"
       ]
     },
     {
@@ -662,7 +1029,8 @@
       ],
       "words": [
         "verb-hacer",
-        "rutina-sales"
+        "rutina-sales",
+        "verb-poner"
       ]
     },
     {
@@ -722,6 +1090,10 @@
           "kind": "text",
           "body": "venir — приходить, decir — говорить, сказать, oír — слышать. Так же устроен tener: tengo, tienes, tiene — он в «Быть и иметь»."
         }
+      ],
+      "words": [
+        "verb-oir",
+        "verb-venir"
       ]
     },
     {
@@ -837,7 +1209,12 @@
       "words": [
         "verb-poder",
         "verb-querer",
-        "verb-empezar"
+        "verb-empezar",
+        "verb-jugar",
+        "verb-dormir",
+        "verb-pensar",
+        "verb-entender",
+        "verb-sentarse"
       ]
     },
     {
@@ -897,6 +1274,9 @@
           "kind": "text",
           "body": "pedir — просить, заказывать, seguir — продолжать, следовать, elegir — выбирать. У seguir и elegir в yo ещё меняется написание: -guir → -go, -gir → -jo, чтобы звук остался тем же."
         }
+      ],
+      "words": [
+        "verb-pedir"
       ]
     },
     {
@@ -951,7 +1331,212 @@
         }
       ],
       "words": [
-        "transp-conducir"
+        "transp-conducir",
+        "verb-conocer"
+      ]
+    },
+    {
+      "id": "ir-a-infinitivo",
+      "group": "futuro",
+      "title": "Скоро: ir a + инфинитив",
+      "gist": "voy a comprar — собираюсь купить. Планы и то, что вот-вот случится",
+      "blocks": [
+        {
+          "kind": "table",
+          "head": [
+            "",
+            "ir",
+            "a + инфинитив"
+          ],
+          "rows": [
+            [
+              "yo",
+              "voy",
+              "a comer"
+            ],
+            [
+              "tú",
+              "vas",
+              "a comer"
+            ],
+            [
+              "él, ella, usted",
+              "va",
+              "a comer"
+            ],
+            [
+              "nosotros/as",
+              "vamos",
+              "a comer"
+            ],
+            [
+              "vosotros/as",
+              "vais",
+              "a comer"
+            ],
+            [
+              "ellos/as, ustedes",
+              "van",
+              "a comer"
+            ]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Самый разговорный способ сказать о будущем: решение уже принято. Voy a comprar un coche el próximo mes. ¿Qué vas a hacer el fin de semana?"
+        },
+        {
+          "kind": "list",
+          "title": "Когда",
+          "items": [
+            "esta tarde — сегодня днём",
+            "esta noche — сегодня вечером",
+            "mañana — завтра",
+            "el fin de semana — в выходные",
+            "la semana que viene — на следующей неделе",
+            "el próximo lunes — в следующий понедельник",
+            "el año que viene — в следующем году"
+          ]
+        },
+        {
+          "kind": "text",
+          "title": "Сейчас и потом",
+          "body": "Silvia está tomando el sol y después va a comprar un bocadillo — загорает, а потом пойдёт за бутербродом. estar + герундий — что сейчас, ir a — что потом."
+        }
+      ],
+      "words": [
+        "tiempo-esta-tarde",
+        "tiempo-esta-noche",
+        "tiempo-semana-que-viene",
+        "tiempo-ano-que-viene",
+        "tiempo-proximo",
+        "tiempo-plan"
+      ]
+    },
+    {
+      "id": "futuro-simple",
+      "group": "futuro",
+      "title": "Будущее время: trabajaré, tendré",
+      "gist": "Окончание к инфинитиву целиком: trabajaré, seré, iré — одно на все глаголы",
+      "blocks": [
+        {
+          "kind": "table",
+          "head": [
+            "",
+            "trabajar",
+            "ser",
+            "ir"
+          ],
+          "rows": [
+            [
+              "yo",
+              "trabajaré",
+              "seré",
+              "iré"
+            ],
+            [
+              "tú",
+              "trabajarás",
+              "serás",
+              "irás"
+            ],
+            [
+              "él, ella, usted",
+              "trabajará",
+              "será",
+              "irá"
+            ],
+            [
+              "nosotros/as",
+              "trabajaremos",
+              "seremos",
+              "iremos"
+            ],
+            [
+              "vosotros/as",
+              "trabajaréis",
+              "seréis",
+              "iréis"
+            ],
+            [
+              "ellos/as, ustedes",
+              "trabajarán",
+              "serán",
+              "irán"
+            ]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Окончание прибавляется к инфинитиву целиком, -ar, -er, -ir не отбрасываются. Окончания у -ar, -er и -ir одинаковые, ударение всегда на окончании."
+        },
+        {
+          "kind": "table",
+          "head": [
+            "инфинитив",
+            "основа",
+            "yo"
+          ],
+          "rows": [
+            [
+              "poder",
+              "podr-",
+              "podré"
+            ],
+            [
+              "tener",
+              "tendr-",
+              "tendré"
+            ],
+            [
+              "saber",
+              "sabr-",
+              "sabré"
+            ],
+            [
+              "salir",
+              "saldr-",
+              "saldré"
+            ],
+            [
+              "poner",
+              "pondr-",
+              "pondré"
+            ],
+            [
+              "venir",
+              "vendr-",
+              "vendré"
+            ],
+            [
+              "hacer",
+              "har-",
+              "haré"
+            ],
+            [
+              "decir",
+              "dir-",
+              "diré"
+            ],
+            [
+              "querer",
+              "querr-",
+              "querré"
+            ]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "У неправильных меняется только основа, окончания те же: tendré, tendrás, tendrá. De mayor seré médico — когда вырасту, буду врачом."
+        },
+        {
+          "kind": "text",
+          "title": "ir a или будущее",
+          "body": "Voy a ir al cine — план, уже решено. Iré a países del Tercer Mundo — когда-нибудь, мечта или прогноз. В разговоре о планах чаще ir a."
+        }
+      ],
+      "words": [
+        "tiempo-de-mayor"
       ]
     },
     {
@@ -1153,6 +1738,42 @@
       ]
     },
     {
+      "id": "plural-familia",
+      "group": "genero",
+      "title": "los padres — родители: мужской род за двоих",
+      "gist": "Мужское множественное включает оба пола: los hermanos — братья и сёстры",
+      "blocks": [
+        {
+          "kind": "list",
+          "items": [
+            "los padres — родители",
+            "los hermanos — братья и сёстры",
+            "los hijos — дети: сыновья и дочери",
+            "los tíos — дядя и тётя",
+            "los abuelos — бабушка и дедушка",
+            "los primos — двоюродные братья и сёстры"
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Поэтому ¿Tienes hermanos? — это «у тебя есть братья или сёстры?», а не только братья. Только о сёстрах — las hermanas."
+        },
+        {
+          "kind": "list",
+          "title": "Родня по браку — la familia política",
+          "items": [
+            "el suegro, la suegra — родители мужа или жены",
+            "el cuñado, la cuñada — брат или сестра мужа, жены",
+            "el yerno — муж дочери",
+            "la nuera — жена сына"
+          ]
+        }
+      ],
+      "cats": [
+        "familia"
+      ]
+    },
+    {
       "id": "tu-usted",
       "group": "trato",
       "title": "tú и usted — два «вы»",
@@ -1324,8 +1945,98 @@
         },
         {
           "kind": "text",
-          "body": "Условие строится так же просто: si + настоящее время, дальше повелительное. Si estás cansado, descansa un poco. Si te duele la cabeza, toma una pastilla."
+          "body": "Условие с si — отдельным правилом: «Если: si + настоящее время»."
+        },
+        {
+          "kind": "list",
+          "title": "Неправильные для tú",
+          "items": [
+            "hacer — haz",
+            "ir — ve",
+            "decir — di",
+            "poner — pon",
+            "salir — sal",
+            "tener — ten",
+            "venir — ven",
+            "ser — sé"
+          ]
+        },
+        {
+          "kind": "text",
+          "title": "Смена корня остаётся",
+          "body": "Корень меняется так же, как в настоящем времени: seguir → sigue, dormir → duerme, sentarse → siéntate, acostarse → acuéstate."
+        },
+        {
+          "kind": "text",
+          "title": "С возвратными",
+          "body": "Местоимение приклеивается в конец, и появляется знак ударения: lávate los dientes, levántate, siéntate. У vosotros -d перед os выпадает: sentaos, levantaos."
         }
+      ]
+    },
+    {
+      "id": "pronombres-objeto",
+      "group": "trato",
+      "title": "lo, la, me, te: где стоит местоимение",
+      "gist": "Перед личной формой глагола, но в конце инфинитива, герундия и просьбы",
+      "blocks": [
+        {
+          "kind": "table",
+          "head": [
+            "кого, что",
+            "местоимение"
+          ],
+          "rows": [
+            [
+              "меня",
+              "me"
+            ],
+            [
+              "тебя",
+              "te"
+            ],
+            [
+              "его, это — м. р.",
+              "lo"
+            ],
+            [
+              "её, это — ж. р.",
+              "la"
+            ],
+            [
+              "нас",
+              "nos"
+            ],
+            [
+              "вас",
+              "os"
+            ],
+            [
+              "их",
+              "los, las"
+            ]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Перед личной формой глагола — отдельным словом: ¿El coche nuevo? — Sí, lo tengo. Te presento a Lucía — знакомлю тебя с Люсией."
+        },
+        {
+          "kind": "text",
+          "body": "После инфинитива, герундия и просьбы — приклеивается в конец: quiero oírlo, estoy terminándolo, levántate, date prisa."
+        },
+        {
+          "kind": "text",
+          "title": "Можно и так, и так",
+          "body": "Если перед инфинитивом или герундием стоит спрягаемый глагол, местоимение можно вынести вперёд: lo estoy terminando = estoy terminándolo."
+        },
+        {
+          "kind": "text",
+          "title": "Знак ударения",
+          "body": "Приклеенное местоимение удлиняет слово, и ударение приходится отмечать знаком: terminando → terminándolo, levanta → levántate."
+        }
+      ],
+      "words": [
+        "verb-presentar"
       ]
     },
     {
@@ -1654,7 +2365,116 @@
         "salud-enferma",
         "salud-resfriada",
         "salud-fiebre",
-        "salud-tos"
+        "salud-tos",
+        "salud-que-te-pasa",
+        "salud-mala-cara",
+        "salud-hambre",
+        "salud-sed",
+        "salud-sueno"
+      ]
+    },
+    {
+      "id": "si-condicion",
+      "group": "frases",
+      "title": "Если: si + настоящее время",
+      "gist": "После si — настоящее, дальше совет, настоящее или будущее: si llueve, me quedaré",
+      "blocks": [
+        {
+          "kind": "list",
+          "title": "Три варианта",
+          "items": [
+            "Si estás cansado, descansa — если устал, отдохни",
+            "Si tengo sed, bebo agua — если хочу пить, пью воду",
+            "Si llueve, me quedaré en casa — если пойдёт дождь, останусь дома"
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Вторая часть — по смыслу: совет (повелительное), обычное следствие (настоящее) или обещание (будущее или ir a: si llueve, voy a quedarme en casa)."
+        },
+        {
+          "kind": "text",
+          "title": "Ловушка",
+          "body": "После si будущее время не ставят, хотя по-русски «если пойдёт дождь» звучит как будущее: si llueve, а не si lloverá."
+        }
+      ]
+    },
+    {
+      "id": "tiempo-atmosferico",
+      "group": "frases",
+      "title": "Погода: hace frío, llueve",
+      "gist": "Погода — через hace: hace frío, hace sol. А llueve и nieva — сами по себе",
+      "blocks": [
+        {
+          "kind": "list",
+          "title": "hace + существительное",
+          "items": [
+            "hace sol — солнечно",
+            "hace calor — жарко",
+            "hace frío — холодно",
+            "hace buen tiempo — хорошая погода",
+            "hace mal tiempo — плохая погода"
+          ]
+        },
+        {
+          "kind": "list",
+          "title": "Отдельные глаголы",
+          "items": [
+            "llueve — идёт дождь",
+            "nieva — идёт снег"
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "llueve и nieva — формы llover и nevar. У них нет «кто»: по-испански дождь не «идёт», а просто «дождит»."
+        },
+        {
+          "kind": "text",
+          "title": "Ловушка",
+          "body": "Hace frío — холодно на улице. Tengo frío — холодно мне. Про погоду — hace, про человека — tener: tengo calor, а не estoy caliente."
+        }
+      ],
+      "words": [
+        "salud-tener-frio",
+        "salud-tener-calor"
+      ],
+      "cats": [
+        "clima"
+      ]
+    },
+    {
+      "id": "direcciones",
+      "group": "frases",
+      "title": "Как объяснить дорогу",
+      "gist": "Sigue todo recto y gira a la derecha — иди прямо и поверни направо",
+      "blocks": [
+        {
+          "kind": "list",
+          "items": [
+            "seguir todo recto — идти прямо",
+            "girar a la derecha — повернуть направо",
+            "girar a la izquierda — повернуть налево",
+            "la primera calle — первая улица",
+            "la segunda calle — вторая улица",
+            "la tercera calle — третья улица"
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Дорогу объясняют просьбой: sigue todo recto y gira la segunda calle a la izquierda. У seguir в просьбе корень меняется, e → i: sigue."
+        },
+        {
+          "kind": "text",
+          "body": "a la derecha — и «направо», и «справа»: la cocina está a la derecha — кухня справа."
+        }
+      ],
+      "words": [
+        "lugar-derecha",
+        "lugar-izquierda",
+        "lugar-todo-recto",
+        "lugar-calle",
+        "verb-girar",
+        "verb-seguir"
       ]
     }
   ]
