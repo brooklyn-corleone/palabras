@@ -827,18 +827,20 @@ input.filter:focus{outline:none;border-bottom-color:var(--accent)}
    Тень — единственная в приложении: без неё стекло на светлом фоне не отрывается
    от страницы, а парение — весь смысл этого материала.
    --tabbar-h — сколько панель занимает снизу целиком: капсула, зазор под ней
-   и воздух над ней; по нему отступают липкие кнопки карточки и низ страницы. */
+   и воздух над ней; по нему отступают липкие кнопки карточки и низ страницы.
+   Капсула 64px: при 58px значок и подпись упирались в края «линзы» (по 3–4px сверху
+   и снизу), и панель выглядела приплюснутой; теперь вокруг них около 8px. */
 @media (max-width:768px){
   :root{
-    --tabbar-pill: 58px;
+    --tabbar-pill: 64px;
     --tabbar-gap: max(10px, calc(env(safe-area-inset-bottom) - 12px));
-    --tabbar-h: calc(var(--tabbar-pill) + var(--tabbar-gap) + 8px);
+    --tabbar-h: calc(var(--tabbar-pill) + var(--tabbar-gap) + 12px);
   }
   body.in-session{--tabbar-h:0px}
   header{margin-bottom:20px}
   nav.tabs{
     position:fixed;z-index:10;
-    left:max(16px, env(safe-area-inset-left));right:max(16px, env(safe-area-inset-right));
+    left:max(20px, env(safe-area-inset-left));right:max(20px, env(safe-area-inset-right));
     bottom:var(--tabbar-gap);
     max-width:460px;margin:0 auto;
     display:flex;gap:0;padding:4px;height:var(--tabbar-pill);
@@ -858,11 +860,11 @@ input.filter:focus{outline:none;border-bottom-color:var(--accent)}
     }
   }
   nav.tabs button{
-    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
     height:100%;min-height:0;padding:0;
     border-radius:calc((var(--tabbar-pill) - 8px) / 2);
     background:none;color:var(--text);
-    font-size:10px;font-weight:600;letter-spacing:.01em;
+    font-size:10px;font-weight:600;letter-spacing:.01em;line-height:12px;
     transition:background-color .25s ease, color .25s ease;
   }
   nav.tabs button:hover{background:none}
