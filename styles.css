@@ -930,3 +930,5 @@ input.filter:focus{outline:none;border-bottom-color:var(--accent)}
   }
   .sheet-inner{padding:0 18px calc(20px + env(safe-area-inset-bottom))}
 }
+.voice-test-result{overflow-wrap:anywhere}.voice-test-result:empty{display:none}
+#voice-test-row{margin-top:10px}
