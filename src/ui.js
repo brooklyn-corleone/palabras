@@ -266,9 +266,14 @@ function applySpeakChoice() {
     btn.setAttribute('aria-pressed', String((btn.dataset.speakChoice === 'on') === on));
   }
   // Голоса нет — так и сказать, и где его взять. Иначе пропавшая кнопка выглядит поломкой.
-  $('voice-note').textContent = speech.canSpeak()
-    ? 'Голос: ' + speech.voiceName() + '. Кнопка 🔊 стоит рядом с испанским словом.'
-    : 'Испанского голоса на устройстве нет, поэтому кнопки 🔊 не будет. На iPhone голос ставится в Настройках: Универсальный доступ → Устный контент → Голоса → Испанский.';
+  $('voice-test-row').classList.toggle('hidden', !speech.canSpeak());
+  const err = speech.speechError();
+  $('voice-note').textContent = !speech.canSpeak()
+    ? 'Испанского голоса на устройстве нет, поэтому кнопки 🔊 не будет. На iPhone голос ставится в Настройках: Универсальный доступ → Устный контент → Голоса → Испанский.'
+    : err
+      ? 'Звук не сработал: ' + err + '.'
+      : 'Голос: ' + speech.voiceName() + '. Кнопка 🔊 стоит рядом с испанским словом. ' +
+        'Не слышно на iPhone — проверьте, что выключен беззвучный режим и громкость не на нуле.';
 }
 
 function bindSpeech() {
@@ -283,6 +288,7 @@ function bindSpeech() {
       applySpeakChoice();
     });
   }
+  $('btn-voice-test').addEventListener('click', () => speech.speak('Hola, ¿qué tal?'));
   speech.initSpeech(applySpeakChoice);
   applySpeakChoice();
 }
