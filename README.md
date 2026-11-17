@@ -10,9 +10,9 @@ address bar and keeps working with no connection.
 
 ## What it does
 
-- **706 words** in 24 themes, **45 grammar rules** in 9 groups — conjugation tables, irregular
+- **726 words** in 24 themes, **46 grammar rules** in 9 groups — conjugation tables, irregular
   verbs grouped by type of change, gender and number, the future, prepositions, numbers and time.
-- **Lesson lists**: the words a teacher assigned for each class (Lección 1–10 so far). A session
+- **Lesson lists**: the words a teacher assigned for each class (Lección 1–10 and daily routine so far). A session
   can be built from a list, a theme, hand-picked words or the hardest ones.
 - Six card modes: quiz, typing, letter scramble, flip cards, dictation, matching pairs.
 - Leitner boxes. The more hints a mode gives, the lower its ceiling — box 5 is reachable
