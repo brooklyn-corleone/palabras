@@ -1,5 +1,5 @@
 {
-  "version": 28,
+  "version": 29,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
@@ -27,6 +27,91 @@
     "restaurante": "Кафе и ресторан"
   },
   "lists": [
+    {
+      "id": "2026-11-17-rutina-se",
+      "title": "Rutina diaria: con se o sin se",
+      "date": "2026-11-17",
+      "words": [
+        "rutina-despertarse",
+        "rutina-levantarse",
+        "rutina-ducharse",
+        "rutina-desayunar",
+        "rutina-almorzar",
+        "rutina-cenar",
+        "rutina-acostarse",
+        "tiempo-manana",
+        "tiempo-tarde-dia",
+        "tiempo-noche",
+        "tiempo-temprano",
+        "tiempo-tarde",
+        "tiempo-siempre",
+        "tiempo-nunca",
+        "tiempo-a-veces",
+        "tiempo-normalmente",
+        "tiempo-habitualmente",
+        "rutina-vestirse",
+        "rutina-peinarse",
+        "rutina-lavarse",
+        "rutina-cepillarse-dientes",
+        "rutina-maquillarse",
+        "rutina-afeitarse",
+        "rutina-tumbarse",
+        "rutina-secarse-pelo",
+        "rutina-tardar",
+        "conec-probablemente",
+        "conec-en-cuanto",
+        "rutina-sales",
+        "rutina-volver",
+        "verb-ir",
+        "rutina-desayuno",
+        "comida-cena",
+        "tiempo-luego",
+        "rutina-despues",
+        "tiempo-despues-de",
+        "tiempo-antes-de",
+        "tiempo-finalmente",
+        "tiempo-todos-dias",
+        "tiempo-todas-mananas",
+        "tiempo-fines-semana",
+        "rutina-lavar",
+        "rutina-vestir",
+        "rutina-despertar",
+        "rutina-acostar",
+        "rutina-peinar",
+        "rutina-secar",
+        "rutina-afeitar",
+        "rutina-maquillar",
+        "verb-llamar",
+        "verb-llamarse",
+        "rutina-lavarse-manos",
+        "rutina-lavarse-cara",
+        "cuerpo-cara",
+        "cuerpo-manos",
+        "cuerpo-diente",
+        "cuerpo-pelo",
+        "transp-coche",
+        "familia-bebe",
+        "familia-nino",
+        "familia-hija",
+        "familia-hijo",
+        "familia-hermano",
+        "familia-familia",
+        "trab-cliente",
+        "trab-actriz",
+        "casa-plato",
+        "anim-perro",
+        "transp-autobus",
+        "transp-bicicleta",
+        "rutina-pasear",
+        "lugar-parque",
+        "trab-trabajo",
+        "trab-deberes",
+        "ropa-elegante",
+        "conec-rapidamente",
+        "adje-rapido",
+        "verb-tomar"
+      ]
+    },
     {
       "id": "2026-11-14-rutina",
       "title": "La rutina diaria",
@@ -5803,6 +5888,146 @@
       "ru": "стакан",
       "pos": "n",
       "cat": "restaurante"
+    },
+    {
+      "id": "rutina-acostar",
+      "es": "acostar",
+      "ru": "укладывать спать (кого-то)",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-peinar",
+      "es": "peinar",
+      "ru": "причёсывать кого-то",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-afeitar",
+      "es": "afeitar",
+      "ru": "брить кого-то",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-maquillar",
+      "es": "maquillar",
+      "ru": "гримировать, красить кого-то",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-secar",
+      "es": "secar",
+      "ru": "сушить, вытирать",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-secarse-pelo",
+      "es": "secarse el pelo",
+      "ru": "сушить волосы",
+      "pos": "phrase",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-tumbarse",
+      "es": "tumbarse",
+      "ru": "прилечь, растянуться",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-tardar",
+      "es": "tardar",
+      "ru": "задерживаться; сколько времени уходит",
+      "pos": "v",
+      "cat": "rutina"
+    },
+    {
+      "id": "verb-llamarse",
+      "es": "llamarse",
+      "ru": "зваться, называться",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "conec-probablemente",
+      "es": "probablemente",
+      "ru": "вероятно, наверное",
+      "pos": "adv",
+      "cat": "conectores"
+    },
+    {
+      "id": "conec-en-cuanto",
+      "es": "en cuanto",
+      "ru": "как только",
+      "pos": "phrase",
+      "cat": "conectores"
+    },
+    {
+      "id": "tiempo-habitualmente",
+      "es": "habitualmente",
+      "ru": "по привычке, как правило",
+      "pos": "adv",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-despues-de",
+      "es": "después de",
+      "ru": "после (чего-то)",
+      "pos": "phrase",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-todas-mananas",
+      "es": "todas las mañanas",
+      "ru": "каждое утро",
+      "pos": "phrase",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-fines-semana",
+      "es": "los fines de semana",
+      "ru": "по выходным",
+      "pos": "phrase",
+      "cat": "tiempo"
+    },
+    {
+      "id": "cuerpo-pelo",
+      "es": "el pelo",
+      "ru": "волосы",
+      "pos": "n",
+      "cat": "cuerpo"
+    },
+    {
+      "id": "familia-nino",
+      "es": "el niño",
+      "ru": "ребёнок, мальчик",
+      "pos": "n",
+      "cat": "familia"
+    },
+    {
+      "id": "trab-cliente",
+      "es": "el cliente",
+      "ru": "клиент",
+      "pos": "n",
+      "cat": "trabajo"
+    },
+    {
+      "id": "trab-actriz",
+      "es": "la actriz",
+      "ru": "актриса",
+      "pos": "n",
+      "cat": "trabajo"
+    },
+    {
+      "id": "casa-plato",
+      "es": "el plato",
+      "ru": "тарелка; блюдо",
+      "pos": "n",
+      "cat": "casa"
     }
   ]
 }

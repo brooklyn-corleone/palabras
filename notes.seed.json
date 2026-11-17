@@ -704,15 +704,52 @@
           "body": "Перед спрягаемым глаголом местоимение стоит отдельным словом: me baño. При инфинитиве оно приклеивается к нему в конец: tengo que bañarme, ¿a qué hora tienes que levantarte?"
         },
         {
-          "kind": "list",
-          "title": "Распорядок дня",
-          "items": [
-            "despertarse — просыпаться",
-            "levantarse — вставать",
-            "ducharse — принимать душ",
-            "vestirse — одеваться",
-            "acostarse — ложиться спать"
+          "kind": "text",
+          "body": "despertarse, acostarse и vestirse меняют корень, как despertar, acostar и vestir. Местоимение слева стоит перед формой: me despierto, nos acostamos."
+        },
+        {
+          "kind": "table",
+          "head": [
+            "",
+            "despertarse",
+            "acostarse"
+          ],
+          "rows": [
+            [
+              "me",
+              "desp[ie]rto",
+              "ac[ue]sto"
+            ],
+            [
+              "te",
+              "desp[ie]rtas",
+              "ac[ue]stas"
+            ],
+            [
+              "se",
+              "desp[ie]rta",
+              "ac[ue]sta"
+            ],
+            [
+              "nos",
+              "despertamos",
+              "acostamos"
+            ],
+            [
+              "os",
+              "despertáis",
+              "acostáis"
+            ],
+            [
+              "se",
+              "desp[ie]rtan",
+              "ac[ue]stan"
+            ]
           ]
+        },
+        {
+          "kind": "text",
+          "body": "vestirse меняет e на i: me visto, te vistes, se viste, nos vestimos, os vestís, se visten."
         },
         {
           "kind": "table",
@@ -759,16 +796,113 @@
         "rutina-maquillarse",
         "rutina-cepillarse-dientes",
         "rutina-lavarse-manos",
-        "rutina-lavar",
-        "rutina-vestir",
-        "rutina-despertar",
         "verb-llamar",
         "verb-banarse",
         "verb-irse",
         "verb-despedirse",
         "verb-despedir",
         "ropa-probarse",
-        "rutina-lavarse-cara"
+        "rutina-lavarse-cara",
+        "verb-llamarse",
+        "rutina-tumbarse"
+      ]
+    },
+    {
+      "id": "reflexivos-o-no",
+      "group": "presente",
+      "title": "Себя или другого: lavar и lavarse",
+      "gist": "На себя — с se: me lavo las manos. На другого — без: lavo el coche",
+      "blocks": [
+        {
+          "kind": "table",
+          "head": [
+            "кого-то — без se",
+            "себя — с se"
+          ],
+          "rows": [
+            [
+              "lavo el coche",
+              "me lavo las manos"
+            ],
+            [
+              "visto al niño",
+              "me visto"
+            ],
+            [
+              "despierto a mi hijo",
+              "me despierto"
+            ],
+            [
+              "acuesto al bebé",
+              "me acuesto"
+            ],
+            [
+              "peino a mi hermana",
+              "me peino"
+            ],
+            [
+              "seco el pelo de Ana",
+              "me seco el pelo"
+            ],
+            [
+              "afeito al cliente",
+              "me afeito"
+            ],
+            [
+              "maquillo a una actriz",
+              "me maquillo"
+            ]
+          ]
+        },
+        {
+          "kind": "text",
+          "body": "Проверка: есть ли после глагола кто-то или что-то другое? Есть — se не нужно: lavo el coche, despierto a mi hijo. Перед человеком — личное a."
+        },
+        {
+          "kind": "text",
+          "body": "Форма та же, что у обычного глагола, только впереди местоимение: lavo — me lavo, lavas — te lavas, lava — se lava."
+        },
+        {
+          "kind": "text",
+          "title": "Ловушка",
+          "body": "Часть тела — с артиклем, а не с «мой»: me lavo las manos, me cepillo los dientes, me seco el pelo. Чьи руки, уже сказало me."
+        },
+        {
+          "kind": "table",
+          "head": [
+            "неверно",
+            "верно"
+          ],
+          "rows": [
+            [
+              "yo lavo las manos",
+              "yo me lavo las manos"
+            ],
+            [
+              "se lava el coche",
+              "lava el coche"
+            ],
+            [
+              "se despierta a los niños",
+              "despierta a los niños"
+            ],
+            [
+              "Pedro llama Pedro",
+              "Pedro se llama Pedro"
+            ]
+          ]
+        }
+      ],
+      "words": [
+        "rutina-lavar",
+        "rutina-vestir",
+        "rutina-despertar",
+        "rutina-acostar",
+        "rutina-peinar",
+        "rutina-afeitar",
+        "rutina-maquillar",
+        "rutina-secar",
+        "rutina-secarse-pelo"
       ]
     },
     {
@@ -2463,7 +2597,7 @@
         {
           "kind": "text",
           "title": "Во сколько",
-          "body": "Во сколько — через a: ¿A qué hora te levantas? — A las siete. ¿A qué hora cenas? — A las nueve y media de la noche."
+          "body": "Во сколько — через a: ¿A qué hora te levantas? — A las siete. ¿A qué hora cenas? — A las nueve y media de la noche. Без точного часа — por: me ducho por la mañana, но a las siete de la mañana."
         }
       ]
     },
