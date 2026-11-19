@@ -1,5 +1,5 @@
 {
-  "version": 29,
+  "version": 30,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
@@ -27,6 +27,38 @@
     "restaurante": "Кафе и ресторан"
   },
   "lists": [
+    {
+      "id": "2026-11-19-verbos-tiempo-libre",
+      "title": "Verbos y tiempo libre",
+      "date": "2026-11-19",
+      "words": [
+        "verb-empezar",
+        "verb-pedir",
+        "verb-ir",
+        "verb-venir",
+        "verb-elegir",
+        "verb-decir",
+        "verb-hacer",
+        "verb-conocer",
+        "verb-poner",
+        "verb-traer",
+        "rutina-sales",
+        "verb-moverse",
+        "salud-descansar",
+        "verb-reunirse",
+        "salud-sueno",
+        "rutina-hacer-deporte",
+        "rutina-aire-fresco",
+        "rutina-tiempo-amigos",
+        "rutina-poner-mesa",
+        "rutina-dar-paseo",
+        "trab-equipo",
+        "conec-tranquilamente",
+        "verb-aceptar",
+        "verb-compartir",
+        "verb-prepararse"
+      ]
+    },
     {
       "id": "2026-11-17-rutina-se",
       "title": "Rutina diaria: con se o sin se",
@@ -6028,6 +6060,83 @@
       "ru": "тарелка; блюдо",
       "pos": "n",
       "cat": "casa"
+    },
+    {
+      "id": "verb-moverse",
+      "es": "moverse",
+      "ru": "двигаться",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-reunirse",
+      "es": "reunirse",
+      "ru": "встречаться, собираться",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-aceptar",
+      "es": "aceptar",
+      "ru": "принимать, соглашаться",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-compartir",
+      "es": "compartir",
+      "ru": "делиться",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-prepararse",
+      "es": "prepararse",
+      "ru": "готовиться",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "rutina-hacer-deporte",
+      "es": "hacer deporte",
+      "ru": "заниматься спортом",
+      "pos": "phrase",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-aire-fresco",
+      "es": "tomar aire fresco",
+      "ru": "подышать свежим воздухом",
+      "pos": "phrase",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-tiempo-amigos",
+      "es": "pasar tiempo con amigos",
+      "ru": "проводить время с друзьями",
+      "pos": "phrase",
+      "cat": "rutina"
+    },
+    {
+      "id": "rutina-poner-mesa",
+      "es": "poner la mesa",
+      "ru": "накрывать на стол",
+      "pos": "phrase",
+      "cat": "rutina"
+    },
+    {
+      "id": "trab-equipo",
+      "es": "el equipo",
+      "ru": "команда",
+      "pos": "n",
+      "cat": "trabajo"
+    },
+    {
+      "id": "conec-tranquilamente",
+      "es": "tranquilamente",
+      "ru": "спокойно",
+      "pos": "adv",
+      "cat": "conectores"
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "version": 16,
+  "version": 17,
   "groups": {
     "start": "Первые шаги",
     "ser": "Быть и иметь",
@@ -635,7 +635,9 @@
         "verb-visitar",
         "verb-nadar",
         "verb-alquilar",
-        "rutina-pasear"
+        "rutina-pasear",
+        "verb-aceptar",
+        "verb-compartir"
       ]
     },
     {
@@ -804,7 +806,10 @@
         "ropa-probarse",
         "rutina-lavarse-cara",
         "verb-llamarse",
-        "rutina-tumbarse"
+        "rutina-tumbarse",
+        "verb-moverse",
+        "verb-reunirse",
+        "verb-prepararse"
       ]
     },
     {
