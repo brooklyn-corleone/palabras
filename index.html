@@ -7,6 +7,8 @@
 <title>Palabras</title>
 <link rel="stylesheet" href="styles.css">
 <link rel="manifest" href="manifest.webmanifest">
+<!-- SVG — чёткий фавикон на любом экране; PNG — для браузеров, что SVG во вкладке не берут. -->
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 <link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -26,7 +28,7 @@ try {
 <div class="wrap">
 
 <header>
-  <h1 class="mark">Palabras</h1>
+  <h1 class="mark"><img src="icons/icon.svg" alt="" width="28" height="28">Palabras</h1>
   <!-- Чей прогресс на экране. На общем ноутбуке профиль меняется отсюда же. -->
   <button class="who hidden" id="btn-profile" type="button" aria-haspopup="dialog"></button>
   <!-- На телефоне это нижняя панель вкладок (HIG: навигация в зоне большого пальца),
