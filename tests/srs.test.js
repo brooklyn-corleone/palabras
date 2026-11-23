@@ -110,66 +110,82 @@ test('diffMarks: лишние буквы в ответе и пропущенны
   assert.equal(srs.diffMarks('', 'perro'), null);
 });
 
-test('опечатка засчитывается, но выше четвёртой коробки не поднимает', () => {
+test('опечатка засчитывается, но «помню» не проходит', () => {
   resetDeck();
   const w = makeWord();
   const key = w.id + '|ru';
-  for (const expected of [2, 3, 4, 4]) {
+  for (const expected of [2, 3, 3]) {
     assert.equal(srs.grade(key, 'type', true, { cap: srs.ALMOST_CAP }).box, expected);
   }
-  // Из пятой коробки опечатка не роняет: за верный ответ наказывать не за что.
-  assert.equal(srs.grade(key, 'type', true).box, 5);
-  assert.equal(srs.grade(key, 'type', true, { cap: srs.ALMOST_CAP }).box, 5);
+  // Пройденную сторону опечатка не роняет: за верный ответ наказывать не за что.
+  assert.equal(srs.grade(key, 'type', true).box, srs.DONE_BOX);
+  assert.equal(srs.grade(key, 'type', true, { cap: srs.ALMOST_CAP }).box, srs.DONE_BOX);
 });
 
-test('type поднимает карточку до коробки 5 и там останавливается', () => {
+test('стадий три, «помню» — последняя', () => {
+  assert.deepEqual(srs.STAGES, ['учу', 'знакомо', 'помню']);
+  assert.equal(srs.DONE_BOX, 4);
+  assert.equal(srs.INTERVALS.length, srs.DONE_BOX);
+  assert.equal(srs.BOX_LABEL.length, srs.DONE_BOX);
+});
+
+test('type проводит карточку через «помню» и там останавливается', () => {
   resetDeck();
   const w = makeWord();
   const key = w.id + '|ru';
 
-  for (const expected of [2, 3, 4, 5, 5]) {
+  for (const expected of [2, 3, 4, 4]) {
     const res = srs.grade(key, 'type', true);
     assert.equal(res.box, expected);
   }
   // Срок следующего повтора считается по интервалу коробки, а не по календарю сессии.
-  assert.equal(state.cards[key].due, addDays(16));
+  assert.equal(state.cards[key].due, addDays(8));
 });
 
-test('flip доводит es-карточку до пятой коробки и там останавливается', () => {
+test('flip проводит es-карточку через «помню» и там останавливается', () => {
   resetDeck();
   const w = makeWord();
   const key = w.id + '|es';
 
-  for (const expected of [2, 3, 4, 5, 5]) {
+  for (const expected of [2, 3, 4, 4]) {
     assert.equal(srs.grade(key, 'flip', true).box, expected);
   }
+});
+
+test('коробка 5 из старой версии прижимается к пройденной', () => {
+  resetDeck();
+  const w = makeWord();
+  state.cards[w.id + '|es'].box = 5;
+  state.cards[w.id + '|ru'].box = 2;
+  assert.equal(srs.wordBox(w.id), 2);
+  state.cards[w.id + '|ru'].box = 5;
+  assert.equal(srs.wordBox(w.id), srs.DONE_BOX);
+  assert.equal(srs.wordStage(w.id), 'помню', 'до архива слово показывается последней стадией');
 });
 
 // Это была дыра в конструкции, а не настройка: у flip потолок стоял на 3, а type
 // и letters привязаны к RU→ES (MODE_DIR), поэтому es-карточку не мог поднять выше
 // третьей коробки вообще ни один режим. Половина колоды возвращалась каждые четыре дня
 // вечно, а wordBox (минимум двух направлений) никогда не показывал больше тройки.
-test('es-направление достижимо до пятой коробки хоть каким-то режимом', () => {
+test('обе стороны можно пройти до архива хоть каким-то режимом', () => {
   const reachable = (dir) => {
     const modes = Object.keys(srs.MODE_DIR).filter(
       (m) => m !== 'match' && (!srs.MODE_DIR[m] || srs.MODE_DIR[m] === dir),
     );
     return Math.max(...modes.map((m) => srs.MAX_BOX[m]));
   };
-  assert.equal(reachable('ru'), 5);
-  assert.equal(reachable('es'), 5, 'иначе es-карточка упирается в потолок навсегда');
+  assert.equal(reachable('ru'), srs.DONE_BOX);
+  assert.equal(reachable('es'), srs.DONE_BOX, 'иначе es-карточка упирается в потолок навсегда');
 });
 
-test('слово целиком доходит до пятой коробки в обоих направлениях', () => {
+test('три верных ответа в каждую сторону — и слово в архиве', () => {
   resetDeck();
   const w = makeWord();
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 3; i++) {
     srs.grade(w.id + '|ru', 'type', true);
     srs.grade(w.id + '|es', 'flip', true);
   }
-  assert.equal(state.cards[w.id + '|ru'].box, 5);
-  assert.equal(state.cards[w.id + '|es'].box, 5);
-  assert.equal(srs.wordBox(w.id), 5, 'коробка слова — минимум направлений, и он достижим');
+  assert.equal(srs.isArchived(w.id), true);
 });
 
 test('ошибка сбрасывает в коробку 1 и возвращает карточку в сессию', () => {
@@ -245,8 +261,8 @@ test('archiveWords убирает пачку и возвращает пачку'
   assert.equal(srs.isArchived(c.id), false, 'неотмеченное слово не трогаем');
   // Оба направления слова уходят вместе: архив — состояние слова, не одной карточки.
   for (const key of [a.id + '|es', a.id + '|ru']) {
-    assert.equal(state.cards[key].box, 5);
-    assert.equal(state.cards[key].due, addDays(16));
+    assert.equal(state.cards[key].box, srs.DONE_BOX);
+    assert.equal(state.cards[key].due, addDays(srs.ARCHIVE_DAYS));
   }
 
   srs.archiveWords([a.id, b.id], false);
@@ -295,21 +311,22 @@ test('очередь берёт только созревшие карточки
 
 // --- автоархив ---------------------------------------------------------------
 
-test('слово уходит в архив само, когда обе стороны дошли до пятой коробки', () => {
+test('слово уходит в архив само, когда обе стороны прошли «помню»', () => {
   resetDeck();
   const w = makeWord();
-  for (let i = 0; i < 5; i++) srs.grade(w.id + '|ru', 'type', true);
-  // Пятёрка только в одном направлении — рано.
+  for (let i = 0; i < 4; i++) srs.grade(w.id + '|ru', 'type', true);
+  // Пройдено только одно направление — рано.
   assert.equal(srs.isArchived(w.id), false);
+  assert.equal(srs.wordStage(w.id), 'учу', 'стадия слова — по слабой стороне');
 
   // Ловим именно тот ответ, который довёл слово до архива: следующие уже идут
   // по архивной ветке и в цель не считаются.
   let res = null;
   while (!srs.isArchived(w.id)) res = srs.grade(w.id + '|es', 'flip', true);
 
-  assert.equal(srs.isArchived(w.id), true, 'обе стороны на пятёрке — слово выучено');
+  assert.equal(srs.isArchived(w.id), true, 'обе стороны пройдены — слово выучено');
   assert.equal(res.arch, true);
-  assert.equal(res.box, 5);
+  assert.equal(res.box, srs.DONE_BOX);
   assert.equal(res.counted, true, 'ответ, который довёл до архива, всё равно идёт в цель');
   assert.equal(state.cards[w.id + '|ru'].arch, true, 'архив накрывает оба направления');
 });
@@ -494,18 +511,21 @@ test('pickMode: чем выше коробка, тем меньше подска
   const es = w.id + '|es';
   const ua = w.id + '|ru';
 
-  // Узнавание — всегда переворот или выбор из вариантов.
+  // Узнавание — всегда переворот или выбор из вариантов, а на «помню» — только переворот:
+  // у выбора потолок 3, и пройти её он не может.
   for (let i = 0; i < 30; i++) {
     assert.ok(['flip', 'choice'].includes(srs.pickMode(es)));
   }
+  state.cards[es].box = 3;
+  for (let i = 0; i < 30; i++) assert.equal(srs.pickMode(es), 'flip');
+  state.cards[es].box = 1;
 
   const seen = new Set();
   for (const [box, allowed] of [
     [1, ['choice', 'letters']],
     [2, ['letters', 'type']],
-    [3, ['letters', 'type']],
+    [3, ['type']],
     [4, ['type']],
-    [5, ['type']],
   ]) {
     state.cards[ua].box = box;
     for (let i = 0; i < 30; i++) {
@@ -516,10 +536,9 @@ test('pickMode: чем выше коробка, тем меньше подска
   }
   assert.ok(seen.has('letters') && seen.has('type') && seen.has('choice'), 'все режимы встречаются');
 
-  // Главное следствие весов: в коробку 5 нельзя попасть ничем, кроме чистого ввода.
-  state.cards[ua].box = 4;
-  assert.equal(srs.pickMode(ua), 'type');
-  assert.equal(srs.MAX_BOX.letters, 4);
+  // Главное следствие весов: пройти «помню» нельзя ничем, кроме чистого ввода.
+  assert.equal(srs.MAX_BOX.type, srs.DONE_BOX);
+  assert.equal(srs.MAX_BOX.letters, 3);
   assert.equal(srs.MAX_BOX.choice, 3);
 });
 
@@ -1035,4 +1054,35 @@ test('неделя: последние семь дней, сегодня спр�
   assert.deepEqual(wk.map((x) => x.dow), [3, 4, 5, 6, 0, 1, 2], 'чт … вс, пн, вт, ср');
   assert.equal(wk[6].r, 4);
   assert.equal(srs.weekFrom({ [t]: on }, t)[6].kind, 'done', 'засчитанный сегодня — уже не кольцо');
+});
+
+test('миграция v5: коробки 5 прижимаются, пройденное с обеих сторон уходит в архив', async () => {
+  const db = await import('../src/db.js');
+  const old = {
+    v: 4,
+    deviceId: 'old',
+    words: [
+      { id: 'a', es: 'uno', ru: 'один' },
+      { id: 'b', es: 'dos', ru: 'два' },
+    ],
+    cards: {
+      'a|es': { box: 5, due: today(), arch: false, seen: '2026-01-01', updated: 'x' },
+      'a|ru': { box: 4, due: today(), arch: false, seen: '2026-01-01', updated: 'x' },
+      'b|es': { box: 5, due: today(), arch: false, seen: '2026-01-01', updated: 'x' },
+      'b|ru': { box: 2, due: today(), arch: false, seen: '2026-01-01', updated: 'x' },
+    },
+    settings: {},
+    log: {},
+  };
+  await db.set('state:migr', old);
+  await load('state:migr');
+  assert.equal(state.v, 5);
+  assert.equal(state.cards['a|es'].arch, true, 'обе стороны дальше «помню» — в архиве');
+  assert.equal(state.cards['a|ru'].arch, true);
+  assert.equal(state.cards['b|es'].box, srs.DONE_BOX);
+  assert.equal(state.cards['b|es'].arch, false, 'вторая сторона ещё учится');
+  assert.notEqual(state.cards['b|es'].updated, 'x', 'изменённое уедет синхронизацией');
+  assert.equal(state.cards['b|ru'].box, 2);
+  assert.equal(srs.learnedWeek(), 0, 'миграция — не выучено сегодня');
+  await load();
 });

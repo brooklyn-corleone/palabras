@@ -5,7 +5,7 @@ import * as db from './db.js';
 
 // Ключ состояния в хранилище. У каждого профиля свой (profiles.js), load его получает.
 let stateKey = 'state';
-const VERSION = 4;
+const VERSION = 5;
 
 // "es" — показываем испанское, вспоминаем русское (узнавание).
 // "ru" — показываем русское, вспоминаем испанское (воспроизведение).
@@ -133,6 +133,37 @@ function renameDir(s, from, to) {
   s.cards = renamed;
 }
 
+// Стадий стало три вместо пяти (v5): «помню» — последняя, за ней архив. Коробки 4 и 5
+// прижимаются к 4 — «направление пройдено» (DONE_BOX в srs.js; импортировать его
+// отсюда нельзя, srs.js сам зависит от state.js). Слово, у которого пройдены обе
+// стороны, сразу уходит в архив: по новым правилам оно уже выучено.
+// updated двигаем, чтобы синхронизация увезла результат, а не вернула коробки 5.
+// В «выучено за неделю» это не идёт: слова выучены не сегодня.
+const DONE_BOX = 4;
+const ARCHIVE_DAYS = 16;
+
+function threeStages(s) {
+  const stamp = now();
+  const byWord = {};
+  for (const [key, card] of Object.entries(s.cards || {})) {
+    if (!card || typeof card !== 'object') continue;
+    if (card.box > DONE_BOX) {
+      card.box = DONE_BOX;
+      card.updated = stamp;
+    }
+    const id = key.slice(0, key.lastIndexOf('|'));
+    (byWord[id] = byWord[id] || []).push(card);
+  }
+  for (const cards of Object.values(byWord)) {
+    if (cards.length < 2 || cards.some((c) => c.arch || c.box < DONE_BOX)) continue;
+    for (const c of cards) {
+      c.arch = true;
+      c.due = addDays(ARCHIVE_DAYS);
+      c.updated = stamp;
+    }
+  }
+}
+
 // Миграции только вперёд и только достраивающие: ничего не удаляем и не перетираем.
 function migrate(raw) {
   const s = raw;
@@ -142,6 +173,7 @@ function migrate(raw) {
   // поэтому пишем их как одну пару взаимно обратных переходов.
   if (!s.v || s.v < 3) renameDir(s, 'ru', 'ua');
   if (s.v < 4) renameDir(s, 'ua', 'ru');
+  if (s.v < 5) threeStages(s);
   s.v = VERSION;
 
   if (!s.deviceId) s.deviceId = uuid();

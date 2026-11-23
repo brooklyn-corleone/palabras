@@ -1056,7 +1056,9 @@ function renderIntro(word) {
       notes.ruleLink(notes.ruleFor(word)),
       el('p', {
         class: 'hint intro-hint',
-        text: '«Уже знаю» — сразу в «' + knownStage + '»: слово вернётся через ' + knownWhen + ' обычной карточкой.',
+        text:
+          '«Уже знаю» — сразу в «' + knownStage + '»: слово вернётся через ' + knownWhen +
+          ', и верный ответ отправит его в архив.',
       }),
       el(
         'div',
@@ -1174,19 +1176,17 @@ function renderNote() {
 // пачкой в архив. Кнопка «в архив» есть и на самой карточке, но там решение приходится
 // принимать в момент ответа и по одному слову; здесь весь список сразу и на свежую голову.
 //
-// Показываем только отвеченное верно и ни разу не промаханное — см. recordAnswer.
-// Галочка 20×20 при HIG-минимуме 44×44: на двухстах сорока строках по ней промахивались.
-// Сама галочка не растёт — растёт label вокруг, а отрицательные поля держат вёрстку на месте.
-function pickHit(check) {
-  return el('label', { class: 'pick-hit' }, check);
-}
-
-function renderArchiveOffer() {
+// Все слова урока, а не только отвеченные верно: в списке ищут знакомое, и слово,
+// где ошибся из-за опечатки или спешки, тоже бывает выученным. Верные — сверху,
+// с ошибкой — ниже и с пометкой, чтобы не отправить их в архив по инерции.
+// rerender — экран, на котором стоит список: конец занятия или «Урок пройден».
+function renderArchiveOffer(rerender) {
   const byId = new Map(activeWords().map((w) => [w.id, w]));
-  const words = [...sessionRight.keys()]
-    .filter((id) => sessionRight.get(id) && !srs.isArchived(id))
-    .map((id) => byId.get(id))
-    .filter(Boolean);
+  const ids = [...sessionRight.keys()].filter((id) => byId.has(id) && !srs.isArchived(id));
+  const words = [
+    ...ids.filter((id) => sessionRight.get(id)),
+    ...ids.filter((id) => !sessionRight.get(id)),
+  ].map((id) => byId.get(id));
 
   const note = archivedAtEnd
     ? el('p', {
@@ -1228,12 +1228,19 @@ function renderArchiveOffer() {
       sync();
     });
     checks.push(check);
+    const missed = !sessionRight.get(w.id);
+    // Строка целиком — подпись галочки: попасть по ней проще, чем по квадрату 20×20.
     return el(
-      'div',
-      { class: 'item' },
-      pickHit(check),
-      el('div', { class: 'es', lang: 'es', text: w.es }),
-      el('div', { class: 'ru', text: w.ru }),
+      'label',
+      { class: 'item end-pick' + (missed ? ' missed' : '') },
+      check,
+      el(
+        'span',
+        { class: 'end-pick-text' },
+        el('span', { class: 'es', lang: 'es', text: w.es }),
+        el('span', { class: 'ru', text: w.ru }),
+      ),
+      missed ? el('span', { class: 'box-tag', text: 'ошибка' }) : null,
     );
   });
 
@@ -1249,15 +1256,25 @@ function renderArchiveOffer() {
 
   apply.addEventListener('click', () => {
     if (!chosen.size) return;
-    archivedAtEnd += chosen.size;
-    srs.archiveWords([...chosen], true);
-    renderRail();
+    const picked = [...chosen];
+    const snaps = picked.map((id) => [id, srs.snapshotWord(id)]);
+    // Карточки слов уходят и из очереди: на экране «Урок пройден» занятие ещё
+    // не кончено, и «Продолжить» не должно спрашивать только что убранное.
+    const dropped = picked.flatMap((id) => srs.dropWord(id));
+    archivedAtEnd += picked.length;
+    srs.archiveWords(picked, true);
+    afterListChange();
     pulseSeg('arch');
-    renderScope();
-    renderList();
     // Перерисовываем экран целиком: убранные слова должны из списка исчезнуть,
     // а состояние галочек живёт в замыкании и переживать перерисовку не должно.
-    renderEmpty();
+    rerender();
+    toast(picked.length + ' ' + plural(picked.length, 'слово', 'слова', 'слов') + ' в архиве', () => {
+      for (const [id, snap] of snaps) srs.restoreWord(id, snap);
+      srs.unshiftKeys(dropped);
+      archivedAtEnd -= picked.length;
+      afterListChange();
+      if (screen === 'end' || screen === 'goal') rerender();
+    });
   });
 
   sync();
@@ -1268,10 +1285,13 @@ function renderArchiveOffer() {
     el(
       'div',
       { class: 'end-archive-head' },
-      el('span', { class: 'cap', text: 'Ответил верно · ' + words.length }),
+      el('span', { class: 'cap', text: 'Слова урока · ' + words.length }),
       toggleAll,
     ),
-    el('p', { class: 'hint', text: 'Отметь то, что уже знаешь наизусть, — уйдёт в архив.' }),
+    el('p', {
+      class: 'hint',
+      text: 'Отметь то, что уже знаешь наизусть, — уйдёт в архив. Остальное продолжит повторяться.',
+    }),
     items,
     note,
     el('div', { class: 'row row-inline' }, apply),
@@ -1358,7 +1378,7 @@ function renderEmpty() {
       ),
       // Итог занятия — тот момент, когда серия только что изменилась.
       renderProgress(),
-      renderArchiveOffer(),
+      renderArchiveOffer(renderEmpty),
     ),
   );
 }
@@ -1434,6 +1454,7 @@ function renderGoalReached() {
           : null,
         el('button', { class: 'btn ghost', onclick: renderSetup }, 'Собрать занятие'),
       ),
+      renderArchiveOffer(renderGoalReached),
     ),
   );
 }
@@ -1460,13 +1481,15 @@ function renderGoal() {
 // Номер коробки и срок — в подписи по тапу.
 function renderRail() {
   const words = activeWords();
-  const boxes = [0, 0, 0, 0, 0];
+  const boxes = srs.STAGES.map(() => 0);
   let fresh = 0;
   let arch = 0;
   for (const w of words) {
     if (srs.isArchived(w.id)) arch++;
     else if (srs.isNewWord(w.id)) fresh++;
-    else boxes[srs.wordBox(w.id) - 1]++;
+    // Пройденное с обеих сторон, но не убранное в архив, бывает только с данными
+    // из старой версии — до следующего ответа оно считается последней стадией.
+    else boxes[Math.min(srs.wordBox(w.id), boxes.length) - 1]++;
   }
   const segments = [{ key: 'new', count: fresh, label: 'Новое', sub: 'ещё не показывалось' }];
   boxes.forEach((count, i) =>
@@ -1681,7 +1704,7 @@ function listRow(w, hard) {
       ? 'трудное'
       : srs.isNewWord(w.id)
         ? 'новое'
-        : srs.STAGES[srs.wordBox(w.id) - 1];
+        : srs.wordStage(w.id);
   const cls = 'item' + (arch ? ' arch' : '') + (w.flagged ? ' flagged' : '') + (hard ? ' hard' : '');
   const text = [
     el('span', { class: 'es', lang: 'es', text: (w.flagged ? '⚑ ' : '') + w.es }),
