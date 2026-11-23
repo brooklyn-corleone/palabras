@@ -1,5 +1,5 @@
 {
-  "version": 32,
+  "version": 33,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
@@ -136,7 +136,18 @@
         "conec-tranquilamente",
         "conec-juntos",
         "conec-conmigo",
-        "conec-algo"
+        "conec-algo",
+        "preg-quien",
+        "conec-nadie",
+        "verb-pasar",
+        "tiempo-hoy",
+        "rutina-tumbarse",
+        "verb-apetecer",
+        "comida-algo-dulce",
+        "tiempo-de-vez",
+        "verb-depender",
+        "salud-animo",
+        "conec-depende-animo"
       ]
     },
     {
@@ -6499,6 +6510,48 @@
       "id": "conec-algo",
       "es": "algo",
       "ru": "что-то, что-нибудь",
+      "pos": "phrase",
+      "cat": "conectores"
+    },
+    {
+      "id": "conec-nadie",
+      "es": "nadie",
+      "ru": "никто",
+      "pos": "phrase",
+      "cat": "conectores"
+    },
+    {
+      "id": "verb-apetecer",
+      "es": "apetecer",
+      "ru": "хотеться, тянуть на что-то — мне хочется",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "comida-algo-dulce",
+      "es": "algo dulce",
+      "ru": "что-нибудь сладкое",
+      "pos": "phrase",
+      "cat": "comida"
+    },
+    {
+      "id": "verb-depender",
+      "es": "depender",
+      "ru": "зависеть",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "salud-animo",
+      "es": "el ánimo",
+      "ru": "настроение, расположение духа",
+      "pos": "n",
+      "cat": "salud"
+    },
+    {
+      "id": "conec-depende-animo",
+      "es": "depende de mi ánimo",
+      "ru": "смотря по настроению",
       "pos": "phrase",
       "cat": "conectores"
     }

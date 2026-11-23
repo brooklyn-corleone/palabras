@@ -1,5 +1,5 @@
 {
-  "version": 19,
+  "version": 20,
   "groups": {
     "start": "Первые шаги",
     "ser": "Быть и иметь",
@@ -639,7 +639,8 @@
         "verb-aceptar",
         "verb-compartir",
         "verb-apagar",
-        "verb-invitar"
+        "verb-invitar",
+        "verb-depender"
       ]
     },
     {
@@ -2311,7 +2312,7 @@
         },
         {
           "kind": "text",
-          "body": "Так же устроен gustar: me gusta el café, me gustan los libros."
+          "body": "Так же устроены gustar и apetecer (хотеться): me gusta el café, me gustan los libros, me apetece algo dulce — хочется сладкого."
         },
         {
           "kind": "text",
@@ -2323,7 +2324,8 @@
         "salud-duele",
         "verb-gustar",
         "ropa-quedar-bien",
-        "verb-parecer"
+        "verb-parecer",
+        "verb-apetecer"
       ]
     },
     {
@@ -2443,7 +2445,7 @@
         },
         {
           "kind": "text",
-          "body": "Перед личной формой глагола — отдельным словом: ¿El coche nuevo? — Sí, lo tengo. Te presento a Lucía — знакомлю тебя с Люсией."
+          "body": "Перед личной формой глагола — отдельным словом: ¿El coche nuevo? — Sí, lo tengo. Te presento a Lucía — знакомлю тебя с Люсией. Tiene una idea y la comparte — делится ею: la = una idea."
         },
         {
           "kind": "text",
