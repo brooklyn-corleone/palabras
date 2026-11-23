@@ -1,5 +1,5 @@
 {
-  "version": 33,
+  "version": 34,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
@@ -147,7 +147,12 @@
         "tiempo-de-vez",
         "verb-depender",
         "salud-animo",
-        "conec-depende-animo"
+        "conec-depende-animo",
+        "comida-patata",
+        "comida-remolacha",
+        "comida-carne",
+        "comida-zanahoria",
+        "comida-repollo"
       ]
     },
     {
@@ -6554,6 +6559,20 @@
       "ru": "смотря по настроению",
       "pos": "phrase",
       "cat": "conectores"
+    },
+    {
+      "id": "comida-remolacha",
+      "es": "la remolacha",
+      "ru": "свёкла",
+      "pos": "n",
+      "cat": "comida"
+    },
+    {
+      "id": "comida-repollo",
+      "es": "el repollo",
+      "ru": "капуста",
+      "pos": "n",
+      "cat": "comida"
     }
   ]
 }
