@@ -13,28 +13,47 @@ import {
   deckRevision,
 } from './state.js';
 
-export const INTERVALS = [1, 2, 4, 8, 16]; // дни для коробок 1..5
-export const BOX_LABEL = ['1 день', '2 дня', '4 дня', '8 дней', '16 дней'];
-
 // Имена стадий вместо номеров коробок, как у WaniKani: «коробка 3» ничего не говорит
 // тому, кто не читал про Лейтнера, а «помню» — говорит. Номер остаётся в подписи шкалы.
-export const STAGES = ['учу', 'знакомо', 'помню', 'уверенно', 'твёрдо'];
+//
+// Стадий три, и «помню» — последняя: верный ответ на ней отправляет слово в архив.
+// Раньше были ещё «уверенно» и «твёрдо», и до архива нужно было четыре верных ответа
+// в каждую сторону с паузами 2, 4 и 8 дней — минимум две недели на слово. Архив
+// наполнялся так медленно, что «выучено» почти не росло.
+export const STAGES = ['учу', 'знакомо', 'помню'];
+
+// Коробка «направление пройдено»: верный ответ из «помню». Это не стадия — слово
+// уходит в архив, как только пройдены обе его карточки (см. grade). Отдельная коробка
+// нужна, пока одна сторона уже пройдена, а вторая ещё учится: её карточка ждёт здесь
+// и изредка проверяется. Записи из старых версий с коробками 5 сюда же и прижимаются.
+export const DONE_BOX = STAGES.length + 1;
+
+export const INTERVALS = [1, 2, 4, 8]; // дни для коробок 1..DONE_BOX
+export const BOX_LABEL = ['1 день', '2 дня', '4 дня', '8 дней'];
+// Как часто проверяется слово из архива.
+export const ARCHIVE_DAYS = 16;
 
 export function stageLabel(card) {
   if (!card) return '';
   if (card.arch) return 'архив';
   if (isNewCard(card)) return 'новое';
-  return STAGES[card.box - 1] || '';
+  return STAGES[card.box - 1] || 'выучено';
+}
+
+// Стадия слова для подписей: пройденная коробка показывается последней стадией,
+// пока слово не ушло в архив.
+export function wordStage(id) {
+  return STAGES[Math.min(wordBox(id), STAGES.length) - 1];
 }
 
 // Потолок коробки для каждого режима. Узнать слово среди двух-трёх вариантов много легче,
 // чем вспомнить его с нуля, поэтому одинаково засчитывать режимы нельзя — иначе слова
 // «выучиваются» фальшиво.
 //
-// letters даёт буквы в подсказку, поэтому останавливается на четвёртой коробке.
-// Коробка 5 в направлении RU→ES — только за чистый ввод по памяти.
+// letters даёт буквы в подсказку, поэтому останавливается на «помню».
+// Пройти «помню» в направлении RU→ES (DONE_BOX) — только чистым вводом по памяти.
 //
-// У flip потолок тоже 5, и это не поблажка. flip обслуживает ровно одно направление —
+// У flip потолок тоже DONE_BOX, и это не поблажка. flip обслуживает ровно одно направление —
 // ES→RU (MODE_DIR), где кроме него есть только choice с выбором из трёх. Пока потолок
 // flip был 3, es-карточка не могла подняться выше третьей коробки ничем вообще:
 // половина колоды возвращалась каждые четыре дня вечно, а коробка слова (минимум двух
@@ -43,8 +62,8 @@ export function stageLabel(card) {
 // туда flip не попадает ни при каких настройках.
 //
 // listen (диктант) — 3, как у choice: записать услышанное — проверка слуха и написания,
-// а не того, что слово значит. Пятую коробку es-карточке по-прежнему даёт flip.
-export const MAX_BOX = { type: 5, letters: 4, flip: 5, choice: 3, listen: 3, match: 0 };
+// а не того, что слово значит. Пройти «помню» es-карточке по-прежнему даёт только flip.
+export const MAX_BOX = { type: 4, letters: 3, flip: 4, choice: 3, listen: 3, match: 0 };
 
 // ---------------------------------------------------------------------------
 // выбор режима
@@ -112,17 +131,17 @@ export function pickMode(key, modes, opts = {}) {
   if (card && card.arch) return dir === 'ru' ? 'type' : 'flip';
 
   // Лестница симметрична в обе стороны: сначала вариант подсказан, дальше подсказок нет.
-  // Без второй ветки es-карточка в четвёртой коробке могла снова получить choice
-  // с его потолком 3 и застрять там же, откуда только что вышла.
+  // На «помню» — только режимы, способные её пройти: choice с потолком 3 там бы
+  // ничего не сдвинул, и карточка застряла бы там же, откуда только что вышла.
   // Диктант — третьим вариантом там, где es-карточке ещё подсказывают: на слух и в
-  // написании слово закрепляется, пока его учат, а не после пятой коробки.
+  // написании слово закрепляется, пока его учат.
   if (dir === 'es') {
-    if (box <= 3) return pickOne(opts.listen ? ['flip', 'choice', 'listen'] : ['flip', 'choice']);
+    if (box <= 2) return pickOne(opts.listen ? ['flip', 'choice', 'listen'] : ['flip', 'choice']);
     return 'flip';
   }
 
   if (box === 1) return pickOne(['choice', 'letters']);
-  if (box <= 3) return pickOne(['letters', 'type']);
+  if (box === 2) return pickOne(['letters', 'type']);
   return 'type';
 }
 
@@ -742,7 +761,7 @@ export function diffMarks(input, target) {
 // оценка карточки
 // ---------------------------------------------------------------------------
 
-// Архив — шестое состояние поверх пяти коробок: слово выучено, но изредка проверяется.
+// Архив — состояние поверх коробок: слово выучено, но изредка проверяется.
 // Само переключение — без save и пересборки очереди, чтобы пачка обошлась одним разом.
 function setArchived(id, on) {
   for (const suffix of ['|es', '|ru']) {
@@ -754,8 +773,8 @@ function setArchived(id, on) {
       c.due = today();
     } else {
       c.arch = true;
-      c.box = 5;
-      c.due = addDays(INTERVALS[4]);
+      c.box = DONE_BOX;
+      c.due = addDays(ARCHIVE_DAYS);
     }
     c.updated = now();
   }
@@ -810,9 +829,10 @@ export function unshiftKeys(keys) {
   queue.unshift(...fresh);
 }
 
-// «Уже знаю» на экране знакомства с новым словом: обе карточки сразу в третью коробку,
+// «Уже знаю» на экране знакомства с новым словом: обе карточки сразу в «помню»,
 // как в Memrise и Drops. Не в архив — знакомое на вид слово ещё надо проверить
-// вспоминанием, и через четыре дня оно придёт обычной карточкой.
+// вспоминанием: через четыре дня оно придёт обычной карточкой, и верный ответ
+// в обе стороны отправит его в архив.
 export const KNOWN_BOX = 3;
 
 export function markKnown(id) {
@@ -829,11 +849,12 @@ export function markKnown(id) {
 }
 
 // Потолок для ответа с опечаткой: см. opts.cap в grade.
-export const ALMOST_CAP = 4;
+// Опечатка засчитывается, но «помню» не проходит: в архив — только точным написанием.
+export const ALMOST_CAP = STAGES.length;
 
 // Возвращает { box, arch, counted } — что показать в шкале и считать ли в дневную цель.
 // opts.cap — потолок для одного ответа ниже потолка режима: «почти — опечатка» засчитывается,
-// но пятая коробка требует точного написания.
+// но пройти «помню» можно только точным написанием.
 export function grade(key, mode, correct, opts = {}) {
   const c = state.cards[key];
   if (!c) return null;
@@ -849,7 +870,7 @@ export function grade(key, mode, correct, opts = {}) {
 
   if (c.arch) {
     if (correct) {
-      c.due = addDays(INTERVALS[4]); // помнит — остаётся в архиве
+      c.due = addDays(ARCHIVE_DAYS); // помнит — остаётся в архиве
     } else {
       c.arch = false; // забыл — возвращается в оборот
       c.box = 2;
@@ -862,8 +883,11 @@ export function grade(key, mode, correct, opts = {}) {
     return { box: c.box, arch: c.arch, counted: false, correct };
   }
 
-  const modeCap = MAX_BOX[mode] === undefined ? 5 : MAX_BOX[mode];
-  const cap = Math.min(modeCap, opts.cap || 5);
+  // Коробки 5 остались в записях старых версий и могут приехать синхронизацией
+  // с устройства, которое ещё не обновилось.
+  if (c.box > DONE_BOX) c.box = DONE_BOX;
+  const modeCap = MAX_BOX[mode] === undefined ? DONE_BOX : MAX_BOX[mode];
+  const cap = Math.min(modeCap, opts.cap || DONE_BOX);
   if (correct) {
     // Выше потолка режима карточка не поднимается, но и не опускается —
     // за верный ответ наказывать не за что.
@@ -884,24 +908,23 @@ export function grade(key, mode, correct, opts = {}) {
   const counted = mode !== 'match' && correct;
   if (counted) state.stats.done++;
 
-  // Слово, дошедшее до пятой коробки в обоих направлениях, уходит в архив само.
+  // Слово, прошедшее «помню» в обоих направлениях, уходит в архив само.
   // Без этого архив наполнялся только руками, и весь механизм вокруг него — подмешивание
   // выученного, MAX_ARCHIVE_MIX, «изредка проверяется» — просто не запускался: пятая
   // коробка была конечной остановкой с интервалом шестнадцать дней навсегда.
   //
-  // Планка высокая нарочно: пятёрка в RU→ES берётся только чистым вводом по памяти,
-  // так что случайно сюда не попасть. Забыл потом — архив сам вернёт слово в оборот
+  // Случайно сюда не попасть: «помню» в RU→ES проходится только чистым вводом по памяти. Забыл потом — архив сам вернёт слово в оборот
   // (см. ветку c.arch в начале функции).
   //
   // Разминку сюда не пускаем: match коробки не двигает и решать судьбу слова не должен.
-  if (counted && wordBox(parseKey(key).wordId) === 5) {
+  if (counted && wordBox(parseKey(key).wordId) === DONE_BOX) {
     setArchived(parseKey(key).wordId, true);
     // Выучено на занятии — в журнал дня: отсюда «+N за неделю» у шкалы колоды.
     // Архив руками («Уже знаю», «В архив») сюда не идёт: это не выучено, а уже знал.
     const e = dayLog(today());
     e.a = (e.a || 0) + 1;
     save();
-    return { box: 5, arch: true, counted, correct };
+    return { box: DONE_BOX, arch: true, counted, correct };
   }
 
   save();
@@ -913,13 +936,13 @@ export function grade(key, mode, correct, opts = {}) {
 // ---------------------------------------------------------------------------
 
 export function boxCounts() {
-  const boxes = [0, 0, 0, 0, 0];
+  const boxes = new Array(DONE_BOX).fill(0);
   let arch = 0;
   for (const key of Object.keys(state.cards)) {
     if (!isLiveKey(key)) continue;
     const c = state.cards[key];
     if (c.arch) arch++;
-    else boxes[c.box - 1]++;
+    else boxes[Math.min(c.box, DONE_BOX) - 1]++;
   }
   return { boxes, arch };
 }
@@ -929,7 +952,7 @@ export function boxCounts() {
 export function wordBox(id) {
   const es = state.cards[id + '|es'];
   const ru = state.cards[id + '|ru'];
-  const boxes = [es, ru].filter(Boolean).map((c) => c.box);
+  const boxes = [es, ru].filter(Boolean).map((c) => Math.min(c.box, DONE_BOX));
   return boxes.length ? Math.min(...boxes) : 1;
 }
 
