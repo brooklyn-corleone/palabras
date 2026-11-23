@@ -878,14 +878,14 @@ function renderHome() {
     text = (text ? text + ' ' : '') + 'Новых на сегодня больше нет: лимит ' + srs.newPerDay() + ' в день, он меняется в «Настройках».';
   }
 
-  // Счётчик как в Anki: что ждёт сегодня, повторение и новое отдельно.
-  const stats = el(
-    'div',
-    { class: 'home-stats' },
-    stat(counts.review, 'к повторению'),
-    stat(counts.fresh, 'новых сегодня'),
-    hard ? stat(hard, plural(hard, 'трудное', 'трудных', 'трудных')) : null,
-  );
+  // Счётчик как в Anki: что ждёт сегодня, повторение и новое отдельно. Строкой, а не
+  // крупными числами: «144» крупно под заголовком «6 слов в занятии» спорило с ним —
+  // было непонятно, сколько же сейчас учить.
+  const due = [];
+  if (counts.review) due.push(counts.review + ' к повторению');
+  if (counts.fresh) due.push(counts.fresh + ' ' + plural(counts.fresh, 'новое', 'новых', 'новых'));
+  if (hard) due.push(hard + ' ' + plural(hard, 'трудное', 'трудных', 'трудных'));
+  const stats = due.length ? el('p', { class: 'cap home-due', text: due.join(' · ') }) : null;
 
   const start = () => {
     const go = resume || nextCard;
@@ -920,50 +920,63 @@ function renderHome() {
   );
 }
 
-// Прогресс под счётчиком дня: серия, точность, прогноз. Цифры — то, что Anki и WaniKani
-// показывают на главном экране: видно, что занятия к чему-то ведут, и сколько ждёт завтра.
+// Серия и последние семь дней над кнопками — на старте и на экране итога. Только то, что понятно
+// без пояснений: сколько дней подряд, какие дни недели засчитаны и сколько ответов
+// осталось до сегодняшнего. Точность «87 % верных за неделю» и прогноз «7 придёт завтра,
+// 11 за 7 дней» отсюда убраны: каждый раз приходилось вспоминать, что они значат,
+// а что-то сделать с ними всё равно было нельзя.
+const DOW = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+const DOW_FULL = ['понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота', 'воскресенье'];
+const DAY_SAY = {
+  done: 'засчитан',
+  frozen: 'пропуск прощён',
+  missed: 'пропущен',
+};
+const FROST = '\u2744\uFE0E'; // ❄ текстом, а не цветным эмодзи
+
 function renderProgress() {
   const st = srs.streak();
-  const acc = srs.accuracy(7);
-  const fc = srs.forecast();
+  const days = srs.week();
   const done = srs.todayLog().r;
-  // У нового пользователя все четыре числа — нули и прочерк: блок только занимал
-  // пол-экрана над «Начать». Появляется, когда есть что показать.
-  if (!st.days && acc === null && !fc.tomorrow && !fc.week && !done) return null;
-  const notesText = [];
-  if (!st.todayDone) {
-    notesText.push(
-      'Сегодня засчитается после ' + srs.STREAK_MIN + ' верных ответов' +
-        (done ? ' (уже ' + done + ')' : '') + ' или когда повторишь всё.',
+  const need = Math.max(0, srs.STREAK_MIN - done);
+
+  const dots = days.map((d) => {
+    let mark = '';
+    let say = DAY_SAY[d.kind];
+    if (d.kind === 'done') mark = '✓';
+    if (d.kind === 'frozen') mark = FROST;
+    if (d.kind === 'today') say = 'сегодня, ' + done + ' из ' + srs.STREAK_MIN;
+    return el(
+      'li',
+      { class: 'day is-' + d.kind, 'aria-label': DOW_FULL[d.dow] + ': ' + say },
+      el('span', {
+        class: 'dot',
+        'aria-hidden': 'true',
+        text: mark,
+        style: d.kind === 'today' ? '--p:' + Math.round((100 * Math.min(done, srs.STREAK_MIN)) / srs.STREAK_MIN) : null,
+      }),
+      el('span', { class: 'dow', 'aria-hidden': 'true', text: DOW[d.dow] }),
     );
-  }
-  if (st.frozen) notesText.push('Пропуск ' + dayName(st.frozen) + ' не сбросил серию: один в неделю прощается.');
+  });
+
+  let note;
+  if (st.todayDone) note = 'Сегодня засчитан. Завтра — снова ' + srs.STREAK_MIN + ' верных.';
+  else if (st.days) note = 'Ещё ' + need + ' ' + plural(need, 'верный ответ', 'верных ответа', 'верных ответов') + ' — и серия продолжится.';
+  else note = (done ? 'Ещё ' : '') + need + ' ' + plural(need, 'верный ответ', 'верных ответа', 'верных ответов') + ' — и серия начнётся.';
+  if (days.some((d) => d.kind === 'frozen')) note += ' ' + FROST + ' — пропуск прощён: один в неделю серию не рвёт.';
+
   return el(
-    'div',
-    { class: 'home-progress' },
+    'section',
+    { class: 'streak', 'aria-label': 'Серия' },
     el(
       'div',
-      { class: 'home-stats small' },
-      stat(st.days, plural(st.days, 'день подряд', 'дня подряд', 'дней подряд')),
-      // Неразрывный пробел: с обычным «%» на узкой колонке уезжал под число.
-      stat(acc === null ? '—' : acc + '\u00a0%', 'верных за неделю'),
-      stat(fc.tomorrow, 'придёт завтра'),
-      stat(fc.week, 'за 7 дней'),
+      { class: 'streak-head' },
+      el('b', { text: String(st.days) }),
+      el('span', { text: plural(st.days, 'день подряд', 'дня подряд', 'дней подряд') }),
     ),
-    notesText.length ? el('p', { class: 'hint', text: notesText.join(' ') }) : null,
+    el('ol', { class: 'week', 'aria-label': 'Последние семь дней' }, ...dots),
+    el('p', { class: 'hint', text: note }),
   );
-}
-
-const MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
-
-function dayName(iso) {
-  if (iso === srs.shiftIso(today(), -1)) return 'вчера';
-  const [, m, d] = iso.split('-').map(Number);
-  return d + ' ' + MONTHS[m - 1];
-}
-
-function stat(n, label) {
-  return el('div', { class: 'stat' }, el('b', { text: String(n) }), el('span', { class: 'cap', text: label }));
 }
 
 function hasNewWords() {
@@ -1343,7 +1356,7 @@ function renderEmpty() {
           'Повторить ещё раз',
         ),
       ),
-      // Итог занятия — тот момент, когда серия и точность только что изменились.
+      // Итог занятия — тот момент, когда серия только что изменилась.
       renderProgress(),
       renderArchiveOffer(),
     ),
@@ -1466,7 +1479,11 @@ function renderRail() {
   );
   segments.push({ key: 'arch', count: arch, label: 'Архив', sub: 'изредка' });
 
-  railHead.textContent = 'Колода · ' + words.length + ' ' + plural(words.length, 'слово', 'слова', 'слов');
+  // Выученное — главное число колоды: растёт только от занятий и понятно без легенды.
+  const plus = srs.learnedWeek();
+  railHead.textContent =
+    'Выучено ' + arch + ' из ' + words.length + ' ' + plural(words.length, 'слова', 'слов', 'слов') +
+    (plus ? ' · +' + plus + ' за неделю' : '');
   replace(
     railLegend,
     segments

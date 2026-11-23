@@ -966,7 +966,7 @@ test('разминка «Пары» — только из знакомых сл�
   srs.setSession({});
 });
 
-test('журнал: точность за семь дней, «Пары» в неё не идут', () => {
+test('журнал: верные и неверные за день, «Пары» не идут', () => {
   resetDeck();
   state.log = {};
   const w = makeWord('la mesa', 'стол');
@@ -974,12 +974,26 @@ test('журнал: точность за семь дней, «Пары» в н�
   srs.grade(w.id + '|ru', 'type', false);
   srs.grade(w.id + '|es', 'match', false);
   assert.deepEqual(srs.todayLog(), { r: 1, w: 1 });
-  assert.equal(srs.accuracy(7), 50);
-  state.log[addDays(-3)] = { r: 8, w: 0 };
-  state.log[addDays(-10)] = { r: 0, w: 50 }; // за пределами недели
-  assert.equal(srs.accuracy(7), 90);
+});
+
+test('выучено за неделю: архив с занятия считается, архив руками — нет', () => {
+  resetDeck();
   state.log = {};
-  assert.equal(srs.accuracy(7), null, 'нет ответов — нет и точности');
+  const w = makeWord('la silla', 'стул');
+  for (const d of ['|es', '|ru']) Object.assign(state.cards[w.id + d], { seen: addDays(-30), box: 5, due: today() });
+  srs.grade(w.id + '|ru', 'type', true);
+  assert.ok(srs.isArchived(w.id));
+  assert.equal(srs.learnedWeek(), 1);
+  const m = makeWord('la lámpara', 'лампа');
+  srs.archiveWord(m.id);
+  assert.equal(srs.learnedWeek(), 1, '«в архив» руками — не выучено на занятии');
+  state.log[addDays(-6)] = { r: 10, w: 0, a: 2 };
+  state.log[addDays(-7)] = { r: 10, w: 0, a: 5 }; // восьмой день назад — за пределами недели
+  assert.equal(srs.learnedWeek(), 3);
+  state.peerLogs = { tablet: { [today()]: { r: 3, w: 0, a: 4 } } };
+  assert.equal(srs.learnedWeek(), 7, 'выученное на других устройствах складывается');
+  state.peerLogs = {};
+  state.log = {};
 });
 
 test('серия дней: засчитанные дни, одна заморозка в неделю, сегодня ещё не вечер', () => {
@@ -988,7 +1002,7 @@ test('серия дней: засчитанные дни, одна заморо�
   const on = { r: srs.STREAK_MIN, w: 0 };
   const log = (days) => Object.fromEntries(days.map((n) => [d(n), on]));
 
-  assert.deepEqual(srs.streakFrom({}, t), { days: 0, todayDone: false, frozen: null });
+  assert.deepEqual(srs.streakFrom({}, t), { days: 0, todayDone: false, frozen: null, frozenDays: [] });
   assert.equal(srs.streakFrom(log([0, 1, 2]), t).days, 3);
   assert.equal(srs.streakFrom(log([1, 2]), t).days, 2, 'сегодня не засчитан — серия ещё жива');
   assert.equal(srs.streakFrom({ [t]: { r: srs.STREAK_MIN - 1, w: 0 } }, t).days, 0, 'девяти верных мало');
@@ -1006,23 +1020,19 @@ test('серия дней: засчитанные дни, одна заморо�
   assert.equal(srs.streakFrom(log([0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 16]), t).days, 15);
   // Пропуск перед самым первым днём истории — не заморозка.
   assert.equal(srs.streakFrom(log([0]), t).frozen, null);
+  // Пропуск, за которым серия всё равно оборвалась, ничего не держит.
+  assert.deepEqual(srs.streakFrom(log([0, 3]), t).frozenDays, []);
+  assert.deepEqual(srs.streakFrom(log([0, 2, 3, 4, 5, 6, 7, 8, 10]), t).frozenDays, [d(1), d(9)]);
 });
 
-test('прогноз: завтра и неделя, сегодняшнее и выученное не считаются', () => {
-  resetDeck();
-  const at = (n, extra = {}) => {
-    const w = makeWord('prog' + n + Math.random(), 'прогноз' + n + Math.random());
-    for (const dir of ['|es', '|ru']) Object.assign(state.cards[w.id + dir], { seen: addDays(-5), box: 2, due: addDays(n) }, extra);
-    return w;
-  };
-  at(1);
-  at(1);
-  at(3);
-  at(7);
-  at(8); // за пределами недели
-  at(0); // сегодня — уже в «к повторению»
-  at(2, { arch: true });
-  const half = at(1);
-  state.cards[half.id + '|es'].due = today(); // одна карточка созрела сегодня — слово придёт сегодня
-  assert.deepEqual(srs.forecast(), { tomorrow: 2, week: 4 });
+test('неделя: последние семь дней, сегодня справа', () => {
+  const t = '2026-11-11'; // среда
+  const d = (n) => srs.shiftIso(t, -n);
+  const on = { r: srs.STREAK_MIN, w: 0 };
+  const wk = srs.weekFrom({ [d(2)]: on, [d(3)]: on, [t]: { r: 4, w: 1 } }, t);
+  assert.deepEqual(wk.map((x) => x.iso), [d(6), d(5), d(4), d(3), d(2), d(1), t]);
+  assert.deepEqual(wk.map((x) => x.kind), ['missed', 'missed', 'missed', 'done', 'done', 'frozen', 'today']);
+  assert.deepEqual(wk.map((x) => x.dow), [3, 4, 5, 6, 0, 1, 2], 'чт … вс, пн, вт, ср');
+  assert.equal(wk[6].r, 4);
+  assert.equal(srs.weekFrom({ [t]: on }, t)[6].kind, 'done', 'засчитанный сегодня — уже не кольцо');
 });

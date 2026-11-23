@@ -116,13 +116,13 @@ test('журналы устройств хранятся раздельно и �
     cards: {},
     logs: {
       tablet: { '2026-11-10': { r: 3, w: 0 } },
-      laptop: { '2026-11-10': { r: 4, w: 2, clear: true }, '2025-01-01': { r: 1, w: 0 } },
+      laptop: { '2026-11-10': { r: 4, w: 2, a: 1, clear: true }, '2025-01-01': { r: 1, w: 0 } },
       a: { '2026-11-10': { r: 1, w: 0 } },
     },
   };
   const res = mergeData(local, remote, 'a', FROM);
   assert.equal(local.peerLogs.tablet['2026-11-10'].r, 8);
-  assert.deepEqual(local.peerLogs.laptop, { '2026-11-10': { r: 4, w: 2, clear: true } });
+  assert.deepEqual(local.peerLogs.laptop, { '2026-11-10': { r: 4, w: 2, a: 1, clear: true } }, 'выученные за день едут вместе с ответами');
   assert.equal(local.log['2026-11-10'].r, 5, 'свой журнал из гиста не перетирается');
   assert.equal(res.pulled, true);
   assert.equal(res.ahead, true);
