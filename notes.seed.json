@@ -1,5 +1,5 @@
 {
-  "version": 17,
+  "version": 18,
   "groups": {
     "start": "Первые шаги",
     "ser": "Быть и иметь",
@@ -637,7 +637,9 @@
         "verb-alquilar",
         "rutina-pasear",
         "verb-aceptar",
-        "verb-compartir"
+        "verb-compartir",
+        "verb-apagar",
+        "verb-invitar"
       ]
     },
     {
@@ -1379,7 +1381,12 @@
         },
         {
           "kind": "text",
-          "body": "querer — хотеть, empezar — начинать, poder — мочь, dormir — спать, mover — двигать, jugar — играть (u → ue, единственный такой). Так же: preferir — prefiero, pensar — pienso, entender — entiendo, costar — cuesta, almorzar — almuerzo."
+          "body": "querer — хотеть, empezar — начинать, poder — мочь, dormir — спать, mover — двигать, jugar — играть (u → ue, единственный такой). Так же: preferir — prefiero, pensar — pienso, entender — entiendo, costar — cuesta, almorzar — almuerzo, soler — suelo (suelo cenar a las nueve — обычно ужинаю в девять), sentirse — me siento."
+        },
+        {
+          "kind": "text",
+          "title": "Ловушка",
+          "body": "me siento — и «сажусь» (sentarse), и «чувствую себя» (sentirse): оба глагола e → ie. Различает продолжение: me siento en el sofá, me siento bien."
         },
         {
           "kind": "text",
@@ -1398,7 +1405,9 @@
         "verb-sentarse",
         "verb-preferir",
         "verb-mover",
-        "rutina-almorzar"
+        "rutina-almorzar",
+        "verb-soler",
+        "verb-sentirse"
       ]
     },
     {
@@ -2603,7 +2612,21 @@
           "kind": "text",
           "title": "Во сколько",
           "body": "Во сколько — через a: ¿A qué hora te levantas? — A las siete. ¿A qué hora cenas? — A las nueve y media de la noche. Без точного часа — por: me ducho por la mañana, но a las siete de la mañana."
+        },
+        {
+          "kind": "text",
+          "title": "Цифрами тоже можно",
+          "body": "10:50 — las once menos diez, но и las diez y cincuenta. Цифрами говорят расписания, вокзалы и часто телефон: las diecisiete treinta. Это не ошибка, просто в разговоре привычнее y и menos."
         }
+      ],
+      "words": [
+        "tiempo-que-hora",
+        "tiempo-a-que-hora",
+        "tiempo-en-punto",
+        "tiempo-y-cuarto",
+        "tiempo-y-media",
+        "tiempo-menos-cuarto",
+        "tiempo-reloj"
       ]
     },
     {
