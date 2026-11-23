@@ -71,6 +71,7 @@ function mergeLog(a, b, from) {
       const o = out[d] || (out[d] = { r: 0, w: 0 });
       o.r = Math.max(o.r, e.r || 0);
       o.w = Math.max(o.w, e.w || 0);
+      if (e.a || o.a) o.a = Math.max(o.a || 0, e.a || 0);
       if (e.clear) o.clear = true;
     }
   }
@@ -80,7 +81,7 @@ function mergeLog(a, b, from) {
 function logAhead(mine, theirs) {
   for (const [d, e] of Object.entries(mine || {})) {
     const t = (theirs || {})[d];
-    if (!t || (e.r || 0) > (t.r || 0) || (e.w || 0) > (t.w || 0) || (e.clear && !t.clear)) return true;
+    if (!t || (e.r || 0) > (t.r || 0) || (e.w || 0) > (t.w || 0) || (e.a || 0) > (t.a || 0) || (e.clear && !t.clear)) return true;
   }
   return false;
 }

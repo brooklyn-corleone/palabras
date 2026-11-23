@@ -896,6 +896,10 @@ export function grade(key, mode, correct, opts = {}) {
   // Разминку сюда не пускаем: match коробки не двигает и решать судьбу слова не должен.
   if (counted && wordBox(parseKey(key).wordId) === 5) {
     setArchived(parseKey(key).wordId, true);
+    // Выучено на занятии — в журнал дня: отсюда «+N за неделю» у шкалы колоды.
+    // Архив руками («Уже знаю», «В архив») сюда не идёт: это не выучено, а уже знал.
+    const e = dayLog(today());
+    e.a = (e.a || 0) + 1;
     save();
     return { box: 5, arch: true, counted, correct };
   }
@@ -942,8 +946,8 @@ export function wordOf(key) {
 // журнал по дням: точность, серия дней, прогноз
 // ---------------------------------------------------------------------------
 
-// state.log — { 'YYYY-MM-DD': { r, w, clear } }: верных, неверных и «разобрал всё».
-// Хранится ровно столько, сколько нужно серии и точности. Девяносто дней — с запасом:
+// state.log — { 'YYYY-MM-DD': { r, w, a, clear } }: верных, неверных, выученных и «разобрал всё».
+// Хранится ровно столько, сколько нужно серии и счёту за неделю. Девяносто дней — с запасом:
 // серия дальше пары месяцев считается по тем же записям и рвётся только на пропуске.
 const LOG_DAYS = 90;
 
@@ -983,24 +987,21 @@ function fullLog() {
       const o = out[d] || (out[d] = { r: 0, w: 0 });
       o.r += e.r || 0;
       o.w += e.w || 0;
+      if (e.a) o.a = (o.a || 0) + e.a;
       if (e.clear) o.clear = true;
     }
   }
   return out;
 }
 
-// Точность за последние `days` дней, включая сегодня. null — ответов не было.
-export function accuracy(days = 7) {
-  const log = fullLog();
+// Сколько слов ушло в архив с занятий за последние `days` дней, включая сегодня.
+// Точность за неделю («87 %») отсюда убрана: без пояснения непонятно, много это или мало,
+// а «+5 выучено» понятно сразу и растёт только от занятий.
+export function learnedWeek(days = 7) {
   const from = addDays(-(days - 1));
-  let r = 0;
-  let w = 0;
-  for (const [d, e] of Object.entries(log)) {
-    if (d < from) continue;
-    r += e.r || 0;
-    w += e.w || 0;
-  }
-  return r + w ? Math.round((100 * r) / (r + w)) : null;
+  let n = 0;
+  for (const [d, e] of Object.entries(fullLog())) if (d >= from) n += e.a || 0;
+  return n;
 }
 
 // Серия дней. День засчитан после STREAK_MIN верных ответов — это самый короткий урок
@@ -1035,10 +1036,13 @@ export function streakFrom(log, t) {
   const todayDone = dayActive(log, t);
   let d = todayDone ? t : shiftIso(t, -1);
   let days = 0;
-  let frozen = null; // последний по времени день, прикрытый заморозкой
+  const frozenDays = []; // прикрытые заморозкой дни, от новых к старым
+  let pending = null; // пропуск, который станет заморозкой, если за ним найдётся засчитанный день
   let lastFreeze = null; // для правила «одна на семь дней» при обходе назад
   for (let i = 0; i < LOG_DAYS + 7; i++) {
     if (dayActive(log, d)) {
+      if (pending) frozenDays.push(pending);
+      pending = null;
       days++;
     } else {
       const gap = lastFreeze ? daysBetween(d, lastFreeze) : Infinity;
@@ -1046,11 +1050,12 @@ export function streakFrom(log, t) {
       // Пропуск после начала истории — не заморозка, а её край.
       if (!Object.keys(log).some((k) => k < d && dayActive(log, k))) break;
       lastFreeze = d;
-      if (!frozen) frozen = d;
+      pending = d;
     }
     d = shiftIso(d, -1);
   }
-  return { days, todayDone, frozen: days ? frozen : null };
+  // Пропуск, за которым обход оборвался, ничего не держит — заморозкой он не был.
+  return { days, todayDone, frozen: frozenDays[0] || null, frozenDays };
 }
 
 function daysBetween(a, b) {
@@ -1063,33 +1068,30 @@ export function streak() {
   return streakFrom(fullLog(), today());
 }
 
+// Последние семь дней, сегодня — справа: полоска под серией.
+// done — засчитан, frozen — пропуск прощён, missed — пропущен, today — сегодня, пока
+// не засчитан (r — сколько верных уже есть). Не календарная неделя: в понедельник
+// она была бы пустой рядом с «5 дней подряд», а серия — это как раз вчера и раньше.
+export function weekFrom(log, t) {
+  const st = streakFrom(log, t);
+  const out = [];
+  for (let i = 6; i >= 0; i--) {
+    const iso = shiftIso(t, -i);
+    const [y, m, d] = iso.split('-').map(Number);
+    let kind = 'missed';
+    if (dayActive(log, iso)) kind = 'done';
+    else if (iso === t) kind = 'today';
+    else if (st.frozenDays.includes(iso)) kind = 'frozen';
+    out.push({ iso, kind, dow: (new Date(y, m - 1, d).getDay() + 6) % 7, r: (log[iso] && log[iso].r) || 0 });
+  }
+  return out;
+}
+
+export function week() {
+  return weekFrom(fullLog(), today());
+}
+
 export function todayLog() {
   const e = fullLog()[today()];
   return { r: (e && e.r) || 0, w: (e && e.w) || 0 };
-}
-
-// Сколько слов придёт завтра и за ближайшие семь дней — как прогноз в Anki и WaniKani.
-// Слово считается в тот день, когда созреет первая его карточка. Сегодняшнее сюда
-// не входит: оно уже в «к повторению». Выученное тоже: его подмешивается не больше трёх.
-export function forecast() {
-  const t = today();
-  const tomorrow = addDays(1);
-  const week = addDays(7);
-  const first = new Map();
-  for (const key of Object.keys(state.cards)) {
-    if (!isLiveKey(key)) continue;
-    const c = state.cards[key];
-    if (c.arch || c.due <= t || c.due > week) continue;
-    const id = parseKey(key).wordId;
-    if (!first.has(id) || c.due < first.get(id)) first.set(id, c.due);
-  }
-  // Слово, у которого другая карточка созрела уже сегодня, придёт сегодня — не считаем.
-  let tom = 0;
-  let wk = 0;
-  for (const [id, due] of first) {
-    if (wordCards(id).some((c) => !c.arch && c.due <= t)) continue;
-    wk++;
-    if (due <= tomorrow) tom++;
-  }
-  return { tomorrow: tom, week: wk };
 }
