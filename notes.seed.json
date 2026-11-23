@@ -1,5 +1,5 @@
 {
-  "version": 18,
+  "version": 19,
   "groups": {
     "start": "Первые шаги",
     "ser": "Быть и иметь",
@@ -1381,7 +1381,7 @@
         },
         {
           "kind": "text",
-          "body": "querer — хотеть, empezar — начинать, poder — мочь, dormir — спать, mover — двигать, jugar — играть (u → ue, единственный такой). Так же: preferir — prefiero, pensar — pienso, entender — entiendo, costar — cuesta, almorzar — almuerzo, soler — suelo (suelo cenar a las nueve — обычно ужинаю в девять), sentirse — me siento."
+          "body": "querer — хотеть, empezar — начинать, poder — мочь, dormir — спать, mover — двигать, jugar — играть (u → ue, единственный такой). Так же: preferir — prefiero, pensar — pienso, entender — entiendo, costar — cuesta, almorzar — almuerzo, soler — suelo (suelo cenar a las nueve — обычно ужинаю в девять), sentirse — me siento, sentarse — me siento."
         },
         {
           "kind": "text",

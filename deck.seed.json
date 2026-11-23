@@ -1,5 +1,5 @@
 {
-  "version": 31,
+  "version": 32,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
@@ -75,6 +75,7 @@
         "verb-aceptar",
         "rutina-volver",
         "verb-sentirse",
+        "verb-sentarse",
         "verb-mirar",
         "verb-pensar",
         "verb-apagar",
