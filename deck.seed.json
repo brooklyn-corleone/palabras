@@ -1,5 +1,5 @@
 {
-  "version": 30,
+  "version": 31,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
@@ -24,9 +24,120 @@
     "clima": "Погода",
     "compras": "Покупки",
     "ropa": "Одежда",
-    "restaurante": "Кафе и ресторан"
+    "restaurante": "Кафе и ресторан",
+    "ocio": "Досуг"
   },
   "lists": [
+    {
+      "id": "2026-11-23-la-hora-irregulares",
+      "title": "La hora y verbos irregulares",
+      "date": "2026-11-23",
+      "words": [
+        "tiempo-que-hora",
+        "tiempo-a-que-hora",
+        "tiempo-hora",
+        "tiempo-minuto",
+        "tiempo-en-punto",
+        "tiempo-y-cuarto",
+        "tiempo-y-media",
+        "tiempo-menos-cuarto",
+        "tiempo-reloj",
+        "rutina-levantarse",
+        "rutina-desayunar",
+        "verb-empezar",
+        "verb-trabajar",
+        "verb-estudiar",
+        "rutina-comer",
+        "verb-terminar",
+        "rutina-cenar",
+        "rutina-acostarse",
+        "verb-querer",
+        "verb-pedir",
+        "verb-dormir",
+        "verb-mover",
+        "verb-jugar",
+        "verb-decir",
+        "verb-venir",
+        "verb-elegir",
+        "verb-ir",
+        "verb-dar",
+        "verb-traer",
+        "verb-hacer",
+        "verb-conocer",
+        "verb-poner",
+        "rutina-sales",
+        "verb-se-queda",
+        "verb-saber",
+        "verb-compartir",
+        "verb-necesitar",
+        "verb-caminar",
+        "verb-moverse",
+        "verb-aceptar",
+        "rutina-volver",
+        "verb-sentirse",
+        "verb-mirar",
+        "verb-pensar",
+        "verb-apagar",
+        "verb-soler",
+        "verb-preferir",
+        "verb-invitar",
+        "verb-poder",
+        "verb-tener-que",
+        "verb-decir-verdad",
+        "trab-oficina",
+        "trab-reunion",
+        "trab-companero",
+        "trab-jefe",
+        "trab-idea",
+        "trab-proyecto",
+        "trab-equipo",
+        "trab-descanso",
+        "trab-ordenador",
+        "trab-clase",
+        "ocio-cine",
+        "ocio-entrada",
+        "ocio-concierto",
+        "ocio-futbol",
+        "ocio-padel",
+        "ocio-jugador",
+        "ocio-cartas",
+        "rutina-deporte",
+        "rutina-hacer-deporte",
+        "rutina-dar-paseo",
+        "rutina-aire-fresco",
+        "rutina-tiempo-amigos",
+        "rutina-poner-mesa",
+        "compr-regalo",
+        "pres-cumpleanos",
+        "salud-sueno",
+        "salud-descansar",
+        "adje-cansado",
+        "adje-sentado",
+        "adje-profesional",
+        "adje-divertido",
+        "clima-buen-tiempo",
+        "rest-restaurante",
+        "rest-camarero",
+        "rest-cafeteria",
+        "comida-cafe",
+        "comida-te",
+        "transp-autobus",
+        "tiempo-a-veces",
+        "tiempo-durante",
+        "tiempo-temprano",
+        "tiempo-normalmente",
+        "tiempo-todos-dias",
+        "tiempo-fin-semana",
+        "tiempo-esta-tarde",
+        "tiempo-dia-siguiente",
+        "lugar-delante",
+        "conec-directamente",
+        "conec-tranquilamente",
+        "conec-juntos",
+        "conec-conmigo",
+        "conec-algo"
+      ]
+    },
     {
       "id": "2026-11-19-verbos-tiempo-libre",
       "title": "Verbos y tiempo libre",
@@ -1719,7 +1830,7 @@
       "es": "el paseo",
       "ru": "прогулка",
       "pos": "n",
-      "cat": "rutina"
+      "cat": "ocio"
     },
     {
       "id": "rutina-barrer",
@@ -4729,7 +4840,7 @@
       "es": "dar un paseo",
       "ru": "прогуляться",
       "pos": "phrase",
-      "cat": "rutina"
+      "cat": "ocio"
     },
     {
       "id": "rutina-almorzar",
@@ -5016,14 +5127,14 @@
       "es": "la música",
       "ru": "музыка",
       "pos": "n",
-      "cat": "rutina"
+      "cat": "ocio"
     },
     {
       "id": "rutina-deporte",
       "es": "el deporte",
       "ru": "спорт",
       "pos": "n",
-      "cat": "rutina"
+      "cat": "ocio"
     },
     {
       "id": "anim-animal",
@@ -6101,7 +6212,7 @@
       "es": "hacer deporte",
       "ru": "заниматься спортом",
       "pos": "phrase",
-      "cat": "rutina"
+      "cat": "ocio"
     },
     {
       "id": "rutina-aire-fresco",
@@ -6115,7 +6226,7 @@
       "es": "pasar tiempo con amigos",
       "ru": "проводить время с друзьями",
       "pos": "phrase",
-      "cat": "rutina"
+      "cat": "ocio"
     },
     {
       "id": "rutina-poner-mesa",
@@ -6136,6 +6247,258 @@
       "es": "tranquilamente",
       "ru": "спокойно",
       "pos": "adv",
+      "cat": "conectores"
+    },
+    {
+      "id": "tiempo-que-hora",
+      "es": "¿Qué hora es?",
+      "ru": "который час?",
+      "pos": "phrase",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-a-que-hora",
+      "es": "¿A qué hora?",
+      "ru": "во сколько?",
+      "pos": "phrase",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-en-punto",
+      "es": "en punto",
+      "ru": "ровно — о времени: 3:00",
+      "pos": "phrase",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-y-cuarto",
+      "es": "y cuarto",
+      "ru": "четверть после часа: 3:15",
+      "pos": "phrase",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-y-media",
+      "es": "y media",
+      "ru": "половина после часа: 3:30",
+      "pos": "phrase",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-menos-cuarto",
+      "es": "menos cuarto",
+      "ru": "без четверти: 2:45",
+      "pos": "phrase",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-reloj",
+      "es": "el reloj",
+      "ru": "часы — прибор",
+      "pos": "n",
+      "cat": "tiempo"
+    },
+    {
+      "id": "tiempo-dia-siguiente",
+      "es": "el día siguiente",
+      "ru": "следующий день — назавтра",
+      "pos": "phrase",
+      "cat": "tiempo"
+    },
+    {
+      "id": "verb-sentirse",
+      "es": "sentirse",
+      "ru": "ощущать себя — о настроении, состоянии",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-apagar",
+      "es": "apagar",
+      "ru": "выключать, гасить",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-soler",
+      "es": "soler",
+      "ru": "иметь привычку, обычно делать — + инфинитив",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-invitar",
+      "es": "invitar",
+      "ru": "приглашать; угощать",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-decir-verdad",
+      "es": "decir la verdad",
+      "ru": "говорить правду",
+      "pos": "phrase",
+      "cat": "verbos"
+    },
+    {
+      "id": "trab-reunion",
+      "es": "la reunión",
+      "ru": "совещание, собрание",
+      "pos": "n",
+      "cat": "trabajo"
+    },
+    {
+      "id": "trab-companero",
+      "es": "el compañero",
+      "ru": "коллега, товарищ — по работе, учёбе",
+      "pos": "n",
+      "cat": "trabajo"
+    },
+    {
+      "id": "trab-jefe",
+      "es": "el jefe",
+      "ru": "начальник",
+      "pos": "n",
+      "cat": "trabajo"
+    },
+    {
+      "id": "trab-proyecto",
+      "es": "el proyecto",
+      "ru": "проект",
+      "pos": "n",
+      "cat": "trabajo"
+    },
+    {
+      "id": "trab-idea",
+      "es": "la idea",
+      "ru": "идея, мысль",
+      "pos": "n",
+      "cat": "trabajo"
+    },
+    {
+      "id": "trab-descanso",
+      "es": "el descanso",
+      "ru": "перерыв, отдых",
+      "pos": "n",
+      "cat": "trabajo"
+    },
+    {
+      "id": "trab-ordenador",
+      "es": "el ordenador",
+      "ru": "компьютер",
+      "pos": "n",
+      "cat": "trabajo"
+    },
+    {
+      "id": "ocio-cine",
+      "es": "el cine",
+      "ru": "кино, кинотеатр",
+      "pos": "n",
+      "cat": "ocio"
+    },
+    {
+      "id": "ocio-concierto",
+      "es": "el concierto",
+      "ru": "концерт",
+      "pos": "n",
+      "cat": "ocio"
+    },
+    {
+      "id": "ocio-entrada",
+      "es": "la entrada",
+      "ru": "входной билет, вход",
+      "pos": "n",
+      "cat": "ocio"
+    },
+    {
+      "id": "ocio-futbol",
+      "es": "el fútbol",
+      "ru": "футбол",
+      "pos": "n",
+      "cat": "ocio"
+    },
+    {
+      "id": "ocio-padel",
+      "es": "el pádel",
+      "ru": "падел — теннис в корте со стенками",
+      "pos": "n",
+      "cat": "ocio"
+    },
+    {
+      "id": "ocio-jugador",
+      "es": "el jugador",
+      "ru": "игрок",
+      "pos": "n",
+      "cat": "ocio"
+    },
+    {
+      "id": "ocio-cartas",
+      "es": "jugar a las cartas",
+      "ru": "играть в карты",
+      "pos": "phrase",
+      "cat": "ocio"
+    },
+    {
+      "id": "compr-regalo",
+      "es": "el regalo",
+      "ru": "подарок",
+      "pos": "n",
+      "cat": "compras"
+    },
+    {
+      "id": "clima-buen-tiempo",
+      "es": "hace buen tiempo",
+      "ru": "хорошая погода",
+      "pos": "phrase",
+      "cat": "clima"
+    },
+    {
+      "id": "adje-sentado",
+      "es": "sentado",
+      "ru": "сидящий, сидя",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "adje-profesional",
+      "es": "profesional",
+      "ru": "профессиональный",
+      "pos": "adj",
+      "cat": "adjetivos"
+    },
+    {
+      "id": "lugar-delante",
+      "es": "delante de",
+      "ru": "перед — о месте",
+      "pos": "phrase",
+      "cat": "lugar"
+    },
+    {
+      "id": "conec-directamente",
+      "es": "directamente",
+      "ru": "сразу, напрямую",
+      "pos": "adv",
+      "cat": "conectores"
+    },
+    {
+      "id": "conec-juntos",
+      "es": "juntos",
+      "ru": "вместе",
+      "pos": "adv",
+      "cat": "conectores"
+    },
+    {
+      "id": "conec-conmigo",
+      "es": "conmigo",
+      "ru": "со мной",
+      "pos": "phrase",
+      "cat": "conectores"
+    },
+    {
+      "id": "conec-algo",
+      "es": "algo",
+      "ru": "что-то, что-нибудь",
+      "pos": "phrase",
       "cat": "conectores"
     }
   ]

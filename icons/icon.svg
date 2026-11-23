@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Векторная копия иконок из make-icons.py: числа — те же доли холста, умноженные на 100.
+       Скругление фона — для фавикона и шапки; у PNG углы режет сама система. -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4E7355"/>
+      <stop offset="1" stop-color="#2C4531"/>
+    </linearGradient>
+  </defs>
+  <rect width="100" height="100" rx="22" fill="url(#bg)"/>
+  <g fill="#FBF8F1" stroke="#FBF8F1" stroke-width="2.4" stroke-linejoin="round">
+    <rect x="17" y="16" width="66" height="58" rx="17" stroke="none"/>
+    <polygon points="27,66 47,70 22,86"/>
+  </g>
+  <g fill="none" stroke-width="8.5" stroke-linecap="round">
+    <path stroke="#2F4A34" d="M38.75 42.75V59.75M38.75 57A11.25 11.25 0 0 1 61.25 57V59.75"/>
+  </g>
+  <polyline fill="none" stroke="#E06E3C" stroke-width="6.2" stroke-linecap="round" stroke-linejoin="round"
+    points="36.00,29.80 37.17,29.08 38.33,28.40 39.50,27.82 40.67,27.38 41.83,27.10 43.00,27.00 44.17,27.10 45.33,27.38 46.50,27.82 47.67,28.40 48.83,29.08 50.00,29.80 51.17,30.52 52.33,31.20 53.50,31.78 54.67,32.22 55.83,32.50 57.00,32.60 58.17,32.50 59.33,32.22 60.50,31.78 61.67,31.20 62.83,30.52 64.00,29.80"/>
+</svg>

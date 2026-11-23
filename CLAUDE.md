@@ -303,7 +303,7 @@ manifest.webmanifest
 sw.js                   оболочка cache-first, deck/notes network-first, skipWaiting
 deck.seed.json          общая колода, канал пополнения через git
 notes.seed.json         правила и таблицы, тот же канал
-icons/                  + make-icons.py — разовая утилита, к сайту отношения не имеет
+icons/                  PNG-иконки + icon.svg (фавикон, знак в шапке); make-icons.py — разовая утилита
 tests/*.test.js         проверки движка, данных, синхронизации и профилей, запуск — sh tests/run.sh
 src/db.js               IndexedDB с откатом на localStorage и память
 src/state.js            загрузка, сохранение, миграции, пополнение колоды
