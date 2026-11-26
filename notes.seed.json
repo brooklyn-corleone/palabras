@@ -1,5 +1,5 @@
 {
-  "version": 20,
+  "version": 21,
   "groups": {
     "start": "Первые шаги",
     "ser": "Быть и иметь",
@@ -1382,7 +1382,7 @@
         },
         {
           "kind": "text",
-          "body": "querer — хотеть, empezar — начинать, poder — мочь, dormir — спать, mover — двигать, jugar — играть (u → ue, единственный такой). Так же: preferir — prefiero, pensar — pienso, entender — entiendo, costar — cuesta, almorzar — almuerzo, soler — suelo (suelo cenar a las nueve — обычно ужинаю в девять), sentirse — me siento, sentarse — me siento."
+          "body": "querer — хотеть, empezar — начинать, poder — мочь, dormir — спать, mover — двигать, jugar — играть (u → ue, единственный такой). Так же: preferir — prefiero, sentir — siento, mentir — miento, volver — vuelvo, contar — cuento, soñar — sueño, pensar — pienso, entender — entiendo, costar — cuesta, almorzar — almuerzo, soler — suelo (suelo cenar a las nueve — обычно ужинаю в девять), sentirse — me siento, sentarse — me siento."
         },
         {
           "kind": "text",
@@ -1408,7 +1408,12 @@
         "verb-mover",
         "rutina-almorzar",
         "verb-soler",
-        "verb-sentirse"
+        "verb-sentirse",
+        "verb-sentir",
+        "verb-mentir",
+        "verb-contar",
+        "verb-sonar",
+        "rutina-volver"
       ]
     },
     {
@@ -1466,12 +1471,13 @@
         },
         {
           "kind": "text",
-          "body": "pedir — просить, заказывать, seguir — продолжать, следовать, elegir — выбирать. У seguir и elegir в yo ещё меняется написание: -guir → -go, -gir → -jo, чтобы звук остался тем же."
+          "body": "pedir — просить, заказывать, seguir — продолжать, следовать, elegir — выбирать. У seguir и elegir в yo ещё меняется написание: -guir → -go, -gir → -jo, чтобы звук остался тем же. Так же competir — compito."
         }
       ],
       "words": [
         "verb-pedir",
-        "verb-elegir"
+        "verb-elegir",
+        "verb-competir"
       ]
     },
     {
@@ -1522,12 +1528,13 @@
         },
         {
           "kind": "text",
-          "body": "conocer — быть знакомым, знать (место, человека), conducir — водить машину. Так же traducir — traduzco, parecer — parezco."
+          "body": "conocer — быть знакомым, знать (место, человека), conducir — водить машину. Так же producir — produzco, traducir — traduzco, parecer — parezco."
         }
       ],
       "words": [
         "transp-conducir",
-        "verb-conocer"
+        "verb-conocer",
+        "verb-producir"
       ]
     },
     {

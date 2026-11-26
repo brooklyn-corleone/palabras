@@ -10,7 +10,7 @@ address bar and keeps working with no connection.
 
 ## What it does
 
-- **781 words** in 25 themes, **46 grammar rules** in 9 groups — conjugation tables, irregular
+- **787 words** in 25 themes, **46 grammar rules** in 9 groups — conjugation tables, irregular
   verbs grouped by type of change, gender and number, the future, prepositions, numbers and time.
 - **Lesson lists**: the words a teacher assigned for each class (Lección 1–10 and daily routine so far). A session
   can be built from a list, a theme, hand-picked words or the hardest ones.
