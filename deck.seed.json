@@ -1,5 +1,5 @@
 {
-  "version": 34,
+  "version": 35,
   "categories": {
     "verbos": "Глаголы",
     "familia": "Семья",
@@ -28,6 +28,43 @@
     "ocio": "Досуг"
   },
   "lists": [
+    {
+      "id": "2026-11-26-presente-irregulares",
+      "title": "Presente: verbos irregulares",
+      "date": "2026-11-26",
+      "words": [
+        "tener-ellos",
+        "verb-hacer",
+        "estar-yo",
+        "ser-nosotros",
+        "verb-dar",
+        "rutina-volver",
+        "verb-sentir",
+        "verb-traer",
+        "rutina-sales",
+        "verb-poner",
+        "verb-saber",
+        "verb-oir",
+        "verb-conocer",
+        "verb-construir",
+        "verb-venir",
+        "verb-ir",
+        "transp-conducir",
+        "verb-huir",
+        "verb-decir",
+        "verb-pedir",
+        "verb-seguir",
+        "verb-mentir",
+        "verb-dormir",
+        "verb-poder",
+        "verb-soler",
+        "verb-competir",
+        "verb-contar",
+        "verb-sonar",
+        "verb-producir",
+        "verb-pensar"
+      ]
+    },
     {
       "id": "2026-11-23-la-hora-irregulares",
       "title": "La hora y verbos irregulares",
@@ -6573,6 +6610,48 @@
       "ru": "капуста",
       "pos": "n",
       "cat": "comida"
+    },
+    {
+      "id": "verb-sentir",
+      "es": "sentir",
+      "ru": "чувствовать, ощущать",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-mentir",
+      "es": "mentir",
+      "ru": "врать, лгать",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-competir",
+      "es": "competir",
+      "ru": "соревноваться, конкурировать",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-contar",
+      "es": "contar",
+      "ru": "считать; рассказывать",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-sonar",
+      "es": "soñar",
+      "ru": "видеть сны, мечтать",
+      "pos": "v",
+      "cat": "verbos"
+    },
+    {
+      "id": "verb-producir",
+      "es": "producir",
+      "ru": "производить",
+      "pos": "v",
+      "cat": "verbos"
     }
   ]
 }
